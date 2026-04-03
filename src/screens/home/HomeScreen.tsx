@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../store/gameStore';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEffectiveRole } from '../../lib/authRoles';
 import { supabase } from '../../lib/supabase';
 import { getTotalFormCount, CATEGORY_LABELS } from '../../data/allForms';
 import { computeDueReviewCount } from '../../lib/adaptiveEngine';
-import type { WordCategory } from '../../types';
+import type { WordCategory, ModeId, MasteryRecord } from '../../types';
+import type { NavigateFunction } from 'react-router-dom';
+import {
+  resolveDefaultUnitId,
+  buildClassUnitModePath,
+  SELECTED_CLASS_STORAGE_KEY,
+} from '../../lib/studentNavigation';
+import { fetchUnitById } from '../../lib/curriculumApi';
 
 interface ClassMembership {
   id: string;
@@ -21,7 +28,15 @@ interface AssignmentPreview {
   mode_id: string;
 }
 
-const modes = [
+const modes: {
+  id: ModeId;
+  path: string;
+  title: string;
+  description: string;
+  icon: string;
+  color: string;
+  tag: string;
+}[] = [
   {
     id: 'learn_table',
     path: '/learn',
@@ -78,6 +93,43 @@ const modes = [
   },
 ];
 
+const FLAT_PATH_BY_MODE: Record<ModeId, string> = {
+  learn_table: '/learn',
+  practice: '/practice',
+  speed_round: '/speed',
+  boss_battle: '/boss',
+  memory_match: '/memory',
+  grid_challenge: '/grid',
+};
+
+async function navigateToMode(
+  navigate: NavigateFunction,
+  modeId: ModeId,
+  opts: {
+    effectiveRole: string;
+    myClasses: ClassMembership[];
+    masteryRecords: Record<string, MasteryRecord>;
+  }
+) {
+  const { effectiveRole, myClasses, masteryRecords } = opts;
+  if (effectiveRole === 'student' && myClasses.length > 0) {
+    let classId: string;
+    try {
+      const stored = localStorage.getItem(SELECTED_CLASS_STORAGE_KEY);
+      classId =
+        stored && myClasses.some(c => c.id === stored) ? stored : myClasses[0].id;
+    } catch {
+      classId = myClasses[0].id;
+    }
+    const uid = await resolveDefaultUnitId(classId, masteryRecords);
+    if (uid) {
+      navigate(buildClassUnitModePath(classId, uid, modeId));
+      return;
+    }
+  }
+  navigate(FLAT_PATH_BY_MODE[modeId] ?? '/practice');
+}
+
 export function HomeScreen() {
   const navigate = useNavigate();
   const { masteryRecords, sessionHistory, settings, toggleCategory } = useGameStore();
@@ -86,6 +138,7 @@ export function HomeScreen() {
 
   const [myClasses, setMyClasses] = useState<ClassMembership[]>([]);
   const [pendingAssignments, setPendingAssignments] = useState<AssignmentPreview[]>([]);
+  const [primaryUnitLabel, setPrimaryUnitLabel] = useState<string | null>(null);
 
   useEffect(() => {
     if (!profile || effectiveRole !== 'student') return;
@@ -136,6 +189,38 @@ export function HomeScreen() {
     loadStudentData();
   }, [profile, effectiveRole]);
 
+  useEffect(() => {
+    if (!profile || effectiveRole !== 'student' || myClasses.length === 0) {
+      setPrimaryUnitLabel(null);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      let classId: string;
+      try {
+        const stored = localStorage.getItem(SELECTED_CLASS_STORAGE_KEY);
+        classId =
+          stored && myClasses.some(c => c.id === stored) ? stored : myClasses[0].id;
+      } catch {
+        classId = myClasses[0].id;
+      }
+      const uid = await resolveDefaultUnitId(classId, masteryRecords);
+      if (cancelled || !uid) {
+        if (!cancelled) setPrimaryUnitLabel(null);
+        return;
+      }
+      const row = await fetchUnitById(uid);
+      if (cancelled || !row) {
+        if (!cancelled) setPrimaryUnitLabel(null);
+        return;
+      }
+      setPrimaryUnitLabel(row.title);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [profile, effectiveRole, myClasses, masteryRecords]);
+
   const totalAttempts = Object.values(masteryRecords).reduce((s, r) => s + r.attempts, 0);
   const masteredCount = Object.values(masteryRecords).filter(r => r.status === 'mastered').length;
   const totalForms = getTotalFormCount(settings.activeCategories);
@@ -148,9 +233,15 @@ export function HomeScreen() {
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-white tracking-tight">
-              🔍 Case Detective
+              Strand
             </h1>
             <p className="text-slate-400 text-sm mt-0.5">Russian Case Declensions</p>
+            {effectiveRole === 'student' && myClasses.length > 0 && (
+              <p className="text-slate-500 text-xs mt-1 max-w-md">
+                Overview — stats and modes for all your work. After sign-in you start in your class; open this page anytime from
+                Overview in the sidebar.
+              </p>
+            )}
           </div>
           <button
             onClick={() => navigate('/settings')}
@@ -183,6 +274,13 @@ export function HomeScreen() {
             );
           })}
         </div>
+        {effectiveRole === 'student' && primaryUnitLabel && myClasses.length > 0 && (
+          <p className="text-slate-500 text-xs leading-relaxed -mt-4">
+            Starting a mode from this page opens your class unit <span className="text-slate-300 font-medium">{primaryUnitLabel}</span>
+            when available. Category pills above are global defaults; the active unit may narrow cases and word types after you enter
+            it.
+          </p>
+        )}
 
         {/* Stats Bar */}
         <div className="grid grid-cols-3 gap-4">
@@ -205,7 +303,14 @@ export function HomeScreen() {
         {/* Review Due Indicator */}
         {dueCount > 0 && (
           <button
-            onClick={() => navigate('/practice')}
+            type="button"
+            onClick={() =>
+              navigateToMode(navigate, 'practice', {
+                effectiveRole,
+                myClasses,
+                masteryRecords,
+              })
+            }
             className="w-full flex items-center justify-between bg-amber-950 hover:bg-amber-900 border border-amber-700 rounded-2xl px-5 py-4 transition-colors"
           >
             <div className="flex items-center gap-3">
@@ -255,12 +360,17 @@ export function HomeScreen() {
 
         {/* My Classes (students only) */}
         {myClasses.length > 0 && (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <span className="text-slate-500 text-xs">Classes:</span>
             {myClasses.map(c => (
-              <span key={c.id} className="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-lg border border-slate-700">
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => navigate(`/class/${c.id}`)}
+                className="bg-slate-800 text-slate-300 text-xs px-3 py-1 rounded-lg border border-slate-700 hover:border-blue-500 hover:text-white transition-colors"
+              >
                 {c.name}
-              </span>
+              </button>
             ))}
             <button onClick={() => navigate('/join-class')} className="text-blue-400 hover:text-blue-300 text-xs font-semibold">
               + Join
@@ -269,24 +379,75 @@ export function HomeScreen() {
         )}
 
         {effectiveRole === 'student' && myClasses.length === 0 && (
-          <button
-            onClick={() => navigate('/join-class')}
-            className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border border-dashed border-slate-600 hover:border-blue-500 rounded-2xl px-5 py-4 transition-colors text-slate-400 hover:text-blue-400 text-sm font-semibold"
-          >
-            🏫 Join a Class
-          </button>
+          <>
+            <div>
+              <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider mb-2">
+                Getting started
+              </h2>
+              <p className="text-slate-500 text-xs mb-4 max-w-xl">
+                New to Russian? Explore the alphabet, useful phrases, and short games here. These are optional —
+                whenever you are ready, join a class to work on case declensions with your teacher.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-2">
+                <Link
+                  to="/intro/alphabet"
+                  className="rounded-2xl border border-slate-700 bg-slate-900 hover:border-blue-500 hover:bg-slate-800 px-4 py-4 transition-colors"
+                >
+                  <span className="text-2xl">А</span>
+                  <p className="text-white font-semibold text-sm mt-2">Alphabet</p>
+                  <p className="text-slate-500 text-xs mt-1">Cyrillic letters and sounds</p>
+                </Link>
+                <Link
+                  to="/intro/phrases"
+                  className="rounded-2xl border border-slate-700 bg-slate-900 hover:border-blue-500 hover:bg-slate-800 px-4 py-4 transition-colors"
+                >
+                  <span className="text-2xl">💬</span>
+                  <p className="text-white font-semibold text-sm mt-2">Phrases</p>
+                  <p className="text-slate-500 text-xs mt-1">Greetings and classroom Russian</p>
+                </Link>
+                <Link
+                  to="/intro/play"
+                  className="rounded-2xl border border-slate-700 bg-slate-900 hover:border-blue-500 hover:bg-slate-800 px-4 py-4 transition-colors"
+                >
+                  <span className="text-2xl">🎮</span>
+                  <p className="text-white font-semibold text-sm mt-2">Games & drills</p>
+                  <p className="text-slate-500 text-xs mt-1">Quiz, match, typing</p>
+                </Link>
+              </div>
+              <Link
+                to="/intro"
+                className="inline-block text-blue-400 hover:text-blue-300 text-xs font-semibold mb-6"
+              >
+                All getting started topics →
+              </Link>
+            </div>
+
+            <button
+              onClick={() => navigate('/join-class')}
+              className="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 border border-dashed border-slate-600 hover:border-blue-500 rounded-2xl px-5 py-4 transition-colors text-slate-400 hover:text-blue-400 text-sm font-semibold"
+            >
+              🏫 Join a Class
+            </button>
+          </>
         )}
 
         {/* Mode Grid */}
         <div>
           <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider mb-4">
-            Choose a Mode
+            {effectiveRole === 'student' && myClasses.length === 0 ? 'Case declensions' : 'Choose a Mode'}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {modes.map(mode => (
               <button
+                type="button"
                 key={mode.id}
-                onClick={() => navigate(mode.path)}
+                onClick={() =>
+                  navigateToMode(navigate, mode.id, {
+                    effectiveRole,
+                    myClasses,
+                    masteryRecords,
+                  })
+                }
                 className="group bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-500 rounded-2xl p-5 text-left transition-all duration-200 hover:scale-[1.02] hover:shadow-xl"
                 style={{ '--mode-color': mode.color } as React.CSSProperties}
               >

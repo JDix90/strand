@@ -2,6 +2,9 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { caseMetadata, caseOrder } from '../../data/caseMetadata';
 import { useGameStore } from '../../store/gameStore';
+import { useCurriculum, useEffectiveUnitId } from '../../contexts/CurriculumContext';
+import { VOCABULARY_STUB_MODULE } from '../../lib/curriculumConstants';
+import { masteryStorageKey } from '../../lib/masteryKeys';
 import { getLemmasByCategory, getForm, CATEGORY_LABELS } from '../../data/allForms';
 import type { CaseId, WordCategory } from '../../types';
 
@@ -14,6 +17,8 @@ const GENDER_LABELS: Record<string, string> = {
 export function LearnScreen() {
   const navigate = useNavigate();
   const { masteryRecords, settings } = useGameStore();
+  const { contentModule, classId, unitId: ctxUnitId } = useCurriculum();
+  const unitId = useEffectiveUnitId();
   const [hoveredCase, setHoveredCase] = useState<CaseId | null>(null);
   const [hoveredLemma, setHoveredLemma] = useState<string | null>(null);
   const [selectedCell, setSelectedCell] = useState<{ caseId: CaseId; lemmaId: string } | null>(null);
@@ -40,7 +45,8 @@ export function LearnScreen() {
     const form = getFormForCell(lemmaId, caseId);
     if (!form) return null;
     const key = `${lemmaId}:${caseId}:${form.surfaceForm}`;
-    return masteryRecords[key] ?? null;
+    const sk = masteryStorageKey(unitId, key);
+    return masteryRecords[sk] ?? masteryRecords[key] ?? null;
   };
 
   const isCellHighlighted = (lemmaId: string, caseId: CaseId) => {
@@ -64,6 +70,25 @@ export function LearnScreen() {
     };
     return colors[m.status] ?? null;
   };
+
+  if (contentModule === VOCABULARY_STUB_MODULE) {
+    const back = classId && ctxUnitId ? `/class/${classId}/unit/${ctxUnitId}` : '/home';
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center px-6">
+        <p className="text-lg font-semibold mb-2">Vocabulary module</p>
+        <p className="text-slate-400 text-center max-w-md mb-6">
+          The learn table is for declension units. This preview unit uses short vocabulary drills in Practice.
+        </p>
+        <button
+          type="button"
+          onClick={() => navigate(`${back}/practice`)}
+          className="px-4 py-2 rounded-lg bg-blue-700 hover:bg-blue-600 text-white font-medium"
+        >
+          Open vocabulary practice
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">

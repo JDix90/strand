@@ -1,151 +1,138 @@
-# Case Detective - Russian Pronoun Cases
+# Strand
 
-**Case Detective** is an interactive web application for mastering Russian personal pronoun declensions across all six grammatical cases. It features six distinct game modes, an adaptive review engine, and full local-storage persistence with no backend or external dependencies required.
+**Strand** is a web application for practicing **Russian nominal declension** (cases, pronouns, names, nouns) across multiple game modes, with **adaptive review**, **class-based curriculum**, and **cloud-synced progress** via [Supabase](https://supabase.com).
+
+Students can join classes, follow teacher-paced units, and practice in scoped routes. Teachers manage classes, curriculum visibility, assignments, and analytics. Admins have separate tools for users, classes, and site settings.
 
 ---
 
-## Quick Start
+## Tech stack
 
-### Prerequisites
+| Layer | Technology |
+|-------|------------|
+| UI | React 19, TypeScript, Tailwind CSS v4 |
+| Build | Vite 8 |
+| State | Zustand 5 |
+| Routing | React Router 7 |
+| Backend | Supabase (Auth, Postgres, Row Level Security) |
+| E2E | Playwright (optional) |
 
-- **Node.js** 18.x or higher
-- **npm** 9.x or higher (bundled with Node)
+---
 
-Check your versions: `node -v` and `npm -v`
-If needed, install or update Node.js at https://nodejs.org
+## Prerequisites
 
-### Step-by-Step Setup
+- **Node.js** 18+
+- **npm** 9+
+- A **Supabase project** with migrations applied (see [Database setup](#database-setup))
 
-**1. Open the project in Visual Studio Code**
+---
 
-Unzip the downloaded archive, then open the `case-detective` folder in VS Code:
-```
-File > Open Folder > select the case-detective folder
-```
+## Setup
 
-**2. Open the integrated terminal**
-```
-Terminal > New Terminal  (or Ctrl+` / Cmd+`)
-```
+### 1. Install dependencies
 
-**3. Install dependencies**
 ```bash
 npm install
 ```
-This installs all required packages into `node_modules/`. Only needs to be run once.
 
-**4. Start the development server**
-```bash
-npm run dev
-```
-The terminal will display a local URL, typically:
-```
-  Local: http://localhost:5173/
-```
+### 2. Environment variables
 
-**5. Open in your browser**
+Copy [`.env.example`](.env.example) to `.env.local` and set:
 
-Navigate to `http://localhost:5173` in any modern browser (Chrome, Firefox, Safari, Edge).
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `VITE_SUPABASE_URL` | Yes | Project URL (e.g. `https://xxxx.supabase.co`) |
+| `VITE_SUPABASE_ANON_KEY` | Yes | Anon/public key from Supabase Dashboard → API |
+| `VITE_CURRICULUM_V2` | No | If `1` or `true`, students with a class may be redirected from legacy flat routes (`/practice`, etc.) to class-scoped URLs |
+
+Restart `npm run dev` after changing env vars.
+
+### 3. Database setup
+
+Apply SQL migrations in order from [`supabase/migrations/`](supabase/migrations/) to your Supabase project (CLI: `supabase db push`, or run files in the SQL editor). Key migration:
+
+- [`005_curriculum.sql`](supabase/migrations/005_curriculum.sql) — subjects, topics, units, `class_curriculum`, mastery `unit_id` scope, and related RLS.
+
+Earlier migrations define profiles, classes, memberships, assignments, and admin helpers.
 
 ---
 
-## Available Scripts
+## Scripts
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start the development server with hot-reload |
-| `npm run build` | Compile TypeScript and build the production bundle into `dist/` |
-| `npm run preview` | Serve the production build locally for final testing |
-| `npm run lint` | Run ESLint across all TypeScript/TSX files |
+| `npm run dev` | Dev server with hot reload |
+| `npm run build` | Typecheck + production bundle to `dist/` |
+| `npm run preview` | Serve production build locally |
+| `npm run lint` | ESLint |
+| `npm run test:e2e` | Playwright tests (starts dev server unless configured otherwise) |
 
 ---
 
-## Game Modes
+## Student navigation (support)
+
+- After sign-in, **students with at least one class** land on **`/class/:classId`** (class workspace with sidebar).
+- **`/home`** is the **Overview** dashboard: stats, mode grid, and cross-class shortcuts; use the sidebar link “Overview” to open it. The selected class for the sidebar and default scoped routes is stored under `cd_student_sidebar_class` (see [`docs/localStorage-keys.md`](docs/localStorage-keys.md)).
+
+---
+
+## Game modes
 
 | Mode | Description |
 |------|-------------|
-| Learn Table | Interactive declension table with row/column/cell highlighting and mastery dots |
-| Practice | Adaptive fill-in-the-blank questions that focus on your weakest forms |
-| Speed Round | 60-second timed blitz - wrong answers cost 2 seconds |
-| Boss Battle | Team vs. boss - deal damage with correct answers, boss heals on mistakes |
-| Memory Match | Flip-card matching across three match types and three grid sizes |
-| Grid Challenge | Complete the full declension grid with virtual Cyrillic keyboard or answer palette |
+| Learn Table | Interactive declension table |
+| Practice | Adaptive fill-in-the-blank |
+| Speed Round | Timed blitz |
+| Boss Battle | Team vs boss |
+| Memory Match | Card matching |
+| Grid Challenge | Full grid completion |
 
 ---
 
-## Tech Stack
+## Data and persistence
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | React 19 + TypeScript |
-| Build Tool | Vite 8 |
-| Styling | Tailwind CSS v4 |
-| State Management | Zustand 5 |
-| Routing | React Router v7 |
-| Persistence | Browser localStorage (no backend) |
+Progress uses a **hybrid** model:
+
+- **Browser**: `localStorage` for offline-capable cache and migration ([`src/lib/storage.ts`](src/lib/storage.ts)).
+- **Cloud**: When signed in, mastery, settings, and session summaries sync to Supabase ([`src/lib/cloudStorage.ts`](src/lib/cloudStorage.ts), [`src/store/gameStore.ts`](src/store/gameStore.ts)).
+
+Settings include a **Clear progress** path in the app.
 
 ---
 
-## Project Structure
+## Project structure (high level)
 
 ```
 src/
-  App.tsx                    - Root router
-  main.tsx                   - Entry point
-  index.css                  - Tailwind + CSS variables
-  types/index.ts             - Canonical TypeScript types
-  data/
-    pronounForms.ts          - 48 pronoun forms (8 pronouns x 6 cases)
-    caseMetadata.ts          - Case labels, colors, helper words
-    confusionPairs.ts        - High-confusion form pairs
-    questionTemplates.ts     - Question bank with distractors and explanations
-    gameConfigs.ts           - Boss HP, speed round, adaptive thresholds
-  lib/
-    adaptiveEngine.ts        - Mastery scoring, queue management
-    bossEngine.ts            - HP math, shield, damage/heal calculations
-    questionGenerator.ts     - Question selection with filters
-    storage.ts               - localStorage schema and helpers
-  store/gameStore.ts         - Zustand global store
-  components/
-    ui/                      - Shared UI primitives
-    game/                    - Game-specific components
-  screens/
-    home/                    - HomeScreen, SettingsScreen
-    learn/                   - LearnScreen (Learn Table)
-    practice/                - PracticeScreen
-    speed/                   - SpeedScreen (Speed Round)
-    boss/                    - BossScreen (Boss Battle)
-    memory/                  - MemoryScreen (Memory Match)
-    grid/                    - GridScreen (Grid Challenge)
-    results/                 - ResultsScreen
+  App.tsx                 # Routes (lazy-loaded screens via lazyScreens.ts)
+  components/             # UI, game, student shell, SyncToastHost, curriculum guards
+  contexts/               # Auth, curriculum
+  layouts/                # Student home / class layouts
+  screens/                # Auth, home, modes, teacher, student, admin
+  store/                  # Zustand game store
+  lib/                    # Adaptive engine, question gen, Supabase helpers, sync toasts
+  lazyScreens.ts          # React.lazy route chunks
+  data/                   # Russian forms, templates, configs
+supabase/migrations/      # SQL schema + RLS
+docs/                     # ADRs, curriculum lock policy, localStorage keys
+tests/e2e/                # Playwright smoke tests
 ```
-
----
-
-## Data Persistence
-
-All progress is stored in the browser `localStorage` under these keys:
-
-| Key | Contents |
-|-----|---------|
-| `cd_mastery_records` | Per-form mastery scores, accuracy, streaks |
-| `cd_adaptive_queue` | Prioritized review queue (max 20 items) |
-| `cd_settings` | Difficulty, display preferences |
-| `cd_session_history` | Last 50 session summaries |
-
-To clear all data, go to **Settings > Clear All Progress** within the app.
 
 ---
 
 ## Deployment
 
-To deploy as a static site (Netlify, Vercel, GitHub Pages, etc.):
+1. Run `npm run build` and host the **`dist/`** output on any static host (Netlify, Vercel, S3, etc.).
+2. Configure the same **`VITE_*`** env vars in the hosting dashboard.
+3. Ensure the Supabase project has migrations applied and Auth redirect URLs include your production origin.
 
-```bash
-npm run build
-```
+---
 
-Upload the contents of the `dist/` folder to any static hosting provider.
+## Documentation
+
+- [`docs/ADR-001-curriculum-mastery.md`](docs/ADR-001-curriculum-mastery.md) — curriculum URLs and mastery keys
+- [`docs/curriculum-lock-policy.md`](docs/curriculum-lock-policy.md) — optional `lock_policy` JSON for teachers
+- [`docs/localStorage-keys.md`](docs/localStorage-keys.md) — `cd_*` client keys
 
 ---
 

@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { StudentEntryRoute } from './StudentEntryRoute';
 
 export function RoleRedirect() {
   const { profile, loading } = useAuth();
@@ -24,5 +25,5 @@ export function RoleRedirect() {
     return <Navigate to="/teacher" replace />;
   }
 
-  return <Navigate to="/home" replace />;
+  return <StudentEntryRoute />;
 }

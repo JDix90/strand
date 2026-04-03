@@ -1,4 +1,6 @@
 import type { MasteryRecord, AdaptiveReviewQueueItem, SessionSummary, WordCategory } from '../types';
+import { DEFAULT_RUSSIAN_UNIT_ID } from './curriculumConstants';
+import { masteryStorageKey, normalizeMasteryRecord } from './masteryKeys';
 
 const KEYS = {
   MASTERY: 'cd_mastery_records',
@@ -8,7 +10,7 @@ const KEYS = {
   VERSION: 'cd_schema_version',
 } as const;
 
-const CURRENT_VERSION = 2;
+const CURRENT_VERSION = 3;
 const MAX_HISTORY = 50;
 const MAX_QUEUE = 50;
 
@@ -31,13 +33,34 @@ function safeSet(key: string, value: unknown): void {
 }
 
 export function checkAndMigrateSchema(): void {
-  const version = safeGet<number>(KEYS.VERSION, 1);
-  if (version < CURRENT_VERSION) {
+  let version = safeGet<number>(KEYS.VERSION, 1);
+  if (version < 2) {
     const settings = safeGet<Record<string, unknown>>(KEYS.SETTINGS, {});
     if (!settings.activeCategories) {
       settings.activeCategories = ['pronoun'];
       safeSet(KEYS.SETTINGS, settings);
     }
+    version = 2;
+    safeSet(KEYS.VERSION, version);
+  }
+  if (version < 3) {
+    const masteryArr = safeGet<MasteryRecord[]>(KEYS.MASTERY, []);
+    const migratedMastery = masteryArr.map(r =>
+      normalizeMasteryRecord({
+        ...r,
+        unitId: r.unitId ?? DEFAULT_RUSSIAN_UNIT_ID,
+        contentModule: r.contentModule ?? 'russian_declension',
+      })
+    );
+    safeSet(KEYS.MASTERY, migratedMastery);
+
+    const queue = safeGet<AdaptiveReviewQueueItem[]>(KEYS.QUEUE, []);
+    const migratedQueue = queue.map(q => ({
+      ...q,
+      unitId: q.unitId ?? DEFAULT_RUSSIAN_UNIT_ID,
+    }));
+    safeSet(KEYS.QUEUE, migratedQueue);
+
     safeSet(KEYS.VERSION, CURRENT_VERSION);
   }
 }
@@ -46,7 +69,12 @@ export function checkAndMigrateSchema(): void {
 
 export function loadMasteryRecords(): Record<string, MasteryRecord> {
   const arr = safeGet<MasteryRecord[]>(KEYS.MASTERY, []);
-  return Object.fromEntries(arr.map(r => [r.formKey, r]));
+  return Object.fromEntries(
+    arr.map(r => {
+      const n = normalizeMasteryRecord(r);
+      return [masteryStorageKey(n.unitId, n.formKey), n] as const;
+    })
+  );
 }
 
 export function saveMasteryRecords(records: Record<string, MasteryRecord>): void {

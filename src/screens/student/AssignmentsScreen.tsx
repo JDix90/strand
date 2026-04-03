@@ -1,7 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import {
+  assignmentModeToModeId,
+  buildClassUnitModePath,
+  modeIdToRouteSegment,
+  resolveDefaultUnitId,
+} from '../../lib/studentNavigation';
+import { useGameStore } from '../../store/gameStore';
 
 interface AssignmentDisplay {
   id: string;
@@ -11,6 +18,8 @@ interface AssignmentDisplay {
   min_questions: number;
   min_accuracy: number;
   due_date: string | null;
+  class_id: string;
+  unit_id: string | null;
   class_name: string;
   completed: boolean;
   completed_at: string | null;
@@ -19,6 +28,7 @@ interface AssignmentDisplay {
 export function AssignmentsScreen() {
   const navigate = useNavigate();
   const { profile } = useAuth();
+  const masteryRecords = useGameStore(s => s.masteryRecords);
   const [assignments, setAssignments] = useState<AssignmentDisplay[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -36,7 +46,9 @@ export function AssignmentsScreen() {
 
       const { data: assigns } = await supabase
         .from('assignments')
-        .select('id, title, description, mode_id, min_questions, min_accuracy, due_date, class_id, created_at')
+        .select(
+          'id, title, description, mode_id, min_questions, min_accuracy, due_date, class_id, unit_id, created_at'
+        )
         .in('class_id', classIds)
         .order('created_at', { ascending: false });
 
@@ -64,6 +76,8 @@ export function AssignmentsScreen() {
         min_questions: a.min_questions,
         min_accuracy: a.min_accuracy,
         due_date: a.due_date,
+        class_id: a.class_id,
+        unit_id: a.unit_id ?? null,
         class_name: classMap[a.class_id] ?? '',
         completed: !!completionMap[a.id],
         completed_at: completionMap[a.id] ?? null,
@@ -79,24 +93,40 @@ export function AssignmentsScreen() {
 
   const modeLabel = (modeId: string) => {
     const labels: Record<string, string> = {
-      practice: 'Practice', speed_round: 'Speed Round', boss_battle: 'Boss Battle',
+      learn_table: 'Learn',
+      practice: 'Practice',
+      speed_round: 'Speed Round',
+      boss_battle: 'Boss Battle',
+      memory_match: 'Memory',
+      grid_challenge: 'Grid',
     };
     return labels[modeId] ?? modeId;
   };
 
-  const modeRoute = (modeId: string) => {
-    const routes: Record<string, string> = {
-      practice: '/practice', speed_round: '/speed', boss_battle: '/boss',
-    };
-    return routes[modeId] ?? '/practice';
-  };
+  const startAssignment = useCallback(
+    async (a: AssignmentDisplay) => {
+      const modeId = assignmentModeToModeId(a.mode_id);
+      if (a.unit_id) {
+        navigate(buildClassUnitModePath(a.class_id, a.unit_id, modeId));
+        return;
+      }
+      const uid = await resolveDefaultUnitId(a.class_id, masteryRecords);
+      if (uid) {
+        navigate(buildClassUnitModePath(a.class_id, uid, modeId));
+      } else {
+        const seg = modeIdToRouteSegment(modeId);
+        navigate(`/${seg}`);
+      }
+    },
+    [navigate, masteryRecords]
+  );
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <div className="bg-slate-900 border-b border-slate-800 px-6 py-5">
         <div className="max-w-3xl mx-auto flex items-center gap-4">
           <button onClick={() => navigate('/home')} className="text-slate-400 hover:text-white">
-            ← Home
+            ← Overview
           </button>
           <h1 className="text-xl font-bold text-white">Assignments</h1>
         </div>
@@ -148,7 +178,8 @@ export function AssignmentsScreen() {
                             <span>Min {Math.round(a.min_accuracy * 100)}% acc</span>
                           </div>
                           <button
-                            onClick={() => navigate(modeRoute(a.mode_id))}
+                            type="button"
+                            onClick={() => void startAssignment(a)}
                             className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-colors"
                           >
                             Start

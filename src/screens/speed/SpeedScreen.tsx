@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../store/gameStore';
+import { useCurriculum, useEffectiveUnitId } from '../../contexts/CurriculumContext';
+import { masteryStorageKey, filterMasteryRecordsByUnit } from '../../lib/masteryKeys';
 import { generateQuestion, type GeneratedQuestion } from '../../lib/questionGenerator';
 import { createMasteryRecord, updateMasteryRecord, enqueueFromEvent } from '../../lib/adaptiveEngine';
 import { AnswerButton } from '../../components/ui/AnswerButton';
@@ -14,6 +16,8 @@ type Phase = 'countdown' | 'playing' | 'complete';
 export function SpeedScreen() {
   const navigate = useNavigate();
   const { settings, masteryRecords, adaptiveQueue, updateMasteryRecord: storeMastery, setAdaptiveQueue, addSessionSummary } = useGameStore();
+  const { effectiveCategories, filterCaseIds, topicId } = useCurriculum();
+  const unitId = useEffectiveUnitId();
 
   const [phase, setPhase] = useState<Phase>('countdown');
   const [countdown, setCountdown] = useState(3);
@@ -27,27 +31,38 @@ export function SpeedScreen() {
   const [correctCount, setCorrectCount] = useState(0);
   const [events, setEvents] = useState<SessionAnswerEvent[]>([]);
   const [localQueue, setLocalQueue] = useState(adaptiveQueue);
-  const [localMastery, setLocalMastery] = useState(masteryRecords);
+  const [localMastery, setLocalMastery] = useState(() => filterMasteryRecordsByUnit(masteryRecords, unitId));
   const presentedAtRef = useRef<number>(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const usedIds = useRef<string[]>([]);
   const timeLeftRef = useRef(SPEED_ROUND_DURATION_SECONDS);
   const phaseRef = useRef<Phase>('countdown');
 
-  const categories = settings.activeCategories;
+  const categories = effectiveCategories;
+
+  useEffect(() => {
+    setLocalMastery(filterMasteryRecordsByUnit(masteryRecords, unitId));
+  }, [masteryRecords, unitId]);
 
   useEffect(() => { phaseRef.current = phase; }, [phase]);
   useEffect(() => { timeLeftRef.current = timeLeft; }, [timeLeft]);
 
   const loadNextQuestion = useCallback(() => {
-    const q = generateQuestion('speed_round', settings.difficulty, undefined, usedIds.current.slice(-8), undefined, categories);
+    const q = generateQuestion(
+      'speed_round',
+      settings.difficulty,
+      filterCaseIds,
+      usedIds.current.slice(-8),
+      undefined,
+      categories
+    );
     if (q) {
       usedIds.current = [...usedIds.current, q.template.id].slice(-20);
       setQuestion(q);
       setAnswerState(['default', 'default', 'default', 'default']);
       presentedAtRef.current = Date.now();
     }
-  }, [settings.difficulty, categories]);
+  }, [settings.difficulty, categories, filterCaseIds]);
 
   useEffect(() => {
     if (phase !== 'countdown') return;
@@ -119,9 +134,10 @@ export function SpeedScreen() {
     };
     setEvents(ev => [...ev, event]);
 
-    const existing = localMastery[formKey] ?? createMasteryRecord(formKey);
+    const sk = masteryStorageKey(unitId, formKey);
+    const existing = localMastery[sk] ?? createMasteryRecord(formKey, unitId);
     const updated = updateMasteryRecord(existing, event);
-    const newMastery = { ...localMastery, [formKey]: updated };
+    const newMastery = { ...localMastery, [sk]: updated };
     setLocalMastery(newMastery);
     storeMastery(updated);
 
@@ -139,6 +155,8 @@ export function SpeedScreen() {
     const summary: SessionSummary = {
       id: Date.now().toString(),
       modeId: 'speed_round',
+      unitId,
+      topicId: topicId ?? undefined,
       score,
       accuracy: totalAnswered > 0 ? correctCount / totalAnswered : 0,
       averageResponseMs: events.length > 0 ? events.reduce((s, e) => s + e.responseMs, 0) / events.length : 0,
@@ -151,7 +169,7 @@ export function SpeedScreen() {
       categories,
     };
     addSessionSummary(summary);
-  }, [phase, score, totalAnswered, correctCount, events, bestStreak, categories, addSessionSummary]);
+  }, [phase, score, totalAnswered, correctCount, events, bestStreak, categories, addSessionSummary, unitId, topicId]);
 
   if (phase === 'countdown') {
     return (

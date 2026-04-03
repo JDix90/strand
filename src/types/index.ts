@@ -123,6 +123,9 @@ export interface SessionAnswerEvent {
 
 export interface MasteryRecord {
   formKey: string;
+  /** Scope for progress; defaults to seeded Russian core unit when omitted (local legacy). */
+  unitId?: string;
+  contentModule?: string;
   attempts: number;
   correct: number;
   lastSeenAt: string;
@@ -137,6 +140,8 @@ export interface MasteryRecord {
 
 export interface AdaptiveReviewQueueItem {
   formKey: string;
+  /** When set, must match active unit for queue resolution. */
+  unitId?: string;
   priorityScore: number;
   scheduledAfterQuestions: number;
   questionsSinceEnqueue: number;
@@ -168,6 +173,8 @@ export interface GridChallengeConfig {
 export interface SessionSummary {
   id: string;
   modeId: ModeId;
+  unitId?: string;
+  topicId?: string;
   score: number;
   accuracy: number;
   averageResponseMs: number;

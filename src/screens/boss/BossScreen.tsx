@@ -1,6 +1,8 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../store/gameStore';
+import { useCurriculum, useEffectiveUnitId } from '../../contexts/CurriculumContext';
+import { masteryStorageKey, filterMasteryRecordsByUnit } from '../../lib/masteryKeys';
 import { generateQuestion, type GeneratedQuestion } from '../../lib/questionGenerator';
 import { createMasteryRecord, updateMasteryRecord, enqueueFromEvent } from '../../lib/adaptiveEngine';
 import { isConfusionPair } from '../../data/confusionPairs';
@@ -25,6 +27,8 @@ type Phase = 'setup' | 'question' | 'feedback' | 'complete';
 export function BossScreen() {
   const navigate = useNavigate();
   const { settings, masteryRecords, adaptiveQueue, updateMasteryRecord: storeMastery, setAdaptiveQueue, addSessionSummary } = useGameStore();
+  const { effectiveCategories, filterCaseIds, topicId } = useCurriculum();
+  const unitId = useEffectiveUnitId();
 
   const [phase, setPhase] = useState<Phase>('setup');
   const [teamCount, setTeamCount] = useState(2);
@@ -38,17 +42,28 @@ export function BossScreen() {
   const [lastHeal, setLastHeal] = useState<number | null>(null);
   const [events, setEvents] = useState<SessionAnswerEvent[]>([]);
   const [localQueue, setLocalQueue] = useState(adaptiveQueue);
-  const [localMastery, setLocalMastery] = useState(masteryRecords);
+  const [localMastery, setLocalMastery] = useState(() => filterMasteryRecordsByUnit(masteryRecords, unitId));
   const [bossName] = useState(() => BOSS_NAMES[Math.floor(Math.random() * BOSS_NAMES.length)]);
   const [bossEmoji] = useState(() => BOSS_EMOJIS[Math.floor(Math.random() * BOSS_EMOJIS.length)]);
   const presentedAtRef = useRef<number>(0);
   const usedIds = useRef<string[]>([]);
   const bestStreakRef = useRef(0);
 
-  const categories = settings.activeCategories;
+  const categories = effectiveCategories;
+
+  useEffect(() => {
+    setLocalMastery(filterMasteryRecordsByUnit(masteryRecords, unitId));
+  }, [masteryRecords, unitId]);
 
   const loadNextQuestion = useCallback(() => {
-    const q = generateQuestion('boss_battle', settings.difficulty, undefined, usedIds.current.slice(-8), undefined, categories);
+    const q = generateQuestion(
+      'boss_battle',
+      settings.difficulty,
+      filterCaseIds,
+      usedIds.current.slice(-8),
+      undefined,
+      categories
+    );
     if (q) {
       usedIds.current = [...usedIds.current, q.template.id].slice(-20);
       setQuestion(q);
@@ -57,7 +72,7 @@ export function BossScreen() {
       setLastHeal(null);
       presentedAtRef.current = Date.now();
     }
-  }, [settings.difficulty, categories]);
+  }, [settings.difficulty, categories, filterCaseIds]);
 
   const handleStart = () => {
     const cfg: BossBattleConfig = { ...defaultBossBattleConfig };
@@ -137,9 +152,10 @@ export function BossScreen() {
     const allEvents = [...events, event];
     setEvents(allEvents);
 
-    const existing = localMastery[formKey] ?? createMasteryRecord(formKey);
+    const sk = masteryStorageKey(unitId, formKey);
+    const existing = localMastery[sk] ?? createMasteryRecord(formKey, unitId);
     const updated = updateMasteryRecord(existing, event);
-    const newMastery = { ...localMastery, [formKey]: updated };
+    const newMastery = { ...localMastery, [sk]: updated };
     setLocalMastery(newMastery);
     storeMastery(updated);
     const newQueue = enqueueFromEvent(localQueue, event, updated);
@@ -152,6 +168,8 @@ export function BossScreen() {
         const summary: SessionSummary = {
           id: Date.now().toString(),
           modeId: 'boss_battle',
+          unitId,
+          topicId: topicId ?? undefined,
           score: Object.values(newBossState.teamScores).reduce((a, b) => a + b, 0),
           accuracy: allEvents.length > 0 ? allEvents.filter(e => e.wasCorrect).length / allEvents.length : 0,
           averageResponseMs: allEvents.length > 0 ? allEvents.reduce((s, e) => s + e.responseMs, 0) / allEvents.length : 0,

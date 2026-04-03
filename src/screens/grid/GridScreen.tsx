@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../store/gameStore';
+import { useCurriculum, useEffectiveUnitId } from '../../contexts/CurriculumContext';
 import { caseMetadata, caseOrder } from '../../data/caseMetadata';
 import { getLemmasByCategory, getForm, getFormsByCategories, CATEGORY_LABELS } from '../../data/allForms';
 import { enqueueFromGridResults } from '../../lib/adaptiveEngine';
@@ -26,6 +27,8 @@ const CYRILLIC_ROWS = [
 export function GridScreen() {
   const navigate = useNavigate();
   const { adaptiveQueue, setAdaptiveQueue, addSessionSummary, settings } = useGameStore();
+  const { topicId } = useCurriculum();
+  const unitId = useEffectiveUnitId();
 
   const allowedCategories = useMemo(() => {
     const a = settings.activeCategories;
@@ -179,7 +182,7 @@ export function GridScreen() {
     setScore(pts);
     setIsChecked(true);
 
-    const newQueue = enqueueFromGridResults(adaptiveQueue, incorrectKeys, blankKeys, editedKeys);
+    const newQueue = enqueueFromGridResults(adaptiveQueue, incorrectKeys, blankKeys, editedKeys, unitId);
     setAdaptiveQueue(newQueue);
 
     const total = Object.keys(newCells).length;
@@ -187,6 +190,8 @@ export function GridScreen() {
     const summary: SessionSummary = {
       id: Date.now().toString(),
       modeId: 'grid_challenge',
+      unitId,
+      topicId: topicId ?? undefined,
       score: pts,
       accuracy: total > 0 ? correct / total : 0,
       averageResponseMs: 0,

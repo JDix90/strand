@@ -1,6 +1,11 @@
 import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useMatch } from 'react-router-dom';
 import type { SessionSummary } from '../../types';
+
+interface ResultsLocationState {
+  summary?: SessionSummary;
+  fromIntro?: boolean;
+}
 
 const modeLabels: Record<string, { icon: string; label: string }> = {
   practice: { icon: '🎯', label: 'Practice' },
@@ -21,7 +26,10 @@ const gradeFromAccuracy = (acc: number): { grade: string; color: string; message
 export function ResultsScreen() {
   const navigate = useNavigate();
   const location = useLocation();
-  const summary = location.state?.summary as SessionSummary | undefined;
+  const classUnit = useMatch('/class/:classId/unit/:unitId/results');
+  const state = location.state as ResultsLocationState | undefined;
+  const summary = state?.summary;
+  const fromIntro = state?.fromIntro === true;
 
   useEffect(() => {
     if (!summary) navigate('/home');
@@ -93,23 +101,35 @@ export function ResultsScreen() {
       </div>
 
       <div className="flex flex-col gap-3 w-full max-w-sm">
+        {!fromIntro && (
+          <button
+            onClick={() =>
+              navigate(
+                classUnit
+                  ? `/class/${classUnit.params.classId}/unit/${classUnit.params.unitId}/practice`
+                  : '/practice'
+              )
+            }
+            className="w-full py-3 bg-green-700 hover:bg-green-600 text-white rounded-xl font-bold transition-colors"
+          >
+            🎯 Practice Weak Forms
+          </button>
+        )}
         <button
-          onClick={() => navigate('/practice')}
-          className="w-full py-3 bg-green-700 hover:bg-green-600 text-white rounded-xl font-bold transition-colors"
-        >
-          🎯 Practice Weak Forms
-        </button>
-        <button
-          onClick={() => navigate(-1)}
+          onClick={() =>
+            fromIntro ? navigate('/intro/play') : navigate(-1)
+          }
           className="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-semibold transition-colors"
         >
           Play Again
         </button>
         <button
-          onClick={() => navigate('/home')}
+          onClick={() =>
+            navigate(fromIntro ? '/intro' : classUnit ? `/class/${classUnit.params.classId}` : '/home')
+          }
           className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-semibold transition-colors"
         >
-          Home
+          {fromIntro ? 'Intro hub' : 'Home'}
         </button>
       </div>
     </div>

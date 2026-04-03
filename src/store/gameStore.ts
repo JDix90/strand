@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { MasteryRecord, AdaptiveReviewQueueItem, SessionSummary, ModeId, DifficultyId, WordCategory } from '../types';
+import { masteryStorageKey, normalizeMasteryRecord } from '../lib/masteryKeys';
 import {
   loadMasteryRecords,
   saveMasteryRecords,
@@ -22,6 +23,7 @@ import {
   cloudAppendSessionSummary,
   migrateLocalToCloud,
 } from '../lib/cloudStorage';
+import { runCloudWriteWithRetry } from '../lib/syncNotifications';
 
 const MIGRATED_KEY = 'cd_cloud_migrated';
 
@@ -37,7 +39,7 @@ interface GameStore {
   setAdaptiveQueue: (queue: AdaptiveReviewQueueItem[]) => void;
 
   sessionHistory: SessionSummary[];
-  addSessionSummary: (summary: SessionSummary) => void;
+  addSessionSummary: (summary: SessionSummary, opts?: { syncToCloud?: boolean }) => void;
 
   currentMode: ModeId | null;
   currentDifficulty: DifficultyId;
@@ -64,15 +66,17 @@ export const useGameStore = create<GameStore>((set, get) => ({
     saveSettings(updated);
     set({ settings: updated });
     const uid = get().userId;
-    if (uid) cloudSaveSettings(uid, updated).catch(() => {});
+    if (uid) void runCloudWriteWithRetry('settings', () => cloudSaveSettings(uid, updated));
   },
 
   updateMasteryRecord: (record) => {
-    const updated = { ...get().masteryRecords, [record.formKey]: record };
+    const n = normalizeMasteryRecord(record);
+    const key = masteryStorageKey(n.unitId, n.formKey);
+    const updated = { ...get().masteryRecords, [key]: n };
     saveMasteryRecords(updated);
     set({ masteryRecords: updated });
     const uid = get().userId;
-    if (uid) cloudSaveMasteryRecord(uid, record).catch(() => {});
+    if (uid) void runCloudWriteWithRetry('progress', () => cloudSaveMasteryRecord(uid, record));
   },
 
   setAdaptiveQueue: (queue) => {
@@ -80,11 +84,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ adaptiveQueue: queue });
   },
 
-  addSessionSummary: (summary) => {
+  addSessionSummary: (summary, opts) => {
     appendSessionSummary(summary);
     set({ sessionHistory: [summary, ...get().sessionHistory].slice(0, 50) });
+    const sync = opts?.syncToCloud !== false;
     const uid = get().userId;
-    if (uid) cloudAppendSessionSummary(uid, summary).catch(() => {});
+    if (sync && uid) void runCloudWriteWithRetry('session', () => cloudAppendSessionSummary(uid, summary));
   },
 
   setCurrentMode: (mode) => set({ currentMode: mode }),
@@ -103,7 +108,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     saveSettings(newSettings);
     set({ settings: newSettings });
     const uid = get().userId;
-    if (uid) cloudSaveSettings(uid, newSettings).catch(() => {});
+    if (uid) void runCloudWriteWithRetry('settings', () => cloudSaveSettings(uid, newSettings));
   },
 
   init: () => {

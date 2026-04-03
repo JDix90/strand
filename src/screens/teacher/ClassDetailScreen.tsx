@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { ClassCurriculumSection } from './ClassCurriculumSection';
+import { TeacherCurriculumChecklist } from './TeacherCurriculumChecklist';
 
 interface ClassInfo {
   id: string;
@@ -175,7 +177,9 @@ export function ClassDetailScreen() {
 
       <div className="max-w-4xl mx-auto px-6 py-8 space-y-8">
         {/* Quick Actions */}
-        <div className="flex gap-3">
+        <TeacherCurriculumChecklist classId={classId!} />
+
+        <div className="flex flex-wrap gap-3 items-center">
           <button
             onClick={() => navigate(`/teacher/assign/${classId}`)}
             className="px-4 py-2 bg-green-700 hover:bg-green-600 text-white rounded-xl font-semibold text-sm transition-colors"
@@ -188,6 +192,20 @@ export function ClassDetailScreen() {
           >
             Class Analytics
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              const url = `${window.location.origin}/class/${classId}`;
+              void navigator.clipboard.writeText(url);
+            }}
+            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 rounded-xl text-sm"
+          >
+            Copy student class link
+          </button>
+        </div>
+
+        <div id="class-curriculum">
+          <ClassCurriculumSection classId={classId!} />
         </div>
 
         {/* Student Roster */}

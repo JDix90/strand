@@ -42,9 +42,8 @@ export function SignUpScreen() {
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-8">
         <div className="text-center">
-          <div className="text-5xl mb-3">🔍</div>
-          <h1 className="text-2xl font-bold text-white">Create Account</h1>
-          <p className="text-slate-400 text-sm mt-1">Join Case Detective</p>
+          <h1 className="text-3xl font-bold text-white tracking-tight mb-1">Strand</h1>
+          <p className="text-slate-400 text-sm mt-1">Create your account</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">

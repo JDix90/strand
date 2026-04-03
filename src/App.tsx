@@ -1,37 +1,55 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Suspense, useEffect } from 'react';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { CurriculumProvider } from './contexts/CurriculumContext';
 import { RequireAuth } from './components/auth/RequireAuth';
 import { RoleRedirect } from './components/auth/RoleRedirect';
 import { AdminRoleBar } from './components/admin/AdminRoleBar';
 import { useGameStore } from './store/gameStore';
+import { SyncToastHost } from './components/ui/SyncToastHost';
+import { UnitScopedOutlet } from './components/student/UnitScopedOutlet';
+import { CurriculumV2FlatRedirect } from './components/curriculum/CurriculumV2FlatRedirect';
 
 import { LoginScreen } from './screens/auth/LoginScreen';
 import { SignUpScreen } from './screens/auth/SignUpScreen';
-import { HomeScreen } from './screens/home/HomeScreen';
-import { SettingsScreen } from './screens/home/SettingsScreen';
-import { LearnScreen } from './screens/learn/LearnScreen';
-import { PracticeScreen } from './screens/practice/PracticeScreen';
-import { SpeedScreen } from './screens/speed/SpeedScreen';
-import { BossScreen } from './screens/boss/BossScreen';
-import { MemoryScreen } from './screens/memory/MemoryScreen';
-import { GridScreen } from './screens/grid/GridScreen';
-import { ResultsScreen } from './screens/results/ResultsScreen';
+import {
+  HomeScreen,
+  SettingsScreen,
+  LearnScreen,
+  PracticeScreen,
+  SpeedScreen,
+  BossScreen,
+  MemoryScreen,
+  GridScreen,
+  ResultsScreen,
+  TeacherDashboard,
+  ClassListScreen,
+  ClassDetailScreen,
+  StudentDetailScreen,
+  AssignmentFormScreen,
+  AnalyticsScreen,
+  JoinClassScreen,
+  AssignmentsScreen,
+  StudentClassHome,
+  StudentClassLayout,
+  StudentHomeLayout,
+  AdminDashboard,
+  AdminUsersScreen,
+  AdminClassesScreen,
+  AdminSiteSettingsScreen,
+  IntroHubScreen,
+  AlphabetScreen,
+  PhrasesScreen,
+  IntroPlayScreen,
+} from './lazyScreens';
 
-import { TeacherDashboard } from './screens/teacher/TeacherDashboard';
-import { ClassListScreen } from './screens/teacher/ClassListScreen';
-import { ClassDetailScreen } from './screens/teacher/ClassDetailScreen';
-import { StudentDetailScreen } from './screens/teacher/StudentDetailScreen';
-import { AssignmentFormScreen } from './screens/teacher/AssignmentFormScreen';
-import { AnalyticsScreen } from './screens/teacher/AnalyticsScreen';
-
-import { JoinClassScreen } from './screens/student/JoinClassScreen';
-import { AssignmentsScreen } from './screens/student/AssignmentsScreen';
-
-import { AdminDashboard } from './screens/admin/AdminDashboard';
-import { AdminUsersScreen } from './screens/admin/AdminUsersScreen';
-import { AdminClassesScreen } from './screens/admin/AdminClassesScreen';
-import { AdminSiteSettingsScreen } from './screens/admin/AdminSiteSettingsScreen';
+function RouteFallback() {
+  return (
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="text-slate-400 text-lg">Loading...</div>
+    </div>
+  );
+}
 
 function AppInit() {
   const { init, initForUser } = useGameStore();
@@ -63,17 +81,98 @@ function AppRoutes() {
           <Route path="/" element={<RoleRedirect />} />
 
           {/* Student / shared game routes */}
-          <Route path="/home" element={<RequireAuth><HomeScreen /></RequireAuth>} />
+          <Route path="/home" element={<RequireAuth><StudentHomeLayout /></RequireAuth>}>
+            <Route index element={<HomeScreen />} />
+          </Route>
           <Route path="/settings" element={<RequireAuth><SettingsScreen /></RequireAuth>} />
-          <Route path="/learn" element={<RequireAuth><LearnScreen /></RequireAuth>} />
-          <Route path="/practice" element={<RequireAuth><PracticeScreen /></RequireAuth>} />
-          <Route path="/speed" element={<RequireAuth><SpeedScreen /></RequireAuth>} />
-          <Route path="/boss" element={<RequireAuth><BossScreen /></RequireAuth>} />
-          <Route path="/memory" element={<RequireAuth><MemoryScreen /></RequireAuth>} />
-          <Route path="/grid" element={<RequireAuth><GridScreen /></RequireAuth>} />
+          <Route path="/intro" element={<RequireAuth><IntroHubScreen /></RequireAuth>} />
+          <Route path="/intro/alphabet" element={<RequireAuth><AlphabetScreen /></RequireAuth>} />
+          <Route path="/intro/phrases" element={<RequireAuth><PhrasesScreen /></RequireAuth>} />
+          <Route path="/intro/play" element={<RequireAuth><IntroPlayScreen /></RequireAuth>} />
+          <Route
+            path="/learn"
+            element={
+              <RequireAuth>
+                <CurriculumV2FlatRedirect>
+                  <LearnScreen />
+                </CurriculumV2FlatRedirect>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/practice"
+            element={
+              <RequireAuth>
+                <CurriculumV2FlatRedirect>
+                  <PracticeScreen />
+                </CurriculumV2FlatRedirect>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/speed"
+            element={
+              <RequireAuth>
+                <CurriculumV2FlatRedirect>
+                  <SpeedScreen />
+                </CurriculumV2FlatRedirect>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/boss"
+            element={
+              <RequireAuth>
+                <CurriculumV2FlatRedirect>
+                  <BossScreen />
+                </CurriculumV2FlatRedirect>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/memory"
+            element={
+              <RequireAuth>
+                <CurriculumV2FlatRedirect>
+                  <MemoryScreen />
+                </CurriculumV2FlatRedirect>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/grid"
+            element={
+              <RequireAuth>
+                <CurriculumV2FlatRedirect>
+                  <GridScreen />
+                </CurriculumV2FlatRedirect>
+              </RequireAuth>
+            }
+          />
           <Route path="/results" element={<RequireAuth><ResultsScreen /></RequireAuth>} />
           <Route path="/join-class" element={<RequireAuth requiredRole="student"><JoinClassScreen /></RequireAuth>} />
           <Route path="/assignments" element={<RequireAuth requiredRole="student"><AssignmentsScreen /></RequireAuth>} />
+
+          <Route
+            path="/class/:classId"
+            element={
+              <RequireAuth requiredRole="student">
+                <StudentClassLayout />
+              </RequireAuth>
+            }
+          >
+            <Route index element={<StudentClassHome />} />
+            <Route path="unit/:unitId" element={<UnitScopedOutlet />}>
+              <Route index element={<Navigate to="practice" replace />} />
+              <Route path="learn" element={<LearnScreen />} />
+              <Route path="practice" element={<PracticeScreen />} />
+              <Route path="speed" element={<SpeedScreen />} />
+              <Route path="boss" element={<BossScreen />} />
+              <Route path="memory" element={<MemoryScreen />} />
+              <Route path="grid" element={<GridScreen />} />
+              <Route path="results" element={<ResultsScreen />} />
+            </Route>
+          </Route>
 
           {/* Teacher routes */}
           <Route path="/teacher" element={<RequireAuth requiredRole="teacher"><TeacherDashboard /></RequireAuth>} />
@@ -98,8 +197,13 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppInit />
-        <AppRoutes />
+        <CurriculumProvider>
+          <AppInit />
+          <SyncToastHost />
+          <Suspense fallback={<RouteFallback />}>
+            <AppRoutes />
+          </Suspense>
+        </CurriculumProvider>
       </AuthProvider>
     </BrowserRouter>
   );

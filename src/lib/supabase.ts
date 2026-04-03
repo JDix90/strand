@@ -21,11 +21,11 @@ if (!isSupabaseConfigured) {
   const url = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim() ?? '';
   if (url.includes('supabase.com/dashboard')) {
     console.warn(
-      '[Case Detective] VITE_SUPABASE_URL looks like a dashboard URL. Use Project URL from Settings → API (e.g. https://YOUR_REF.supabase.co), not the dashboard project page.'
+      '[Strand] VITE_SUPABASE_URL looks like a dashboard URL. Use Project URL from Settings → API (e.g. https://YOUR_REF.supabase.co), not the dashboard project page.'
     );
   } else {
     console.warn(
-      '[Case Detective] Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.local (from your Supabase project Settings → API).'
+      '[Strand] Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env.local (from your Supabase project Settings → API).'
     );
   }
 }

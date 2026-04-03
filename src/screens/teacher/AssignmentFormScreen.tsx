@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { fetchCatalogUnitsPage, type UnitRow } from '../../lib/curriculumApi';
+import { parseRussianDeclensionConfig, isRussianDeclensionModule } from '../../lib/contentModules';
 import type { CaseId, WordCategory, ModeId } from '../../types';
 
 const ALL_CASES: CaseId[] = ['nominative', 'genitive', 'dative', 'accusative', 'instrumental', 'prepositional'];
@@ -31,6 +33,20 @@ export function AssignmentFormScreen() {
   const [dueDate, setDueDate] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [catalogUnits, setCatalogUnits] = useState<UnitRow[]>([]);
+  const [unitSearch, setUnitSearch] = useState('');
+  const [catalogLoadError, setCatalogLoadError] = useState<string | null>(null);
+  const [unitId, setUnitId] = useState<string>('');
+
+  useEffect(() => {
+    const handle = window.setTimeout(() => {
+      void fetchCatalogUnitsPage({ search: unitSearch.trim() || undefined, limit: 500 }).then(res => {
+        setCatalogUnits(res.rows);
+        setCatalogLoadError(res.error);
+      });
+    }, 280);
+    return () => window.clearTimeout(handle);
+  }, [unitSearch]);
 
   const toggleCase = (c: CaseId) => {
     setSelectedCases(prev =>
@@ -62,6 +78,7 @@ export function AssignmentFormScreen() {
       min_questions: minQuestions,
       min_accuracy: minAccuracy / 100,
       due_date: dueDate || null,
+      unit_id: unitId || null,
     });
 
     setSubmitting(false);
@@ -111,6 +128,46 @@ export function AssignmentFormScreen() {
               placeholder="Instructions for students..."
             />
           </div>
+        </div>
+
+        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">
+          <h2 className="text-white font-bold">Curriculum unit (optional)</h2>
+          <p className="text-slate-500 text-sm">
+            Tie this assignment to a unit so students see it in context. Selecting a Russian declension unit can
+            pre-fill cases and categories below.
+          </p>
+          <label className="block text-slate-300 text-sm font-semibold mb-1.5">Search catalog</label>
+          <input
+            type="search"
+            value={unitSearch}
+            onChange={e => setUnitSearch(e.target.value)}
+            placeholder="Filter by title or slug…"
+            className="w-full bg-slate-700 border border-slate-600 text-white rounded-xl px-4 py-2.5 mb-3 focus:outline-none focus:border-blue-500"
+          />
+          {catalogLoadError && (
+            <p className="text-amber-400 text-xs mb-2">Could not load units: {catalogLoadError}</p>
+          )}
+          <select
+            value={unitId}
+            onChange={e => {
+              const id = e.target.value;
+              setUnitId(id);
+              const u = catalogUnits.find(x => x.id === id);
+              if (u && isRussianDeclensionModule(u.content_module)) {
+                const cfg = parseRussianDeclensionConfig(u.content_config);
+                setSelectedCases(cfg.caseIds.length > 0 ? [...cfg.caseIds] : [...ALL_CASES]);
+                setSelectedCategories(cfg.categories.length > 0 ? [...cfg.categories] : ['pronoun']);
+              }
+            }}
+            className="w-full bg-slate-700 border border-slate-600 text-white rounded-xl px-4 py-2.5 focus:outline-none focus:border-blue-500"
+          >
+            <option value="">— None —</option>
+            {catalogUnits.map(u => (
+              <option key={u.id} value={u.id}>
+                {u.title} ({u.content_module})
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">

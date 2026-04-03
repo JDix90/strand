@@ -1,6 +1,7 @@
 import { supabase } from './supabase';
 import type { MasteryRecord, SessionSummary } from '../types';
 import type { AppSettings } from './storage';
+import { masteryStorageKey, normalizeMasteryRecord } from './masteryKeys';
 
 export async function cloudLoadMasteryRecords(userId: string): Promise<Record<string, MasteryRecord>> {
   const { data, error } = await supabase
@@ -12,8 +13,11 @@ export async function cloudLoadMasteryRecords(userId: string): Promise<Record<st
 
   const records: Record<string, MasteryRecord> = {};
   for (const row of data) {
-    records[row.form_key] = {
+    const unitId = row.unit_id as string;
+    const rec: MasteryRecord = {
       formKey: row.form_key,
+      unitId,
+      contentModule: row.content_module ?? 'russian_declension',
       attempts: row.attempts,
       correct: row.correct,
       lastSeenAt: row.last_seen_at,
@@ -25,25 +29,31 @@ export async function cloudLoadMasteryRecords(userId: string): Promise<Record<st
       confusionWith: row.confusion_with ?? [],
       status: row.status,
     };
+    const n = normalizeMasteryRecord(rec);
+    records[masteryStorageKey(n.unitId, n.formKey)] = n;
   }
   return records;
 }
 
 export async function cloudSaveMasteryRecord(userId: string, record: MasteryRecord): Promise<void> {
-  await supabase.from('mastery_records').upsert({
+  const n = normalizeMasteryRecord(record);
+  const { error } = await supabase.from('mastery_records').upsert({
     user_id: userId,
-    form_key: record.formKey,
-    attempts: record.attempts,
-    correct: record.correct,
-    last_seen_at: record.lastSeenAt,
-    last_correct_at: record.lastCorrectAt ?? null,
-    ease_score: record.easeScore,
-    mastery_score: record.masteryScore,
-    consecutive_correct: record.consecutiveCorrect,
-    consecutive_wrong: record.consecutiveWrong,
-    confusion_with: record.confusionWith,
-    status: record.status,
-  }, { onConflict: 'user_id,form_key' });
+    unit_id: n.unitId,
+    content_module: n.contentModule ?? 'russian_declension',
+    form_key: n.formKey,
+    attempts: n.attempts,
+    correct: n.correct,
+    last_seen_at: n.lastSeenAt,
+    last_correct_at: n.lastCorrectAt ?? null,
+    ease_score: n.easeScore,
+    mastery_score: n.masteryScore,
+    consecutive_correct: n.consecutiveCorrect,
+    consecutive_wrong: n.consecutiveWrong,
+    confusion_with: n.confusionWith,
+    status: n.status,
+  }, { onConflict: 'user_id,unit_id,form_key' });
+  if (error) throw new Error(error.message);
 }
 
 export async function cloudLoadSettings(userId: string): Promise<Partial<AppSettings>> {
@@ -65,7 +75,7 @@ export async function cloudLoadSettings(userId: string): Promise<Partial<AppSett
 }
 
 export async function cloudSaveSettings(userId: string, settings: AppSettings): Promise<void> {
-  await supabase.from('user_settings').upsert({
+  const { error } = await supabase.from('user_settings').upsert({
     user_id: userId,
     audio_enabled: settings.audioEnabled,
     difficulty: settings.difficulty,
@@ -73,6 +83,7 @@ export async function cloudSaveSettings(userId: string, settings: AppSettings): 
     show_english_gloss: settings.showEnglishGloss,
     active_categories: settings.activeCategories,
   });
+  if (error) throw new Error(error.message);
 }
 
 export async function cloudLoadSessionHistory(userId: string): Promise<SessionSummary[]> {
@@ -88,6 +99,8 @@ export async function cloudLoadSessionHistory(userId: string): Promise<SessionSu
   return data.map(row => ({
     id: row.id,
     modeId: row.mode_id,
+    unitId: row.unit_id ?? undefined,
+    topicId: row.topic_id ?? undefined,
     score: row.score,
     accuracy: row.accuracy,
     averageResponseMs: row.average_response_ms,
@@ -102,20 +115,24 @@ export async function cloudLoadSessionHistory(userId: string): Promise<SessionSu
 }
 
 export async function cloudAppendSessionSummary(userId: string, summary: SessionSummary): Promise<void> {
-  await supabase.from('session_summaries').insert({
+  // DB columns are integer; client averages (e.g. speed round) can be floats — round before insert.
+  const { error } = await supabase.from('session_summaries').insert({
     user_id: userId,
     mode_id: summary.modeId,
-    score: summary.score,
+    unit_id: summary.unitId ?? null,
+    topic_id: summary.topicId ?? null,
+    score: Math.round(summary.score),
     accuracy: summary.accuracy,
-    average_response_ms: summary.averageResponseMs,
-    total_questions: summary.totalQuestions,
-    correct_answers: summary.correctAnswers,
-    best_streak: summary.bestStreak,
+    average_response_ms: Math.round(summary.averageResponseMs ?? 0),
+    total_questions: Math.round(summary.totalQuestions),
+    correct_answers: Math.round(summary.correctAnswers),
+    best_streak: Math.round(summary.bestStreak),
     weak_forms: summary.weakForms,
     confusion_pairs_hit: summary.confusionPairsHit,
     completed_at: summary.completedAt,
     categories: summary.categories ?? [],
   });
+  if (error) throw new Error(error.message);
 }
 
 export async function migrateLocalToCloud(
@@ -126,23 +143,30 @@ export async function migrateLocalToCloud(
 ): Promise<void> {
   const records = Object.values(masteryRecords);
   if (records.length > 0) {
-    const rows = records.map(r => ({
-      user_id: userId,
-      form_key: r.formKey,
-      attempts: r.attempts,
-      correct: r.correct,
-      last_seen_at: r.lastSeenAt,
-      last_correct_at: r.lastCorrectAt ?? null,
-      ease_score: r.easeScore,
-      mastery_score: r.masteryScore,
-      consecutive_correct: r.consecutiveCorrect,
-      consecutive_wrong: r.consecutiveWrong,
-      confusion_with: r.confusionWith,
-      status: r.status,
-    }));
+    const rows = records.map(r => {
+      const n = normalizeMasteryRecord(r);
+      return {
+        user_id: userId,
+        unit_id: n.unitId,
+        content_module: n.contentModule ?? 'russian_declension',
+        form_key: n.formKey,
+        attempts: n.attempts,
+        correct: n.correct,
+        last_seen_at: n.lastSeenAt,
+        last_correct_at: n.lastCorrectAt ?? null,
+        ease_score: n.easeScore,
+        mastery_score: n.masteryScore,
+        consecutive_correct: n.consecutiveCorrect,
+        consecutive_wrong: n.consecutiveWrong,
+        confusion_with: n.confusionWith,
+        status: n.status,
+      };
+    });
 
     for (let i = 0; i < rows.length; i += 50) {
-      await supabase.from('mastery_records').upsert(rows.slice(i, i + 50), { onConflict: 'user_id,form_key' });
+      await supabase.from('mastery_records').upsert(rows.slice(i, i + 50), {
+        onConflict: 'user_id,unit_id,form_key',
+      });
     }
   }
 
@@ -150,12 +174,14 @@ export async function migrateLocalToCloud(
     const sessRows = sessionHistory.map(s => ({
       user_id: userId,
       mode_id: s.modeId,
-      score: s.score,
+      unit_id: s.unitId ?? null,
+      topic_id: s.topicId ?? null,
+      score: Math.round(s.score),
       accuracy: s.accuracy,
-      average_response_ms: s.averageResponseMs,
-      total_questions: s.totalQuestions,
-      correct_answers: s.correctAnswers,
-      best_streak: s.bestStreak,
+      average_response_ms: Math.round(s.averageResponseMs ?? 0),
+      total_questions: Math.round(s.totalQuestions),
+      correct_answers: Math.round(s.correctAnswers),
+      best_streak: Math.round(s.bestStreak),
       weak_forms: s.weakForms,
       confusion_pairs_hit: s.confusionPairsHit,
       completed_at: s.completedAt,

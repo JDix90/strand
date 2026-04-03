@@ -1,8 +1,19 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../store/gameStore';
+import { useCurriculum, useEffectiveUnitId } from '../../contexts/CurriculumContext';
 import { generateQuestion, type GeneratedQuestion } from '../../lib/questionGenerator';
-import { createMasteryRecord, updateMasteryRecord, enqueueFromEvent, advanceQueue, selectNextAdaptiveFormKey, consumeQueueItem } from '../../lib/adaptiveEngine';
+import {
+  createMasteryRecord,
+  updateMasteryRecord,
+  enqueueFromEvent,
+  advanceQueue,
+  selectNextAdaptiveFormKey,
+  consumeQueueItem,
+} from '../../lib/adaptiveEngine';
+import { masteryStorageKey, filterMasteryRecordsByUnit } from '../../lib/masteryKeys';
+import { VOCABULARY_STUB_MODULE } from '../../lib/curriculumConstants';
+import { VocabularyStubPractice } from '../../components/game/VocabularyStubPractice';
 import { AnswerButton } from '../../components/ui/AnswerButton';
 import { FeedbackPanel } from '../../components/ui/FeedbackPanel';
 import { QuestionCard } from '../../components/game/QuestionCard';
@@ -14,12 +25,20 @@ type Phase = 'question' | 'feedback' | 'complete';
 
 export function PracticeScreen() {
   const navigate = useNavigate();
-  const { settings, masteryRecords, adaptiveQueue, updateMasteryRecord: storeMastery, setAdaptiveQueue, addSessionSummary } = useGameStore();
+  const { settings, masteryRecords, adaptiveQueue, updateMasteryRecord: storeMastery, setAdaptiveQueue, addSessionSummary } =
+    useGameStore();
+  const { effectiveCategories, filterCaseIds, contentModule, topicId, classId, unitId: ctxUnitId } = useCurriculum();
+  const unitId = useEffectiveUnitId();
 
   const [phase, setPhase] = useState<Phase>('question');
   const [question, setQuestion] = useState<GeneratedQuestion | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-  const [answerState, setAnswerState] = useState<('default' | 'correct' | 'wrong' | 'disabled')[]>(['default', 'default', 'default', 'default']);
+  const [answerState, setAnswerState] = useState<('default' | 'correct' | 'wrong' | 'disabled')[]>([
+    'default',
+    'default',
+    'default',
+    'default',
+  ]);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
@@ -28,17 +47,29 @@ export function PracticeScreen() {
   const [events, setEvents] = useState<SessionAnswerEvent[]>([]);
   const [recentFormKeys, setRecentFormKeys] = useState<string[]>([]);
   const [localQueue, setLocalQueue] = useState(adaptiveQueue);
-  const [localMastery, setLocalMastery] = useState(masteryRecords);
+  const [localMastery, setLocalMastery] = useState(() => filterMasteryRecordsByUnit(masteryRecords, unitId));
   const presentedAtRef = useRef<number>(Date.now());
   const usedIds = useRef<string[]>([]);
 
-  const categories = settings.activeCategories;
+  const categories = effectiveCategories;
+
+  useEffect(() => {
+    setLocalMastery(filterMasteryRecordsByUnit(masteryRecords, unitId));
+  }, [masteryRecords, unitId]);
+
+  const resultsPath = useMemo(() => {
+    if (classId && ctxUnitId) return `/class/${classId}/unit/${ctxUnitId}/results`;
+    return '/results';
+  }, [classId, ctxUnitId]);
 
   const loadNextQuestion = useCallback(() => {
+    if (contentModule === VOCABULARY_STUB_MODULE) return;
+
     const confusionCounts: Record<string, number> = {};
     for (const record of Object.values(localMastery)) {
       if (record.confusionWith.length > 0) {
-        confusionCounts[record.formKey] = record.confusionWith.length;
+        const sk = masteryStorageKey(unitId, record.formKey);
+        confusionCounts[sk] = record.confusionWith.length;
       }
     }
 
@@ -47,20 +78,35 @@ export function PracticeScreen() {
       localMastery,
       recentFormKeys,
       confusionCounts,
-      categories
+      categories,
+      unitId
     );
 
     let q: GeneratedQuestion | null = null;
     if (adaptiveFormKey) {
-      q = generateQuestion('practice', settings.difficulty, undefined, [], adaptiveFormKey, categories);
+      q = generateQuestion(
+        'practice',
+        settings.difficulty,
+        filterCaseIds,
+        [],
+        adaptiveFormKey,
+        categories
+      );
       if (q) {
-        const newQueue = consumeQueueItem(localQueue, adaptiveFormKey);
+        const newQueue = consumeQueueItem(localQueue, adaptiveFormKey, unitId);
         setLocalQueue(newQueue);
       }
     }
 
     if (!q) {
-      q = generateQuestion('practice', settings.difficulty, undefined, usedIds.current.slice(-10), undefined, categories);
+      q = generateQuestion(
+        'practice',
+        settings.difficulty,
+        filterCaseIds,
+        usedIds.current.slice(-10),
+        undefined,
+        categories
+      );
     }
 
     if (q) {
@@ -70,18 +116,29 @@ export function PracticeScreen() {
       setSelectedAnswer(null);
       presentedAtRef.current = Date.now();
     }
-  }, [localQueue, localMastery, recentFormKeys, settings.difficulty, categories]);
+  }, [
+    localQueue,
+    localMastery,
+    recentFormKeys,
+    settings.difficulty,
+    categories,
+    filterCaseIds,
+    unitId,
+    contentModule,
+  ]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { loadNextQuestion(); }, []);
+  useEffect(() => {
+    if (contentModule !== VOCABULARY_STUB_MODULE) loadNextQuestion();
+  }, []);
 
   const handleAnswer = (choice: string, idx: number) => {
     if (phase !== 'question' || !question) return;
 
     const answeredAt = Date.now();
     const responseMs = answeredAt - presentedAtRef.current;
-    const isCorrect = choice === question.template.correctAnswer ||
-      (question.template.acceptedAnswers?.includes(choice) ?? false);
+    const isCorrect =
+      choice === question.template.correctAnswer || (question.template.acceptedAnswers?.includes(choice) ?? false);
 
     const newStates: ('default' | 'correct' | 'wrong' | 'disabled')[] = question.choices.map((c, i) => {
       if (c === question.template.correctAnswer) return 'correct';
@@ -121,9 +178,10 @@ export function PracticeScreen() {
     setEvents(ev => [...ev, event]);
     setRecentFormKeys(rfk => [...rfk, formKey].slice(-20));
 
-    const existing = localMastery[formKey] ?? createMasteryRecord(formKey);
+    const sk = masteryStorageKey(unitId, formKey);
+    const existing = localMastery[sk] ?? createMasteryRecord(formKey, unitId);
     const updated = updateMasteryRecord(existing, event);
-    const newMastery = { ...localMastery, [formKey]: updated };
+    const newMastery = { ...localMastery, [sk]: updated };
     setLocalMastery(newMastery);
     storeMastery(updated);
 
@@ -139,6 +197,8 @@ export function PracticeScreen() {
       const summary: SessionSummary = {
         id: Date.now().toString(),
         modeId: 'practice',
+        unitId,
+        topicId: topicId ?? undefined,
         score,
         accuracy: questionCount > 0 ? correctCount / questionCount : 0,
         averageResponseMs: events.length > 0 ? events.reduce((s, e) => s + e.responseMs, 0) / events.length : 0,
@@ -151,25 +211,43 @@ export function PracticeScreen() {
         categories,
       };
       addSessionSummary(summary);
-      navigate('/results', { state: { summary } });
+      navigate(resultsPath, { state: { summary } });
       return;
     }
     setPhase('question');
     loadNextQuestion();
   };
 
-  if (!question) return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">
-      Loading...
-    </div>
-  );
+  if (contentModule === VOCABULARY_STUB_MODULE) {
+    const backPath = classId && ctxUnitId ? `/class/${classId}/unit/${ctxUnitId}` : '/home';
+    return (
+      <VocabularyStubPractice
+        resultsPath={resultsPath}
+        unitId={unitId}
+        topicId={topicId}
+        addSessionSummary={addSessionSummary}
+        backPath={backPath}
+      />
+    );
+  }
+
+  if (!question) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">Loading...</div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <div className="bg-slate-900 border-b border-slate-800 px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/home')} className="text-slate-400 hover:text-white">✕</button>
+            <button
+              onClick={() => navigate(classId && ctxUnitId ? `/class/${classId}/unit/${ctxUnitId}` : '/home')}
+              className="text-slate-400 hover:text-white"
+            >
+              ✕
+            </button>
             <span className="text-white font-bold">🎯 Practice</span>
           </div>
           <div className="flex items-center gap-3">
@@ -181,7 +259,9 @@ export function PracticeScreen() {
 
       <div className="max-w-2xl mx-auto px-4 pt-4">
         <div className="flex justify-between text-xs text-slate-500 mb-1">
-          <span>Question {questionCount + 1} of 20</span>
+          <span>
+            Question {questionCount + 1} of 20
+          </span>
           <span>{correctCount} correct</span>
         </div>
         <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
@@ -211,7 +291,10 @@ export function PracticeScreen() {
 
         {phase === 'feedback' && selectedAnswer && (
           <FeedbackPanel
-            isCorrect={selectedAnswer === question.template.correctAnswer || (question.template.acceptedAnswers?.includes(selectedAnswer) ?? false)}
+            isCorrect={
+              selectedAnswer === question.template.correctAnswer ||
+              (question.template.acceptedAnswers?.includes(selectedAnswer) ?? false)
+            }
             correctAnswer={question.template.correctAnswer}
             explanation={question.template.explanation}
             onContinue={handleContinue}

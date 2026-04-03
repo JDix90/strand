@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../../store/gameStore';
+import { useCurriculum, useEffectiveUnitId } from '../../contexts/CurriculumContext';
 import { getFormsByCategories, CATEGORY_LABELS } from '../../data/allForms';
 import { caseMetadata } from '../../data/caseMetadata';
 import type { MatchCard, SessionSummary, CaseId, WordCategory } from '../../types';
@@ -65,6 +66,8 @@ function generateCards(matchType: MatchType, count: number, categories: WordCate
 export function MemoryScreen() {
   const navigate = useNavigate();
   const { addSessionSummary, settings } = useGameStore();
+  const { topicId } = useCurriculum();
+  const unitId = useEffectiveUnitId();
 
   /** Categories for this mode only — does not change Home filters. Initialized from Home selection. */
   const [selectedCategories, setSelectedCategories] = useState<WordCategory[]>(() => {
@@ -170,6 +173,8 @@ export function MemoryScreen() {
             const summary: SessionSummary = {
               id: Date.now().toString(),
               modeId: 'memory_match',
+              unitId,
+              topicId: topicId ?? undefined,
               score: newScore,
               accuracy: newMoves > 0 ? newMatched / newMoves : 1,
               averageResponseMs: 0,

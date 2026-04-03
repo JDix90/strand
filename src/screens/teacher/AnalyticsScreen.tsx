@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { fetchAllCatalogUnits, type UnitRow } from '../../lib/curriculumApi';
 import type { CaseId } from '../../types';
 
 const CASE_ORDER: CaseId[] = ['nominative', 'genitive', 'dative', 'accusative', 'instrumental', 'prepositional'];
@@ -16,6 +17,7 @@ const STATUS_DISPLAY: Record<string, { label: string; color: string }> = {
 interface MasteryRow {
   user_id: string;
   form_key: string;
+  unit_id: string | null;
   status: string;
   attempts: number;
   correct: number;
@@ -29,6 +31,12 @@ export function AnalyticsScreen() {
   const [masteryRows, setMasteryRows] = useState<MasteryRow[]>([]);
   const [studentCount, setStudentCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [units, setUnits] = useState<UnitRow[]>([]);
+  const [unitFilter, setUnitFilter] = useState<string>('all');
+
+  useEffect(() => {
+    fetchAllCatalogUnits().then(setUnits);
+  }, []);
 
   useEffect(() => {
     if (!classId) return;
@@ -51,7 +59,7 @@ export function AnalyticsScreen() {
       if (studentIds.length > 0) {
         const { data: mastery } = await supabase
           .from('mastery_records')
-          .select('user_id, form_key, status, attempts, correct, confusion_with')
+          .select('user_id, form_key, unit_id, status, attempts, correct, confusion_with')
           .in('user_id', studentIds);
         setMasteryRows(mastery ?? []);
       }
@@ -62,14 +70,17 @@ export function AnalyticsScreen() {
     load();
   }, [classId]);
 
+  const filteredRows =
+    unitFilter === 'all' ? masteryRows : masteryRows.filter(r => r.unit_id === unitFilter);
+
   // Aggregate: weakest cases
   const caseStats: Record<CaseId, { total: number; correct: number; statusCounts: Record<string, number> }> = {} as never;
   for (const c of CASE_ORDER) {
     caseStats[c] = { total: 0, correct: 0, statusCounts: {} };
   }
-  for (const row of masteryRows) {
-    const parts = row.form_key.split('_');
-    const caseId = parts[parts.length - 1] as CaseId;
+  for (const row of filteredRows) {
+    const parts = row.form_key.split(':');
+    const caseId = (parts[1] ?? '') as CaseId;
     if (!caseStats[caseId]) continue;
     caseStats[caseId].total += row.attempts;
     caseStats[caseId].correct += row.correct;
@@ -79,7 +90,7 @@ export function AnalyticsScreen() {
 
   // Top confusion pairs
   const confusionMap: Record<string, number> = {};
-  for (const row of masteryRows) {
+  for (const row of filteredRows) {
     for (const c of row.confusion_with) {
       const pair = [row.form_key, c].sort().join(' ↔ ');
       confusionMap[pair] = (confusionMap[pair] ?? 0) + 1;
@@ -106,6 +117,28 @@ export function AnalyticsScreen() {
           </button>
           <h1 className="text-2xl font-bold text-white">Class Analytics</h1>
           <p className="text-slate-400 text-sm mt-0.5">{className} · {studentCount} students</p>
+          <div className="mt-4 flex items-center gap-2">
+            <label htmlFor="unit-filter" className="text-slate-400 text-sm">
+              Unit
+            </label>
+            <select
+              id="unit-filter"
+              value={unitFilter}
+              onChange={e => setUnitFilter(e.target.value)}
+              className="bg-slate-800 border border-slate-600 text-white rounded-lg px-3 py-1.5 text-sm"
+            >
+              <option value="all">All units</option>
+              {units.map(u => (
+                <option key={u.id} value={u.id}>
+                  {u.title}
+                </option>
+              ))}
+            </select>
+          </div>
+          <p className="text-slate-500 text-xs mt-2 max-w-xl">
+            Some older records have no unit_id; they are included when you choose &quot;All units&quot; but not when you
+            filter to a single catalog unit.
+          </p>
         </div>
       </div>
 
