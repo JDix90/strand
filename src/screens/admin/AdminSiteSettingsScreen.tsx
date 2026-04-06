@@ -55,31 +55,31 @@ export function AdminSiteSettingsScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="bg-slate-900 border-b border-slate-800 px-6 py-5">
+    <div className="min-h-screen bg-page text-ink">
+      <div className="bg-surface-elevated border-b border-border px-6 py-5">
         <div className="max-w-3xl mx-auto flex items-center gap-4">
-          <button type="button" onClick={() => navigate('/admin')} className="text-slate-400 hover:text-white">
+          <button type="button" onClick={() => navigate('/admin')} className="text-ink-secondary hover:text-ink">
             ← Admin
           </button>
-          <h1 className="text-xl font-bold text-white">Site settings</h1>
+          <h1 className="text-xl font-bold text-ink">Site settings</h1>
         </div>
       </div>
 
       <div className="max-w-3xl mx-auto px-6 py-8 space-y-4">
-        <p className="text-slate-400 text-sm leading-relaxed">
-          Key <code className="text-amber-200/90 bg-slate-800 px-1 rounded">{GENERAL_KEY}</code> holds a JSON object.
+        <p className="text-ink-secondary text-sm leading-relaxed">
+          Key <code className="text-amber-200/90 bg-surface px-1 rounded">{GENERAL_KEY}</code> holds a JSON object.
           You can extend this structure as needed (e.g. feature flags, announcement text).
         </p>
 
         {loading ? (
-          <p className="text-slate-400">Loading…</p>
+          <p className="text-ink-secondary">Loading…</p>
         ) : (
           <>
             <textarea
               value={rawJson}
               onChange={e => setRawJson(e.target.value)}
               spellCheck={false}
-              className="w-full min-h-[280px] font-mono text-sm px-4 py-3 rounded-xl bg-slate-900 border border-slate-600 text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
+              className="w-full min-h-[280px] font-mono text-sm px-4 py-3 rounded-xl bg-surface-elevated border border-border-strong text-ink focus:outline-none focus:ring-2 focus:ring-amber-500"
             />
             {message && (
               <div
@@ -96,7 +96,7 @@ export function AdminSiteSettingsScreen() {
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white rounded-xl font-semibold transition-colors"
+              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-ink rounded-xl font-semibold transition-colors"
             >
               {saving ? 'Saving…' : 'Save'}
             </button>

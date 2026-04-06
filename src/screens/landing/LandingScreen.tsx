@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { generateQuestion } from '../../lib/questionGenerator';
 import { QuestionCard } from '../../components/game/QuestionCard';
 import { AnswerButton } from '../../components/ui/AnswerButton';
+import { BrandLogo } from '../../components/brand/BrandLogo';
 
 const MODE_PREVIEWS = [
   {
@@ -73,23 +74,23 @@ export function LandingScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <header className="border-b border-slate-800/80 bg-slate-950/95 backdrop-blur-sm sticky top-0 z-10">
+    <div className="min-h-screen bg-page text-ink">
+      <header className="border-b border-border/80 bg-page/95 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <span className="text-2xl font-bold tracking-tight text-white">Strand</span>
-            <span className="text-slate-500 text-sm hidden sm:inline">Russian declension practice</span>
+            <BrandLogo size="md" to="/" />
+            <span className="text-ink-secondary text-sm hidden sm:inline">Russian declension practice</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <Link
               to="/login"
-              className="text-sm font-semibold text-slate-300 hover:text-white px-3 py-2 rounded-xl hover:bg-slate-800 transition-colors"
+              className="text-sm font-semibold text-ink-secondary hover:text-ink px-3 py-2 rounded-xl hover:bg-surface transition-colors"
             >
               Sign in
             </Link>
             <Link
               to="/signup"
-              className="text-sm font-semibold text-white bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-xl transition-colors"
+              className="text-sm font-semibold text-ink bg-brand hover:bg-brand-hover px-4 py-2 rounded-xl transition-colors"
             >
               Create account
             </Link>
@@ -99,11 +100,11 @@ export function LandingScreen() {
 
       <main className="max-w-5xl mx-auto px-4 py-12 sm:py-16 space-y-16">
         <section className="text-center max-w-2xl mx-auto space-y-5">
-          <p className="text-blue-400 text-sm font-semibold uppercase tracking-wider">Free to try</p>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white leading-tight">
+          <p className="text-link text-sm font-semibold uppercase tracking-wider">Free to try</p>
+          <h1 className="text-3xl sm:text-4xl font-bold text-ink leading-tight">
             Master Russian cases with adaptive drills and classroom-ready curriculum
           </h1>
-          <p className="text-slate-400 text-lg leading-relaxed">
+          <p className="text-ink-secondary text-lg leading-relaxed">
             Practice pronouns, names, and nouns across all six cases. Teachers can run classes, assign
             units, and track progress—learners get streaks, review queues, and multiple game modes in
             one place.
@@ -111,13 +112,13 @@ export function LandingScreen() {
           <div className="flex flex-wrap justify-center gap-3 pt-2">
             <Link
               to="/signup"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-colors"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-brand hover:bg-brand-hover text-white font-bold transition-colors"
             >
               Get started
             </Link>
             <a
               href="#try-it"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-slate-600 text-slate-200 hover:bg-slate-800 font-semibold transition-colors"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-border-strong text-ink hover:bg-surface font-semibold transition-colors"
             >
               Try a sample question
             </a>
@@ -126,8 +127,8 @@ export function LandingScreen() {
 
         <section id="try-it" className="scroll-mt-24 space-y-4">
           <div className="text-center space-y-2">
-            <h2 className="text-xl font-bold text-white">Sample practice question</h2>
-            <p className="text-slate-400 text-sm max-w-lg mx-auto">
+            <h2 className="text-xl font-bold text-ink">Sample practice question</h2>
+            <p className="text-ink-secondary text-sm max-w-lg mx-auto">
               This is the same style as Practice mode—no account required for this preview. Your real
               sessions save progress when you sign in.
             </p>
@@ -156,15 +157,15 @@ export function LandingScreen() {
                 })}
               </div>
               {answered && (
-                <div className="rounded-2xl border border-slate-700 bg-slate-900/80 px-4 py-3 text-center space-y-3">
-                  <p className={isCorrect ? 'text-green-400 font-semibold' : 'text-amber-400 font-semibold'}>
+                <div className="rounded-2xl border border-border bg-surface-elevated/95 px-4 py-3 text-center space-y-3">
+                  <p className={isCorrect ? 'text-emerald-700 font-semibold' : 'text-amber-700 font-semibold'}>
                     {isCorrect ? 'Correct — nice work!' : 'Not quite — the highlighted answer is correct.'}
                   </p>
-                  <p className="text-slate-400 text-sm leading-relaxed">{demoQuestion.template.explanation}</p>
+                  <p className="text-ink-secondary text-sm leading-relaxed">{demoQuestion.template.explanation}</p>
                   <button
                     type="button"
                     onClick={handleTryAnother}
-                    className="text-sm font-semibold text-blue-400 hover:text-blue-300"
+                    className="text-sm font-semibold text-link hover:text-link"
                   >
                     Next sample question
                   </button>
@@ -172,14 +173,14 @@ export function LandingScreen() {
               )}
             </div>
           ) : (
-            <p className="text-center text-slate-500 text-sm">Could not load a sample question.</p>
+            <p className="text-center text-ink-secondary text-sm">Could not load a sample question.</p>
           )}
         </section>
 
         <section className="space-y-6">
           <div className="text-center space-y-2">
-            <h2 className="text-xl font-bold text-white">Modes and activities</h2>
-            <p className="text-slate-400 text-sm max-w-xl mx-auto">
+            <h2 className="text-xl font-bold text-ink">Modes and activities</h2>
+            <p className="text-ink-secondary text-sm max-w-xl mx-auto">
               Sign in to unlock every mode, sync progress across devices, and join a class when your
               teacher provides a code.
             </p>
@@ -188,7 +189,7 @@ export function LandingScreen() {
             {MODE_PREVIEWS.map(mode => (
               <div
                 key={mode.title}
-                className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 text-left hover:border-slate-600 transition-colors"
+                className="bg-surface-elevated/80 border border-border rounded-2xl p-5 text-left hover:border-border-strong transition-colors"
               >
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <span className="text-2xl">{mode.icon}</span>
@@ -199,29 +200,29 @@ export function LandingScreen() {
                     {mode.tag}
                   </span>
                 </div>
-                <h3 className="text-white font-bold mb-1">{mode.title}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{mode.description}</p>
+                <h3 className="text-ink font-bold mb-1">{mode.title}</h3>
+                <p className="text-ink-secondary text-sm leading-relaxed">{mode.description}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="rounded-2xl border border-slate-800 bg-linear-to-br from-slate-900 to-slate-950 p-8 sm:p-10 text-center space-y-4">
-          <h2 className="text-xl font-bold text-white">Ready to learn?</h2>
-          <p className="text-slate-400 max-w-md mx-auto">
+        <section className="rounded-2xl border border-border bg-linear-to-br from-surface-elevated to-page p-8 sm:p-10 text-center space-y-4">
+          <h2 className="text-xl font-bold text-ink">Ready to learn?</h2>
+          <p className="text-ink-secondary max-w-md mx-auto">
             Create a free account to save mastery, join classes, and pick up where you left off on any
             device.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link
               to="/signup"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-colors"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-brand hover:bg-brand-hover text-white font-bold transition-colors"
             >
               Sign up
             </Link>
             <Link
               to="/login"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-slate-600 text-slate-200 hover:bg-slate-800 font-semibold transition-colors"
+              className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-border-strong text-ink hover:bg-surface font-semibold transition-colors"
             >
               I already have an account
             </Link>
@@ -229,8 +230,8 @@ export function LandingScreen() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-800 py-8 text-center text-slate-600 text-sm">
-        Strand — Russian nominal declension practice
+      <footer className="border-t border-border py-8 text-center text-ink-secondary text-sm">
+        Languini — Russian nominal declension practice
       </footer>
     </div>
   );

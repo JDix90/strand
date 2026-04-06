@@ -95,7 +95,7 @@ export function IntroMatchGame({ pairSet }: Props) {
 
   return (
     <div className="px-4 py-6 max-w-xl mx-auto w-full">
-      <p className="text-slate-500 text-sm text-center mb-4">{pairSet.description}</p>
+      <p className="text-ink-secondary text-sm text-center mb-4">{pairSet.description}</p>
       <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
         {cards.map(card => {
           const isUp = flipped.includes(card.id) || matched.has(card.id);
@@ -109,8 +109,8 @@ export function IntroMatchGame({ pairSet }: Props) {
                 matched.has(card.id)
                   ? 'bg-emerald-950 border-emerald-700 text-emerald-100'
                   : isUp
-                    ? 'bg-slate-700 border-slate-500 text-white'
-                    : 'bg-slate-800 border-slate-600 text-slate-400 hover:bg-slate-700'
+                    ? 'bg-surface-muted border-border-strong text-ink'
+                    : 'bg-surface border-border-strong text-ink-secondary hover:bg-surface-muted'
               }`}
             >
               {isUp ? card.text : '?'}
@@ -118,7 +118,7 @@ export function IntroMatchGame({ pairSet }: Props) {
           );
         })}
       </div>
-      <p className="text-slate-500 text-xs text-center mt-4">
+      <p className="text-ink-secondary text-xs text-center mt-4">
         Matched {matched.size / 2} / {pairSet.pairs.length} pairs
       </p>
     </div>

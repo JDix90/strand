@@ -128,7 +128,7 @@ export function ClassCurriculumSection({ classId }: Props) {
   };
 
   if (loading) {
-    return <div className="text-slate-500 text-sm py-4">Loading curriculum…</div>;
+    return <div className="text-ink-secondary text-sm py-4">Loading curriculum…</div>;
   }
 
   return (
@@ -138,10 +138,10 @@ export function ClassCurriculumSection({ classId }: Props) {
           Could not load class curriculum: {curriculumError}
         </div>
       )}
-      <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider mb-4">
+      <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-4">
         Curriculum units
       </h2>
-      <p className="text-slate-500 text-sm mb-4">
+      <p className="text-ink-secondary text-sm mb-4">
         Add units from the catalog, set visibility and optional unlock time. Order matches the student sidebar
         (visible units only). Hiding a unit keeps its settings; students no longer see it.
       </p>
@@ -152,11 +152,11 @@ export function ClassCurriculumSection({ classId }: Props) {
             return (
               <div
                 key={u.id}
-                className="flex items-center justify-between gap-3 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3"
+                className="flex items-center justify-between gap-3 bg-surface border border-border rounded-xl px-4 py-3"
               >
                 <div className="min-w-0">
-                  <p className="text-white font-medium truncate">{u.title}</p>
-                  <p className="text-slate-500 text-xs truncate">{u.slug} · {u.content_module}</p>
+                  <p className="text-ink font-medium truncate">{u.title}</p>
+                  <p className="text-ink-secondary text-xs truncate">{u.slug} · {u.content_module}</p>
                 </div>
                 <button
                   type="button"
@@ -173,15 +173,15 @@ export function ClassCurriculumSection({ classId }: Props) {
           return (
             <div
               key={u.id}
-              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3"
+              className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-surface border border-border rounded-xl px-4 py-3"
             >
               <div className="min-w-0 flex-1">
-                <p className="text-white font-medium truncate">{u.title}</p>
-                <p className="text-slate-500 text-xs truncate">{u.slug} · {u.content_module}</p>
+                <p className="text-ink font-medium truncate">{u.title}</p>
+                <p className="text-ink-secondary text-xs truncate">{u.slug} · {u.content_module}</p>
                 {!row.is_visible && (
                   <span className="inline-block mt-1 text-xs text-amber-400">Hidden from students</span>
                 )}
-                <label className="flex items-center gap-2 mt-2 text-xs text-slate-400">
+                <label className="flex items-center gap-2 mt-2 text-xs text-ink-secondary">
                   <span className="w-24 shrink-0">Unlock at</span>
                   <input
                     key={`${row.unit_id}-${row.unlock_at ?? 'none'}`}
@@ -194,12 +194,12 @@ export function ClassCurriculumSection({ classId }: Props) {
                       if (v === cur) return;
                       void saveUnlockAt(row, v);
                     }}
-                    className="flex-1 min-w-0 bg-slate-900 border border-slate-600 rounded px-2 py-1 text-slate-200 text-xs"
+                    className="flex-1 min-w-0 bg-surface-elevated border border-border-strong rounded px-2 py-1 text-ink text-xs"
                   />
                 </label>
               </div>
               <div className="flex flex-wrap items-center gap-2 shrink-0">
-                <label className="flex items-center gap-2 text-xs text-slate-300">
+                <label className="flex items-center gap-2 text-xs text-ink-secondary">
                   <input
                     type="checkbox"
                     checked={row.is_visible}
@@ -212,7 +212,7 @@ export function ClassCurriculumSection({ classId }: Props) {
                   type="button"
                   disabled={!!busy || !row.is_visible}
                   onClick={() => move(u.id, -1)}
-                  className="px-2 py-1 rounded-lg bg-slate-700 text-slate-200 text-xs disabled:opacity-40"
+                  className="px-2 py-1 rounded-lg bg-surface-muted text-ink text-xs disabled:opacity-40"
                 >
                   Up
                 </button>
@@ -220,7 +220,7 @@ export function ClassCurriculumSection({ classId }: Props) {
                   type="button"
                   disabled={!!busy || !row.is_visible}
                   onClick={() => move(u.id, 1)}
-                  className="px-2 py-1 rounded-lg bg-slate-700 text-slate-200 text-xs disabled:opacity-40"
+                  className="px-2 py-1 rounded-lg bg-surface-muted text-ink text-xs disabled:opacity-40"
                 >
                   Down
                 </button>
@@ -229,9 +229,9 @@ export function ClassCurriculumSection({ classId }: Props) {
           );
         })}
       </div>
-      <p className="text-slate-600 text-xs mt-4">
-        Advanced prerequisite rules use <code className="text-slate-500">lock_policy</code> JSON — see{' '}
-        <span className="text-slate-500">docs/curriculum-lock-policy.md</span>.
+      <p className="text-ink-secondary text-xs mt-4">
+        Advanced prerequisite rules use <code className="text-ink-secondary">lock_policy</code> JSON — see{' '}
+        <span className="text-ink-secondary">docs/curriculum-lock-policy.md</span>.
       </p>
     </div>
   );

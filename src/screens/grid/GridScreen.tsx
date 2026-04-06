@@ -223,17 +223,17 @@ export function GridScreen() {
 
   if (phase === 'setup') {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center px-4 gap-6">
+      <div className="min-h-screen bg-page text-ink flex flex-col items-center justify-center px-4 gap-6">
         <div className="text-center space-y-2">
           <div className="text-6xl">🔲</div>
-          <h1 className="text-3xl font-bold text-white">Grid Challenge</h1>
-          <p className="text-slate-400">Complete the declension grid from memory</p>
+          <h1 className="text-3xl font-bold text-ink">Grid Challenge</h1>
+          <p className="text-ink-secondary">Complete the declension grid from memory</p>
         </div>
 
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 w-full max-w-lg space-y-5">
+        <div className="bg-surface rounded-2xl border border-border p-6 w-full max-w-lg space-y-5">
           {/* Category */}
           <div>
-            <label className="text-slate-300 text-sm font-semibold block mb-2">Word Category</label>
+            <label className="text-ink-secondary text-sm font-semibold block mb-2">Word Category</label>
             <div className="flex gap-2">
               {allowedCategories.map(cat => {
                 const info = CATEGORY_LABELS[cat];
@@ -241,7 +241,7 @@ export function GridScreen() {
                   <button
                     key={cat}
                     onClick={() => handleCategoryChange(cat)}
-                    className={`flex-1 py-2 rounded-xl font-semibold text-sm transition-colors ${activeCategory === cat ? 'bg-teal-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                    className={`flex-1 py-2 rounded-xl font-semibold text-sm transition-colors ${activeCategory === cat ? 'bg-teal-600 text-ink' : 'bg-surface-muted text-ink-secondary hover:bg-surface-muted'}`}
                   >
                     {info.icon} {info.label}
                   </button>
@@ -252,17 +252,17 @@ export function GridScreen() {
 
           {/* Input Mode */}
           <div>
-            <label className="text-slate-300 text-sm font-semibold block mb-2">Input Method</label>
+            <label className="text-ink-secondary text-sm font-semibold block mb-2">Input Method</label>
             <div className="flex gap-3">
               <button
                 onClick={() => setInputMode('keyboard')}
-                className={`flex-1 py-2 rounded-xl font-semibold text-sm transition-colors ${inputMode === 'keyboard' ? 'bg-teal-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                className={`flex-1 py-2 rounded-xl font-semibold text-sm transition-colors ${inputMode === 'keyboard' ? 'bg-teal-600 text-ink' : 'bg-surface-muted text-ink-secondary hover:bg-surface-muted'}`}
               >
                 ⌨️ Cyrillic Keyboard
               </button>
               <button
                 onClick={() => setInputMode('palette')}
-                className={`flex-1 py-2 rounded-xl font-semibold text-sm transition-colors ${inputMode === 'palette' ? 'bg-teal-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                className={`flex-1 py-2 rounded-xl font-semibold text-sm transition-colors ${inputMode === 'palette' ? 'bg-teal-600 text-ink' : 'bg-surface-muted text-ink-secondary hover:bg-surface-muted'}`}
               >
                 🎯 Answer Palette
               </button>
@@ -271,7 +271,7 @@ export function GridScreen() {
 
           {/* Cases */}
           <div>
-            <label className="text-slate-300 text-sm font-semibold block mb-2">Cases to Include</label>
+            <label className="text-ink-secondary text-sm font-semibold block mb-2">Cases to Include</label>
             <div className="flex flex-wrap gap-2">
               {caseOrder.map(caseId => {
                 const meta = caseMetadata[caseId];
@@ -296,7 +296,7 @@ export function GridScreen() {
 
           {/* Words */}
           <div>
-            <label className="text-slate-300 text-sm font-semibold block mb-2">Words to Include</label>
+            <label className="text-ink-secondary text-sm font-semibold block mb-2">Words to Include</label>
             <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
               {currentLemmas.map(lemma => {
                 const active = selectedLemmaIds.includes(lemma.lemmaId);
@@ -304,7 +304,7 @@ export function GridScreen() {
                   <button
                     key={lemma.lemmaId}
                     onClick={() => toggleLemma(lemma.lemmaId)}
-                    className={`px-3 py-1 rounded-full text-sm font-bold transition-all ${active ? 'bg-teal-700 text-white border border-teal-400' : 'bg-slate-700 text-slate-400 border border-slate-600'}`}
+                    className={`px-3 py-1 rounded-full text-sm font-bold transition-all ${active ? 'bg-teal-700 text-ink border border-teal-400' : 'bg-surface-muted text-ink-secondary border border-border-strong'}`}
                   >
                     {lemma.lemmaDisplay}
                   </button>
@@ -315,7 +315,7 @@ export function GridScreen() {
 
           <button
             onClick={handleStart}
-            className="w-full py-3 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-bold text-lg transition-colors"
+            className="w-full py-3 bg-teal-600 hover:bg-teal-500 text-ink rounded-xl font-bold text-lg transition-colors"
           >
             Start Grid!
           </button>
@@ -328,33 +328,33 @@ export function GridScreen() {
     const total = Object.keys(cells).length;
     const correct = Object.values(cells).filter(c => c.state === 'correct').length;
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center px-4 gap-6">
+      <div className="min-h-screen bg-page flex flex-col items-center justify-center px-4 gap-6">
         <div className="text-center space-y-2">
           <div className="text-6xl">{correct === total ? '🏆' : '📊'}</div>
-          <h1 className="text-3xl font-bold text-white">Grid Complete!</h1>
+          <h1 className="text-3xl font-bold text-ink">Grid Complete!</h1>
         </div>
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-8 w-full max-w-sm space-y-4">
+        <div className="bg-surface rounded-2xl border border-border p-8 w-full max-w-sm space-y-4">
           <div className="text-center">
             <p className="text-5xl font-bold text-teal-400">{score}</p>
-            <p className="text-slate-400 text-sm mt-1">Points</p>
+            <p className="text-ink-secondary text-sm mt-1">Points</p>
           </div>
           <div className="grid grid-cols-2 gap-3 text-center">
             <div>
               <p className="text-xl font-bold text-green-400">{correct}</p>
-              <p className="text-slate-500 text-xs">Correct</p>
+              <p className="text-ink-secondary text-xs">Correct</p>
             </div>
             <div>
               <p className="text-xl font-bold text-red-400">{total - correct}</p>
-              <p className="text-slate-500 text-xs">Incorrect</p>
+              <p className="text-ink-secondary text-xs">Incorrect</p>
             </div>
           </div>
           {total - correct > 0 && (
-            <p className="text-slate-400 text-sm text-center">Missed forms added to Practice queue!</p>
+            <p className="text-ink-secondary text-sm text-center">Missed forms added to Practice queue!</p>
           )}
         </div>
         <div className="flex gap-3">
-          <button onClick={() => navigate('/home')} className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-semibold">Home</button>
-          <button onClick={() => setPhase('setup')} className="px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-semibold">Try Again</button>
+          <button onClick={() => navigate('/home')} className="px-6 py-3 bg-surface-muted hover:bg-surface-muted text-ink rounded-xl font-semibold">Home</button>
+          <button onClick={() => setPhase('setup')} className="px-6 py-3 bg-teal-600 hover:bg-teal-500 text-ink rounded-xl font-semibold">Try Again</button>
           <button onClick={() => navigate('/practice')} className="px-6 py-3 bg-green-700 hover:bg-green-600 text-white rounded-xl font-semibold">Practice Weak Forms</button>
         </div>
       </div>
@@ -362,17 +362,17 @@ export function GridScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
-      <div className="bg-slate-900 border-b border-slate-800 px-4 py-3 flex-shrink-0">
+    <div className="min-h-screen bg-page text-ink flex flex-col">
+      <div className="bg-surface-elevated border-b border-border px-4 py-3 flex-shrink-0">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/home')} className="text-slate-400 hover:text-white">✕</button>
-            <span className="text-white font-bold">🔲 Grid Challenge</span>
+            <button onClick={() => navigate('/home')} className="text-ink-secondary hover:text-ink">✕</button>
+            <span className="text-ink font-bold">🔲 Grid Challenge</span>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={() => setInputMode(m => m === 'keyboard' ? 'palette' : 'keyboard')}
-              className="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-medium transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-surface-muted hover:bg-surface-muted text-ink-secondary text-sm font-medium transition-colors"
             >
               {inputMode === 'keyboard' ? '⌨️ Keyboard' : '🎯 Palette'}
             </button>
@@ -385,7 +385,7 @@ export function GridScreen() {
             </button>
             <button
               onClick={handleCheck}
-              className="px-4 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-sm font-bold transition-colors"
+              className="px-4 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-ink text-sm font-bold transition-colors"
             >
               Check ✓
             </button>
@@ -395,13 +395,13 @@ export function GridScreen() {
 
       <div className="flex-1 overflow-auto">
         <div className="max-w-5xl mx-auto px-2 py-4">
-          <div className="overflow-x-auto rounded-xl border border-slate-700">
+          <div className="overflow-x-auto rounded-xl border border-border">
             <table className="border-collapse w-full">
               <thead>
-                <tr className="bg-slate-800">
-                  <th className="px-3 py-2 text-left text-slate-400 text-xs w-28">Case</th>
+                <tr className="bg-surface">
+                  <th className="px-3 py-2 text-left text-ink-secondary text-xs w-28">Case</th>
                   {selectedLemmaIds.map(lemmaId => (
-                    <th key={lemmaId} className="px-2 py-2 text-center text-white font-bold text-base w-20">
+                    <th key={lemmaId} className="px-2 py-2 text-center text-ink font-bold text-base w-20">
                       {lemmaLabels[lemmaId] ?? lemmaId}
                     </th>
                   ))}
@@ -411,7 +411,7 @@ export function GridScreen() {
                 {selectedCases.map((caseId, rowIdx) => {
                   const meta = caseMetadata[caseId];
                   return (
-                    <tr key={caseId} className={rowIdx % 2 === 0 ? 'bg-slate-900' : 'bg-slate-950'}>
+                    <tr key={caseId} className={rowIdx % 2 === 0 ? 'bg-surface-elevated' : 'bg-page'}>
                       <td className="px-3 py-2">
                         <div className="flex items-center gap-1.5">
                           <span className="text-sm">{meta.icon}</span>
@@ -467,14 +467,14 @@ export function GridScreen() {
           {selectedCell && !isChecked && (
             <div className="mt-4">
               {inputMode === 'keyboard' ? (
-                <div className="bg-slate-800 rounded-2xl border border-slate-700 p-4 space-y-2">
+                <div className="bg-surface rounded-2xl border border-border p-4 space-y-2">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-slate-400 text-sm">
-                      Typing: <span className="text-white font-bold">{cells[selectedCell]?.value || '—'}</span>
+                    <p className="text-ink-secondary text-sm">
+                      Typing: <span className="text-ink font-bold">{cells[selectedCell]?.value || '—'}</span>
                     </p>
                     <button
                       onClick={() => updateCellValue(selectedCell, '')}
-                      className="text-slate-500 hover:text-red-400 text-xs"
+                      className="text-ink-secondary hover:text-red-400 text-xs"
                     >
                       Clear
                     </button>
@@ -489,7 +489,7 @@ export function GridScreen() {
                             rounded-lg font-bold transition-colors
                             ${char === '⌫'
                               ? 'px-4 py-2 bg-red-900 hover:bg-red-700 text-red-200 text-sm'
-                              : 'w-9 h-9 bg-slate-700 hover:bg-slate-500 text-white text-base'
+                              : 'w-9 h-9 bg-surface-muted hover:bg-slate-500 text-ink text-base'
                             }
                           `}
                         >
@@ -500,8 +500,8 @@ export function GridScreen() {
                   ))}
                 </div>
               ) : (
-                <div className="bg-slate-800 rounded-2xl border border-slate-700 p-4">
-                  <p className="text-slate-400 text-sm mb-3">Select answer:</p>
+                <div className="bg-surface rounded-2xl border border-border p-4">
+                  <p className="text-ink-secondary text-sm mb-3">Select answer:</p>
                   <div className="flex flex-wrap gap-2 max-h-48 overflow-y-auto">
                     {paletteForms.map(form => {
                       const isCurrentValue = cells[selectedCell]?.value === form;
@@ -511,8 +511,8 @@ export function GridScreen() {
                           onClick={() => handlePaletteSelect(form)}
                           className={`px-3 py-1.5 rounded-lg text-sm font-bold transition-colors ${
                             isCurrentValue
-                              ? 'bg-teal-600 text-white'
-                              : 'bg-slate-700 hover:bg-slate-600 text-slate-200'
+                              ? 'bg-teal-600 text-ink'
+                              : 'bg-surface-muted hover:bg-surface-muted text-ink'
                           }`}
                         >
                           {form}

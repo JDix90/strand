@@ -122,31 +122,31 @@ export function AssignmentsScreen() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="bg-slate-900 border-b border-slate-800 px-6 py-5">
+    <div className="min-h-screen bg-page text-ink">
+      <div className="bg-surface-elevated border-b border-border px-6 py-5">
         <div className="max-w-3xl mx-auto flex items-center gap-4">
-          <button onClick={() => navigate('/home')} className="text-slate-400 hover:text-white">
+          <button onClick={() => navigate('/home')} className="text-ink-secondary hover:text-ink">
             ← Overview
           </button>
-          <h1 className="text-xl font-bold text-white">Assignments</h1>
+          <h1 className="text-xl font-bold text-ink">Assignments</h1>
         </div>
       </div>
 
       <div className="max-w-3xl mx-auto px-6 py-8 space-y-8">
         {loading ? (
-          <div className="text-slate-400 text-center py-12">Loading assignments...</div>
+          <div className="text-ink-secondary text-center py-12">Loading assignments...</div>
         ) : assignments.length === 0 ? (
           <div className="text-center py-16 space-y-3">
             <div className="text-5xl">📝</div>
-            <p className="text-slate-300 font-semibold">No assignments yet</p>
-            <p className="text-slate-500 text-sm">When your teacher creates assignments, they'll appear here.</p>
+            <p className="text-ink-secondary font-semibold">No assignments yet</p>
+            <p className="text-ink-secondary text-sm">When your teacher creates assignments, they'll appear here.</p>
           </div>
         ) : (
           <>
             {/* Pending */}
             {pending.length > 0 && (
               <div>
-                <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider mb-4">
+                <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-4">
                   To Do ({pending.length})
                 </h2>
                 <div className="space-y-3">
@@ -155,12 +155,12 @@ export function AssignmentsScreen() {
                     return (
                       <div
                         key={a.id}
-                        className={`bg-slate-800 border rounded-2xl p-5 ${overdue ? 'border-red-700' : 'border-slate-700'}`}
+                        className={`bg-surface border rounded-2xl p-5 ${overdue ? 'border-red-700' : 'border-border'}`}
                       >
                         <div className="flex items-start justify-between mb-2">
                           <div>
-                            <h3 className="text-white font-bold">{a.title}</h3>
-                            <p className="text-slate-500 text-xs">{a.class_name}</p>
+                            <h3 className="text-ink font-bold">{a.title}</h3>
+                            <p className="text-ink-secondary text-xs">{a.class_name}</p>
                           </div>
                           {a.due_date && (
                             <span className={`text-xs font-semibold px-2 py-1 rounded-lg ${
@@ -170,9 +170,9 @@ export function AssignmentsScreen() {
                             </span>
                           )}
                         </div>
-                        {a.description && <p className="text-slate-400 text-sm mb-3">{a.description}</p>}
+                        {a.description && <p className="text-ink-secondary text-sm mb-3">{a.description}</p>}
                         <div className="flex items-center justify-between">
-                          <div className="text-slate-500 text-xs space-x-3">
+                          <div className="text-ink-secondary text-xs space-x-3">
                             <span>{modeLabel(a.mode_id)}</span>
                             <span>Min {a.min_questions}q</span>
                             <span>Min {Math.round(a.min_accuracy * 100)}% acc</span>
@@ -180,7 +180,7 @@ export function AssignmentsScreen() {
                           <button
                             type="button"
                             onClick={() => void startAssignment(a)}
-                            className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-colors"
+                            className="px-4 py-1.5 bg-brand hover:bg-brand-hover text-white rounded-xl font-semibold text-sm transition-colors"
                           >
                             Start
                           </button>
@@ -195,23 +195,23 @@ export function AssignmentsScreen() {
             {/* Completed */}
             {completed.length > 0 && (
               <div>
-                <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider mb-4">
+                <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-4">
                   Completed ({completed.length})
                 </h2>
                 <div className="space-y-2">
                   {completed.map(a => (
                     <div
                       key={a.id}
-                      className="flex items-center justify-between bg-slate-800 border border-slate-700 rounded-xl px-5 py-3 opacity-70"
+                      className="flex items-center justify-between bg-surface border border-border rounded-xl px-5 py-3 opacity-70"
                     >
                       <div>
-                        <p className="text-white text-sm font-medium">{a.title}</p>
-                        <p className="text-slate-500 text-xs">{a.class_name}</p>
+                        <p className="text-ink text-sm font-medium">{a.title}</p>
+                        <p className="text-ink-secondary text-xs">{a.class_name}</p>
                       </div>
                       <div className="text-right">
                         <span className="text-green-400 text-xs font-semibold">✓ Done</span>
                         {a.completed_at && (
-                          <p className="text-slate-600 text-xs">{new Date(a.completed_at).toLocaleDateString()}</p>
+                          <p className="text-ink-secondary text-xs">{new Date(a.completed_at).toLocaleDateString()}</p>
                         )}
                       </div>
                     </div>

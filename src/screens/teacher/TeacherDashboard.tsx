@@ -60,14 +60,14 @@ export function TeacherDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="bg-slate-900 border-b border-slate-800 px-6 py-5">
+    <div className="min-h-screen bg-page text-ink">
+      <div className="bg-surface-elevated border-b border-border px-6 py-5">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white tracking-tight">
+            <h1 className="text-2xl font-bold text-ink tracking-tight">
               👨‍🏫 Teacher Dashboard
             </h1>
-            <p className="text-slate-400 text-sm mt-0.5">
+            <p className="text-ink-secondary text-sm mt-0.5">
               Welcome, {profile?.displayName}
               {profile?.role === 'admin' && (
                 <span className="block text-amber-400/90 text-xs mt-1">Admin: viewing all classes</span>
@@ -77,14 +77,14 @@ export function TeacherDashboard() {
           <div className="flex items-center gap-3">
             <button
               onClick={() => navigate('/settings')}
-              className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition-colors"
+              className="text-ink-secondary hover:text-ink p-2 rounded-lg hover:bg-surface transition-colors"
               title="Settings"
             >
               ⚙️
             </button>
             <button
               onClick={handleSignOut}
-              className="text-slate-400 hover:text-white text-sm px-3 py-1.5 rounded-lg hover:bg-slate-800 transition-colors"
+              className="text-ink-secondary hover:text-ink text-sm px-3 py-1.5 rounded-lg hover:bg-surface transition-colors"
             >
               Sign Out
             </button>
@@ -94,27 +94,27 @@ export function TeacherDashboard() {
 
       <div className="max-w-4xl mx-auto px-6 py-8 space-y-8">
         <div className="flex items-center justify-between">
-          <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider">
+          <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider">
             My Classes
           </h2>
           <button
             onClick={() => navigate('/teacher/classes')}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-colors"
+            className="px-4 py-2 bg-brand hover:bg-brand-hover text-white rounded-xl font-semibold text-sm transition-colors"
           >
             + New Class
           </button>
         </div>
 
         {loading ? (
-          <div className="text-slate-400 text-center py-12">Loading classes...</div>
+          <div className="text-ink-secondary text-center py-12">Loading classes...</div>
         ) : classes.length === 0 ? (
           <div className="text-center py-16 space-y-3">
             <div className="text-5xl">📚</div>
-            <p className="text-slate-300 font-semibold">No classes yet</p>
-            <p className="text-slate-500 text-sm">Create your first class and share the join code with students.</p>
+            <p className="text-ink-secondary font-semibold">No classes yet</p>
+            <p className="text-ink-secondary text-sm">Create your first class and share the join code with students.</p>
             <button
               onClick={() => navigate('/teacher/classes')}
-              className="mt-3 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold transition-colors"
+              className="mt-3 px-6 py-2.5 bg-brand hover:bg-brand-hover text-white rounded-xl font-semibold transition-colors"
             >
               Create a Class
             </button>
@@ -125,19 +125,19 @@ export function TeacherDashboard() {
               <button
                 key={cls.id}
                 onClick={() => navigate(`/teacher/class/${cls.id}`)}
-                className="bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-500 rounded-2xl p-5 text-left transition-all hover:scale-[1.02] hover:shadow-xl"
+                className="bg-surface hover:bg-surface-muted border border-border hover:border-border-strong rounded-2xl p-5 text-left transition-all hover:scale-[1.02] hover:shadow-xl"
               >
                 <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-white font-bold text-lg">{cls.name}</h3>
-                  <span className="bg-blue-950 text-blue-300 font-mono text-xs px-2 py-1 rounded-lg">
+                  <h3 className="text-ink font-bold text-lg">{cls.name}</h3>
+                  <span className="bg-brand/15 text-link font-mono text-xs px-2 py-1 rounded-lg">
                     {cls.join_code}
                   </span>
                 </div>
                 <div className="flex items-center gap-4 text-sm">
-                  <span className="text-slate-400">
+                  <span className="text-ink-secondary">
                     {cls.studentCount} {cls.studentCount === 1 ? 'student' : 'students'}
                   </span>
-                  <span className="text-slate-600">
+                  <span className="text-ink-secondary">
                     Created {new Date(cls.created_at).toLocaleDateString()}
                   </span>
                 </div>

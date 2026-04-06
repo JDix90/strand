@@ -23,17 +23,17 @@ export function IntroPlayScreen() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-page text-ink flex flex-col">
       <IntroScreenHeader title="Games & drills" subtitle="Short activities — progress stays on this device only." />
       <div className="max-w-2xl mx-auto w-full px-4 pt-4">
-        <div className="flex rounded-xl bg-slate-900 border border-slate-700 p-1 gap-1">
+        <div className="flex rounded-xl bg-surface-elevated border border-border p-1 gap-1">
           {tabs.map(t => (
             <button
               key={t.id}
               type="button"
               onClick={() => setTab(t.id)}
               className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                tab === t.id ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-slate-200'
+                tab === t.id ? 'bg-brand text-white' : 'text-ink-secondary hover:text-ink'
               }`}
             >
               {t.label}
@@ -45,11 +45,11 @@ export function IntroPlayScreen() {
       {tab === 'quiz' && quizDeck && (
         <>
           <div className="max-w-lg mx-auto w-full px-4 pt-4">
-            <label className="block text-slate-500 text-xs mb-1">Deck</label>
+            <label className="block text-ink-secondary text-xs mb-1">Deck</label>
             <select
               value={quizDeck.id}
               onChange={e => setQuizDeckId(e.target.value)}
-              className="w-full rounded-xl bg-slate-900 border border-slate-600 px-3 py-2 text-white text-sm"
+              className="w-full rounded-xl bg-surface-elevated border border-border-strong px-3 py-2 text-ink text-sm"
             >
               {INTRO_QUIZ_DECKS.map(d => (
                 <option key={d.id} value={d.id}>
@@ -57,7 +57,7 @@ export function IntroPlayScreen() {
                 </option>
               ))}
             </select>
-            <p className="text-slate-500 text-xs mt-2">{quizDeck.description}</p>
+            <p className="text-ink-secondary text-xs mt-2">{quizDeck.description}</p>
           </div>
           <IntroQuizRunner key={quizDeck.id} deck={quizDeck} />
         </>
@@ -66,11 +66,11 @@ export function IntroPlayScreen() {
       {tab === 'match' && matchSet && (
         <>
           <div className="max-w-xl mx-auto w-full px-4 pt-4">
-            <label className="block text-slate-500 text-xs mb-1">Set</label>
+            <label className="block text-ink-secondary text-xs mb-1">Set</label>
             <select
               value={matchSet.id}
               onChange={e => setMatchSetId(e.target.value)}
-              className="w-full rounded-xl bg-slate-900 border border-slate-600 px-3 py-2 text-white text-sm"
+              className="w-full rounded-xl bg-surface-elevated border border-border-strong px-3 py-2 text-ink text-sm"
             >
               {INTRO_MATCH_SETS.map(s => (
                 <option key={s.id} value={s.id}>
@@ -78,7 +78,7 @@ export function IntroPlayScreen() {
                 </option>
               ))}
             </select>
-            <p className="text-slate-500 text-xs mt-2">{matchSet.description}</p>
+            <p className="text-ink-secondary text-xs mt-2">{matchSet.description}</p>
           </div>
           <IntroMatchGame key={matchSet.id} pairSet={matchSet} />
         </>

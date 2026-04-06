@@ -9,10 +9,10 @@ const CASE_LABELS: Record<CaseId, string> = {
   accusative: 'Acc', instrumental: 'Inst', prepositional: 'Prep',
 };
 const STATUS_COLORS: Record<string, string> = {
-  unseen: 'bg-slate-700 text-slate-500',
+  unseen: 'bg-surface-muted text-ink-secondary',
   introduced: 'bg-yellow-950 text-yellow-400',
   shaky: 'bg-orange-950 text-orange-400',
-  improving: 'bg-blue-950 text-blue-400',
+  improving: 'bg-brand/15 text-link',
   strong: 'bg-green-950 text-green-400',
   mastered: 'bg-emerald-950 text-emerald-300',
 };
@@ -100,21 +100,21 @@ export function StudentDetailScreen() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="text-slate-400">Loading...</div>
+      <div className="min-h-screen bg-page flex items-center justify-center">
+        <div className="text-ink-secondary">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="bg-slate-900 border-b border-slate-800 px-6 py-5">
+    <div className="min-h-screen bg-page text-ink">
+      <div className="bg-surface-elevated border-b border-border px-6 py-5">
         <div className="max-w-4xl mx-auto">
-          <button onClick={() => navigate(-1)} className="text-slate-400 hover:text-white text-sm mb-2 block">
+          <button onClick={() => navigate(-1)} className="text-ink-secondary hover:text-ink text-sm mb-2 block">
             ← Back
           </button>
-          <h1 className="text-2xl font-bold text-white">{studentName}</h1>
-          <p className="text-slate-400 text-sm mt-0.5">
+          <h1 className="text-2xl font-bold text-ink">{studentName}</h1>
+          <p className="text-ink-secondary text-sm mt-0.5">
             {masteryRows.length} forms tracked · {sessions.length} sessions
           </p>
         </div>
@@ -123,7 +123,7 @@ export function StudentDetailScreen() {
       <div className="max-w-4xl mx-auto px-6 py-8 space-y-8">
         {/* Case Breakdown */}
         <div>
-          <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider mb-4">
+          <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-4">
             Mastery by Case
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -133,10 +133,10 @@ export function StudentDetailScreen() {
               const mastered = rows.filter(r => r.status === 'mastered' || r.status === 'strong').length;
               const pct = total > 0 ? Math.round((mastered / total) * 100) : 0;
               return (
-                <div key={c} className="bg-slate-800 border border-slate-700 rounded-xl p-4">
-                  <p className="text-white font-bold capitalize">{CASE_LABELS[c]}</p>
-                  <p className="text-2xl font-bold text-blue-400 mt-1">{pct}%</p>
-                  <p className="text-slate-500 text-xs">{mastered}/{total} strong+</p>
+                <div key={c} className="bg-surface border border-border rounded-xl p-4">
+                  <p className="text-ink font-bold capitalize">{CASE_LABELS[c]}</p>
+                  <p className="text-2xl font-bold text-link mt-1">{pct}%</p>
+                  <p className="text-ink-secondary text-xs">{mastered}/{total} strong+</p>
                 </div>
               );
             })}
@@ -146,7 +146,7 @@ export function StudentDetailScreen() {
         {/* Weak Forms */}
         {weakForms.length > 0 && (
           <div>
-            <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider mb-4">
+            <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-4">
               Weakest Forms
             </h2>
             <div className="flex flex-wrap gap-2">
@@ -165,7 +165,7 @@ export function StudentDetailScreen() {
         {/* Confusion Pairs */}
         {confusions.length > 0 && (
           <div>
-            <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider mb-4">
+            <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-4">
               Confusion Pairs
             </h2>
             <div className="flex flex-wrap gap-2">
@@ -180,25 +180,25 @@ export function StudentDetailScreen() {
 
         {/* Recent Sessions */}
         <div>
-          <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider mb-4">
+          <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-4">
             Recent Sessions
           </h2>
           {sessions.length === 0 ? (
-            <p className="text-slate-500 text-sm">No sessions recorded yet.</p>
+            <p className="text-ink-secondary text-sm">No sessions recorded yet.</p>
           ) : (
             <div className="space-y-2">
               {sessions.map(s => (
                 <div
                   key={s.id}
-                  className="flex items-center justify-between bg-slate-800 border border-slate-700 rounded-xl px-5 py-3"
+                  className="flex items-center justify-between bg-surface border border-border rounded-xl px-5 py-3"
                 >
                   <div>
-                    <p className="text-white text-sm font-medium capitalize">{s.mode_id.replace(/_/g, ' ')}</p>
-                    <p className="text-slate-500 text-xs">{new Date(s.completed_at).toLocaleDateString()}</p>
+                    <p className="text-ink text-sm font-medium capitalize">{s.mode_id.replace(/_/g, ' ')}</p>
+                    <p className="text-ink-secondary text-xs">{new Date(s.completed_at).toLocaleDateString()}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-white font-bold">{s.score}</p>
-                    <p className="text-slate-400 text-xs">
+                    <p className="text-ink font-bold">{s.score}</p>
+                    <p className="text-ink-secondary text-xs">
                       {Math.round(s.accuracy * 100)}% · {s.total_questions}q
                     </p>
                   </div>

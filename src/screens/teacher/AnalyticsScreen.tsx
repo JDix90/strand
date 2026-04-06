@@ -6,10 +6,10 @@ import type { CaseId } from '../../types';
 
 const CASE_ORDER: CaseId[] = ['nominative', 'genitive', 'dative', 'accusative', 'instrumental', 'prepositional'];
 const STATUS_DISPLAY: Record<string, { label: string; color: string }> = {
-  unseen: { label: 'Unseen', color: 'bg-slate-600' },
+  unseen: { label: 'Unseen', color: 'bg-surface-muted' },
   introduced: { label: 'Intro', color: 'bg-yellow-600' },
   shaky: { label: 'Shaky', color: 'bg-orange-600' },
-  improving: { label: 'Improving', color: 'bg-blue-600' },
+  improving: { label: 'Improving', color: 'bg-brand' },
   strong: { label: 'Strong', color: 'bg-green-600' },
   mastered: { label: 'Mastered', color: 'bg-emerald-500' },
 };
@@ -102,30 +102,30 @@ export function AnalyticsScreen() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="text-slate-400">Loading analytics...</div>
+      <div className="min-h-screen bg-page flex items-center justify-center">
+        <div className="text-ink-secondary">Loading analytics...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="bg-slate-900 border-b border-slate-800 px-6 py-5">
+    <div className="min-h-screen bg-page text-ink">
+      <div className="bg-surface-elevated border-b border-border px-6 py-5">
         <div className="max-w-4xl mx-auto">
-          <button onClick={() => navigate(-1)} className="text-slate-400 hover:text-white text-sm mb-2 block">
+          <button onClick={() => navigate(-1)} className="text-ink-secondary hover:text-ink text-sm mb-2 block">
             ← Back
           </button>
-          <h1 className="text-2xl font-bold text-white">Class Analytics</h1>
-          <p className="text-slate-400 text-sm mt-0.5">{className} · {studentCount} students</p>
+          <h1 className="text-2xl font-bold text-ink">Class Analytics</h1>
+          <p className="text-ink-secondary text-sm mt-0.5">{className} · {studentCount} students</p>
           <div className="mt-4 flex items-center gap-2">
-            <label htmlFor="unit-filter" className="text-slate-400 text-sm">
+            <label htmlFor="unit-filter" className="text-ink-secondary text-sm">
               Unit
             </label>
             <select
               id="unit-filter"
               value={unitFilter}
               onChange={e => setUnitFilter(e.target.value)}
-              className="bg-slate-800 border border-slate-600 text-white rounded-lg px-3 py-1.5 text-sm"
+              className="bg-surface border border-border-strong text-ink rounded-lg px-3 py-1.5 text-sm"
             >
               <option value="all">All units</option>
               {units.map(u => (
@@ -135,7 +135,7 @@ export function AnalyticsScreen() {
               ))}
             </select>
           </div>
-          <p className="text-slate-500 text-xs mt-2 max-w-xl">
+          <p className="text-ink-secondary text-xs mt-2 max-w-xl">
             Some older records have no unit_id; they are included when you choose &quot;All units&quot; but not when you
             filter to a single catalog unit.
           </p>
@@ -145,13 +145,13 @@ export function AnalyticsScreen() {
       <div className="max-w-4xl mx-auto px-6 py-8 space-y-8">
         {studentCount === 0 ? (
           <div className="text-center py-16">
-            <p className="text-slate-400">No students to analyze yet.</p>
+            <p className="text-ink-secondary">No students to analyze yet.</p>
           </div>
         ) : (
           <>
             {/* Case Accuracy Bars */}
             <div>
-              <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider mb-4">
+              <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-4">
                 Accuracy by Case
               </h2>
               <div className="space-y-3">
@@ -159,14 +159,14 @@ export function AnalyticsScreen() {
                   const s = caseStats[c];
                   const pct = s.total > 0 ? Math.round((s.correct / s.total) * 100) : 0;
                   return (
-                    <div key={c} className="bg-slate-800 border border-slate-700 rounded-xl p-4">
+                    <div key={c} className="bg-surface border border-border rounded-xl p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-white font-semibold capitalize">{c}</span>
-                        <span className="text-slate-300 font-bold">{pct}%</span>
+                        <span className="text-ink font-semibold capitalize">{c}</span>
+                        <span className="text-ink-secondary font-bold">{pct}%</span>
                       </div>
-                      <div className="w-full bg-slate-700 rounded-full h-2.5">
+                      <div className="w-full bg-surface-muted rounded-full h-2.5">
                         <div
-                          className="bg-blue-500 h-2.5 rounded-full transition-all"
+                          className="bg-brand h-2.5 rounded-full transition-all"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -178,17 +178,17 @@ export function AnalyticsScreen() {
 
             {/* Mastery Heatmap */}
             <div>
-              <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider mb-4">
+              <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-4">
                 Mastery Distribution
               </h2>
-              <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6">
+              <div className="bg-surface border border-border rounded-2xl p-6">
                 <div className="grid grid-cols-6 gap-3">
                   {CASE_ORDER.map(c => {
                     const counts = caseStats[c].statusCounts;
                     const totalForms = Object.values(counts).reduce((a, b) => a + b, 0) || 1;
                     return (
                       <div key={c} className="text-center">
-                        <p className="text-slate-400 text-xs font-semibold mb-2 capitalize">{c.slice(0, 3)}</p>
+                        <p className="text-ink-secondary text-xs font-semibold mb-2 capitalize">{c.slice(0, 3)}</p>
                         <div className="space-y-1">
                           {Object.entries(STATUS_DISPLAY).map(([key, info]) => {
                             const count = counts[key] ?? 0;
@@ -199,7 +199,7 @@ export function AnalyticsScreen() {
                                   className={`${info.color} rounded-sm mx-auto transition-all`}
                                   style={{ height: `${Math.round(heightPct * 0.4)}px`, minHeight: '3px', width: '100%', opacity: count > 0 ? 1 : 0.15 }}
                                 />
-                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 hidden group-hover:block bg-slate-700 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap z-10">
+                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 hidden group-hover:block bg-surface-muted text-ink text-xs px-2 py-0.5 rounded whitespace-nowrap z-10">
                                   {info.label}: {count}
                                 </div>
                               </div>
@@ -214,7 +214,7 @@ export function AnalyticsScreen() {
                   {Object.entries(STATUS_DISPLAY).map(([key, info]) => (
                     <div key={key} className="flex items-center gap-1.5">
                       <div className={`w-2.5 h-2.5 rounded-sm ${info.color}`} />
-                      <span className="text-slate-500 text-xs">{info.label}</span>
+                      <span className="text-ink-secondary text-xs">{info.label}</span>
                     </div>
                   ))}
                 </div>
@@ -224,17 +224,17 @@ export function AnalyticsScreen() {
             {/* Top Confusion Pairs */}
             {topConfusions.length > 0 && (
               <div>
-                <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider mb-4">
+                <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-4">
                   Most Common Confusions
                 </h2>
                 <div className="space-y-2">
                   {topConfusions.map(([pair, count]) => (
                     <div
                       key={pair}
-                      className="flex items-center justify-between bg-slate-800 border border-slate-700 rounded-xl px-5 py-3"
+                      className="flex items-center justify-between bg-surface border border-border rounded-xl px-5 py-3"
                     >
                       <span className="text-red-300 font-mono text-sm">{pair}</span>
-                      <span className="text-slate-400 text-sm">{count} students</span>
+                      <span className="text-ink-secondary text-sm">{count} students</span>
                     </div>
                   ))}
                 </div>

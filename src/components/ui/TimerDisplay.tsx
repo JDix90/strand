@@ -16,7 +16,7 @@ export function TimerDisplay({ seconds, warning, danger }: TimerDisplayProps) {
           ? 'text-red-400 border-red-500 bg-red-950 animate-pulse'
           : warning
           ? 'text-yellow-400 border-yellow-500 bg-yellow-950'
-          : 'text-slate-200 border-slate-600 bg-slate-800'
+          : 'text-ink border-border-strong bg-surface'
       }`}
     >
       {display}

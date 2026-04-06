@@ -37,11 +37,11 @@ export function StudentClassHome() {
   if (!classId) return null;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6">
+    <div className="min-h-screen bg-page text-ink p-6">
       <div className="max-w-lg mx-auto space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">{className || 'Your class'}</h1>
-          <p className="text-slate-400 text-sm mt-1">Pick a unit to practice, or use the sidebar.</p>
+          <h1 className="text-2xl font-bold text-ink">{className || 'Your class'}</h1>
+          <p className="text-ink-secondary text-sm mt-1">Pick a unit to practice, or use the sidebar.</p>
         </div>
         {curriculumError && (
           <div className="rounded-xl border border-red-800 bg-red-950/50 text-red-200 text-sm px-4 py-3">
@@ -56,11 +56,11 @@ export function StudentClassHome() {
               <li key={row.unit_id}>
                 <Link
                   to={`/class/${classId}/unit/${row.unit_id}/practice`}
-                  className="block rounded-xl border border-slate-800 bg-slate-900 hover:border-slate-600 px-4 py-3 transition-colors"
+                  className="block rounded-xl border border-border bg-surface-elevated hover:border-border-strong px-4 py-3 transition-colors"
                 >
-                  <span className="font-semibold text-white">{u.title}</span>
+                  <span className="font-semibold text-ink">{u.title}</span>
                   {u.description && (
-                    <span className="block text-slate-500 text-sm mt-1">{u.description}</span>
+                    <span className="block text-ink-secondary text-sm mt-1">{u.description}</span>
                   )}
                 </Link>
               </li>
@@ -68,7 +68,7 @@ export function StudentClassHome() {
           })}
         </ul>
         {curriculum.length === 0 && (
-          <p className="text-slate-500 text-sm">No visible units yet. Check back after your teacher publishes curriculum.</p>
+          <p className="text-ink-secondary text-sm">No visible units yet. Check back after your teacher publishes curriculum.</p>
         )}
       </div>
     </div>

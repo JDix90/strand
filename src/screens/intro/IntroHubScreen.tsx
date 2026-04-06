@@ -30,7 +30,7 @@ const cards = [
 
 export function IntroHubScreen() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-page text-ink flex flex-col">
       <IntroScreenHeader
         title="Getting started"
         backTo="/home"
@@ -42,7 +42,7 @@ export function IntroHubScreen() {
             <Link
               key={c.to}
               to={c.to}
-              className="group bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-500 rounded-2xl p-5 text-left transition-all duration-200 hover:scale-[1.02] hover:shadow-xl"
+              className="group bg-surface hover:bg-surface-muted border border-border hover:border-border-strong rounded-2xl p-5 text-left transition-all duration-200 hover:scale-[1.02] hover:shadow-xl"
             >
               <div className="flex items-start justify-between mb-3">
                 <span className="text-3xl">{c.icon}</span>
@@ -53,8 +53,8 @@ export function IntroHubScreen() {
                   {c.tag}
                 </span>
               </div>
-              <h2 className="text-white font-bold text-base mb-1">{c.title}</h2>
-              <p className="text-slate-400 text-sm leading-relaxed">{c.description}</p>
+              <h2 className="text-ink font-bold text-base mb-1">{c.title}</h2>
+              <p className="text-ink-secondary text-sm leading-relaxed">{c.description}</p>
             </Link>
           ))}
         </div>

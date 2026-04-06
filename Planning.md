@@ -1,12 +1,12 @@
-# Strand — planning context for the codebase
+# Languini — planning context for the codebase
 
-This document describes **what Strand is**, **who uses it**, and **which features and constraints already exist**. It is meant to be shared with an AI (or a human) when planning new work so proposals align with the real architecture instead of inventing parallel systems.
+This document describes **what Languini is**, **who uses it**, and **which features and constraints already exist**. It is meant to be shared with an AI (or a human) when planning new work so proposals align with the real architecture instead of inventing parallel systems.
 
 ---
 
-## What Strand is
+## What Languini is
 
-**Strand** is a **web application** for practicing **Russian nominal declension**—correct forms of pronouns, names, and nouns across the six grammatical cases. Students work through **several game modes** (study table, adaptive practice, timed drills, boss battle, memory, grid). The app tracks **per-form mastery**, runs an **adaptive review queue**, and can **sync progress to the cloud** when the user signs in.
+**Languini** is a **web application** for practicing **Russian nominal declension**—correct forms of pronouns, names, and nouns across the six grammatical cases. Students work through **several game modes** (study table, adaptive practice, timed drills, boss battle, memory, grid). The app tracks **per-form mastery**, runs an **adaptive review queue**, and can **sync progress to the cloud** when the user signs in.
 
 The product also supports **classes**: teachers create classes with join codes, assign **curriculum units** and **assignments**, and view **analytics**. **Admins** have separate tools for users, classes, and site-wide settings.
 

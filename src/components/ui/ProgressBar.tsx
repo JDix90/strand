@@ -19,12 +19,12 @@ export function ProgressBar({
   return (
     <div className="w-full space-y-1">
       {showLabel && (
-        <div className="flex justify-between text-xs text-slate-400">
+        <div className="flex justify-between text-xs text-ink-secondary">
           <span>{label}</span>
           <span>{Math.round(pct)}%</span>
         </div>
       )}
-      <div className={`w-full ${height} bg-slate-700 rounded-full overflow-hidden`}>
+      <div className={`w-full ${height} bg-surface-muted rounded-full overflow-hidden`}>
         <div
           className={`h-full rounded-full ${animate ? 'transition-all duration-500' : ''}`}
           style={{ width: `${pct}%`, backgroundColor: color }}

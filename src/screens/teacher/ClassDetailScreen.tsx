@@ -141,32 +141,32 @@ export function ClassDetailScreen() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="text-slate-400 text-lg">Loading class...</div>
+      <div className="min-h-screen bg-page flex items-center justify-center">
+        <div className="text-ink-secondary text-lg">Loading class...</div>
       </div>
     );
   }
 
   if (!classInfo) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="text-slate-400 text-lg">Class not found.</div>
+      <div className="min-h-screen bg-page flex items-center justify-center">
+        <div className="text-ink-secondary text-lg">Class not found.</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="bg-slate-900 border-b border-slate-800 px-6 py-5">
+    <div className="min-h-screen bg-page text-ink">
+      <div className="bg-surface-elevated border-b border-border px-6 py-5">
         <div className="max-w-4xl mx-auto">
-          <button onClick={() => navigate('/teacher')} className="text-slate-400 hover:text-white text-sm mb-2 block">
+          <button onClick={() => navigate('/teacher')} className="text-ink-secondary hover:text-ink text-sm mb-2 block">
             ← Dashboard
           </button>
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-white">{classInfo.name}</h1>
+            <h1 className="text-2xl font-bold text-ink">{classInfo.name}</h1>
             <button
               onClick={copyCode}
-              className="bg-blue-950 hover:bg-blue-900 text-blue-300 font-mono text-sm px-4 py-2 rounded-xl transition-colors flex items-center gap-2"
+              className="bg-brand/15 hover:bg-blue-900 text-link font-mono text-sm px-4 py-2 rounded-xl transition-colors flex items-center gap-2"
             >
               <span>{classInfo.join_code}</span>
               <span className="text-blue-500 text-xs">{copied ? '✓ Copied' : 'Copy'}</span>
@@ -198,7 +198,7 @@ export function ClassDetailScreen() {
               const url = `${window.location.origin}/class/${classId}`;
               void navigator.clipboard.writeText(url);
             }}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 rounded-xl text-sm"
+            className="px-4 py-2 bg-surface hover:bg-surface-muted border border-border-strong text-ink rounded-xl text-sm"
           >
             Copy student class link
           </button>
@@ -210,19 +210,19 @@ export function ClassDetailScreen() {
 
         {/* Student Roster */}
         <div>
-          <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider mb-4">
+          <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-4">
             Students ({students.length})
           </h2>
           {students.length === 0 ? (
-            <div className="bg-slate-800 border border-slate-700 rounded-2xl p-8 text-center">
-              <p className="text-slate-400">No students have joined yet.</p>
-              <p className="text-slate-500 text-sm mt-1">Share the join code: <span className="font-mono text-blue-300">{classInfo.join_code}</span></p>
+            <div className="bg-surface border border-border rounded-2xl p-8 text-center">
+              <p className="text-ink-secondary">No students have joined yet.</p>
+              <p className="text-ink-secondary text-sm mt-1">Share the join code: <span className="font-mono text-link">{classInfo.join_code}</span></p>
             </div>
           ) : (
-            <div className="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+            <div className="bg-surface border border-border rounded-2xl overflow-hidden">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-slate-700 text-slate-400 text-xs uppercase">
+                  <tr className="border-b border-border text-ink-secondary text-xs uppercase">
                     <th className="px-5 py-3 text-left">Name</th>
                     <th className="px-5 py-3 text-right">Attempts</th>
                     <th className="px-5 py-3 text-right">Accuracy</th>
@@ -234,14 +234,14 @@ export function ClassDetailScreen() {
                     <tr
                       key={s.id}
                       onClick={() => navigate(`/teacher/student/${s.id}`)}
-                      className="border-b border-slate-700/50 hover:bg-slate-700/50 cursor-pointer transition-colors"
+                      className="border-b border-border/50 hover:bg-surface-muted/80 cursor-pointer transition-colors"
                     >
-                      <td className="px-5 py-3 text-white font-medium">{s.display_name}</td>
-                      <td className="px-5 py-3 text-right text-slate-300">{s.totalAttempts}</td>
-                      <td className="px-5 py-3 text-right text-slate-300">
+                      <td className="px-5 py-3 text-ink font-medium">{s.display_name}</td>
+                      <td className="px-5 py-3 text-right text-ink-secondary">{s.totalAttempts}</td>
+                      <td className="px-5 py-3 text-right text-ink-secondary">
                         {s.totalAttempts > 0 ? `${Math.round(s.accuracy * 100)}%` : '—'}
                       </td>
-                      <td className="px-5 py-3 text-right text-slate-300">{s.sessionsCount}</td>
+                      <td className="px-5 py-3 text-right text-ink-secondary">{s.sessionsCount}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -252,25 +252,25 @@ export function ClassDetailScreen() {
 
         {/* Assignments */}
         <div>
-          <h2 className="text-slate-300 text-sm font-semibold uppercase tracking-wider mb-4">
+          <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-4">
             Assignments ({assignments.length})
           </h2>
           {assignments.length === 0 ? (
-            <p className="text-slate-500 text-sm">No assignments created yet.</p>
+            <p className="text-ink-secondary text-sm">No assignments created yet.</p>
           ) : (
             <div className="space-y-2">
               {assignments.map(a => (
                 <div
                   key={a.id}
-                  className="flex items-center justify-between bg-slate-800 border border-slate-700 rounded-xl px-5 py-3"
+                  className="flex items-center justify-between bg-surface border border-border rounded-xl px-5 py-3"
                 >
                   <div>
-                    <p className="text-white font-medium">{a.title}</p>
-                    <p className="text-slate-500 text-xs mt-0.5">
+                    <p className="text-ink font-medium">{a.title}</p>
+                    <p className="text-ink-secondary text-xs mt-0.5">
                       {a.due_date ? `Due ${new Date(a.due_date).toLocaleDateString()}` : 'No due date'}
                     </p>
                   </div>
-                  <span className="text-slate-400 text-sm">
+                  <span className="text-ink-secondary text-sm">
                     {a.completions}/{students.length} completed
                   </span>
                 </div>

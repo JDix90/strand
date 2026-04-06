@@ -196,22 +196,22 @@ export function BossScreen() {
 
   if (phase === 'setup') {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center px-4 gap-8">
+      <div className="min-h-screen bg-page text-ink flex flex-col items-center justify-center px-4 gap-8">
         <div className="text-center space-y-2">
           <div className="text-6xl">{bossEmoji}</div>
-          <h1 className="text-3xl font-bold text-white">⚔️ Boss Battle</h1>
-          <p className="text-slate-400">Team vs. Boss — Deal damage with correct answers!</p>
+          <h1 className="text-3xl font-bold text-ink">⚔️ Boss Battle</h1>
+          <p className="text-ink-secondary">Team vs. Boss — Deal damage with correct answers!</p>
         </div>
 
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 w-full max-w-sm space-y-5">
+        <div className="bg-surface rounded-2xl border border-border p-6 w-full max-w-sm space-y-5">
           <div>
-            <label className="text-slate-300 text-sm font-semibold block mb-2">Number of Teams</label>
+            <label className="text-ink-secondary text-sm font-semibold block mb-2">Number of Teams</label>
             <div className="flex gap-3">
               {[2, 3, 4].map(n => (
                 <button
                   key={n}
                   onClick={() => setTeamCount(n)}
-                  className={`flex-1 py-2 rounded-xl font-bold transition-colors ${teamCount === n ? 'bg-red-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                  className={`flex-1 py-2 rounded-xl font-bold transition-colors ${teamCount === n ? 'bg-red-600 text-ink' : 'bg-surface-muted text-ink-secondary hover:bg-surface-muted'}`}
                 >
                   {n}
                 </button>
@@ -220,11 +220,11 @@ export function BossScreen() {
           </div>
 
           <div>
-            <label className="text-slate-300 text-sm font-semibold block mb-2">Boss Weakness (optional)</label>
+            <label className="text-ink-secondary text-sm font-semibold block mb-2">Boss Weakness (optional)</label>
             <select
               value={weaknessCaseId}
               onChange={e => setWeaknessCaseId(e.target.value)}
-              className="w-full bg-slate-700 border border-slate-600 text-white rounded-xl px-3 py-2"
+              className="w-full bg-surface-muted border border-border-strong text-ink rounded-xl px-3 py-2"
             >
               <option value="">No weakness</option>
               {Object.values(caseMetadata).map(m => (
@@ -235,7 +235,7 @@ export function BossScreen() {
 
           <button
             onClick={handleStart}
-            className="w-full py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-lg transition-colors"
+            className="w-full py-3 bg-red-600 hover:bg-red-500 text-ink rounded-xl font-bold text-lg transition-colors"
           >
             Start Battle!
           </button>
@@ -247,47 +247,47 @@ export function BossScreen() {
   if (phase === 'complete') {
     const mvp = getMvpTeam(bossState);
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center px-4 gap-6">
+      <div className="min-h-screen bg-page flex flex-col items-center justify-center px-4 gap-6">
         <div className="text-center space-y-2">
           <div className="text-6xl">{bossState.isDefeated ? '🏆' : '💀'}</div>
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-3xl font-bold text-ink">
             {bossState.isDefeated ? 'Boss Defeated!' : 'Boss Wins!'}
           </h1>
         </div>
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 w-full max-w-sm space-y-4">
+        <div className="bg-surface rounded-2xl border border-border p-6 w-full max-w-sm space-y-4">
           {mvp && <p className="text-center text-yellow-400 font-bold">🏅 MVP: {mvp}</p>}
           <div className="space-y-2">
             {Object.entries(bossState.teamScores).map(([team, pts]) => (
               <div key={team} className="flex justify-between text-sm">
-                <span className="text-slate-300">{team}</span>
-                <span className="text-white font-bold">{pts.toLocaleString()} pts</span>
+                <span className="text-ink-secondary">{team}</span>
+                <span className="text-ink font-bold">{pts.toLocaleString()} pts</span>
               </div>
             ))}
           </div>
-          <p className="text-slate-400 text-sm text-center">Round {bossState.round}</p>
+          <p className="text-ink-secondary text-sm text-center">Round {bossState.round}</p>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => navigate('/home')} className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-semibold">Home</button>
-          <button onClick={() => window.location.reload()} className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-semibold">Play Again</button>
+          <button onClick={() => navigate('/home')} className="px-6 py-3 bg-surface-muted hover:bg-surface-muted text-ink rounded-xl font-semibold">Home</button>
+          <button onClick={() => window.location.reload()} className="px-6 py-3 bg-red-600 hover:bg-red-500 text-ink rounded-xl font-semibold">Play Again</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="bg-slate-900 border-b border-slate-800 px-4 py-3">
+    <div className="min-h-screen bg-page text-ink">
+      <div className="bg-surface-elevated border-b border-border px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/home')} className="text-slate-400 hover:text-white">✕</button>
-            <span className="text-white font-bold">⚔️ Boss Battle — Round {bossState.round}</span>
+            <button onClick={() => navigate('/home')} className="text-ink-secondary hover:text-ink">✕</button>
+            <span className="text-ink font-bold">⚔️ Boss Battle — Round {bossState.round}</span>
           </div>
           <StreakDisplay streak={bossState.teamStreak} />
         </div>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
-        <div className="bg-slate-800 rounded-2xl border border-red-900 p-4 space-y-3">
+        <div className="bg-surface rounded-2xl border border-red-900 p-4 space-y-3">
           <div className="flex items-center gap-3">
             <span className="text-4xl">{bossEmoji}</span>
             <div className="flex-1">
@@ -307,21 +307,21 @@ export function BossScreen() {
           {Object.entries(bossState.teamScores).map(([team, pts], i) => (
             <div
               key={team}
-              className={`flex-1 rounded-xl p-2 text-center border-2 transition-colors ${currentTeamIdx === i ? 'border-blue-400 bg-blue-950' : 'border-slate-700 bg-slate-800'}`}
+              className={`flex-1 rounded-xl p-2 text-center border-2 transition-colors ${currentTeamIdx === i ? 'border-blue-400 bg-brand/15' : 'border-border bg-surface'}`}
             >
-              <p className="text-xs text-slate-400">{team}</p>
-              <p className="text-white font-bold">{pts.toLocaleString()}</p>
-              {currentTeamIdx === i && <p className="text-blue-400 text-xs">&larr; Turn</p>}
+              <p className="text-xs text-ink-secondary">{team}</p>
+              <p className="text-ink font-bold">{pts.toLocaleString()}</p>
+              {currentTeamIdx === i && <p className="text-link text-xs">&larr; Turn</p>}
             </div>
           ))}
         </div>
 
         {question && (
           <>
-            <div className="bg-slate-800 rounded-2xl border border-slate-600 p-6 text-center">
-              <p className="text-3xl font-bold text-white">{question.template.prompt}</p>
+            <div className="bg-surface rounded-2xl border border-border-strong p-6 text-center">
+              <p className="text-3xl font-bold text-ink">{question.template.prompt}</p>
               {settings.showHelperWords && (
-                <p className="text-slate-400 text-sm mt-2">Helper: {question.template.helperWord}</p>
+                <p className="text-ink-secondary text-sm mt-2">Helper: {question.template.helperWord}</p>
               )}
               {config.weaknessCaseId && question.template.targetCaseId === config.weaknessCaseId && (
                 <p className="text-yellow-400 text-xs mt-1">⚡ Weakness hit! +3 bonus damage</p>

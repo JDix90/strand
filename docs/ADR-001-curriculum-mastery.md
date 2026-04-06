@@ -12,7 +12,7 @@ The app was built around Russian nominal declension (cases, pronouns/names/nouns
 
 ### Hierarchy (MVP)
 
-- **Subject**: Top-level strand (e.g. Russian language).
+- **Subject**: Top-level subject line (e.g. Russian language).
 - **Topic**: Thematic grouping (e.g. Nominal declension).
 - **Unit**: Smallest curriculum entity tied to a **content module** + **JSON config** (cases, categories, etc.). Chapters deferred.
 

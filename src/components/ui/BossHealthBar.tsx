@@ -11,10 +11,10 @@ export function BossHealthBar({ hp, maxHp, shieldHp }: BossHealthBarProps) {
   return (
     <div className="space-y-2">
       <div className="flex justify-between items-center text-sm">
-        <span className="text-slate-400 font-semibold">BOSS HP</span>
+        <span className="text-ink-secondary font-semibold">BOSS HP</span>
         <span className="text-red-400 font-bold tabular-nums">{Math.max(0, hp)} / {maxHp}</span>
       </div>
-      <div className="relative h-5 bg-slate-800 rounded-full overflow-hidden border border-slate-600">
+      <div className="relative h-5 bg-surface rounded-full overflow-hidden border border-border-strong">
         <div
           className="h-full rounded-full transition-all duration-700"
           style={{ width: `${hpPct}%`, backgroundColor: hpColor }}
@@ -26,7 +26,7 @@ export function BossHealthBar({ hp, maxHp, shieldHp }: BossHealthBarProps) {
         )}
       </div>
       {shieldHp > 0 && (
-        <div className="h-2 bg-blue-900 rounded-full overflow-hidden border border-blue-500">
+        <div className="h-2 bg-blue-900 rounded-full overflow-hidden border border-brand">
           <div
             className="h-full bg-blue-400 rounded-full transition-all duration-500"
             style={{ width: '100%' }}

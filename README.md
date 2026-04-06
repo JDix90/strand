@@ -1,6 +1,6 @@
-# Strand
+# Languini
 
-**Strand** is a web application for practicing **Russian nominal declension** (cases, pronouns, names, nouns) across multiple game modes, with **adaptive review**, **class-based curriculum**, and **cloud-synced progress** via [Supabase](https://supabase.com).
+**Languini** is a web application for practicing **Russian nominal declension** (cases, pronouns, names, nouns) across multiple game modes, with **adaptive review**, **class-based curriculum**, and **cloud-synced progress** via [Supabase](https://supabase.com).
 
 Students can join classes, follow teacher-paced units, and practice in scoped routes. Teachers manage classes, curriculum visibility, assignments, and analytics. Admins have separate tools for users, classes, and site settings.
 

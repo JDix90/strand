@@ -59,10 +59,10 @@ export function IntroQuizRunner({ deck }: Props) {
 
   return (
     <div className="flex flex-col items-center justify-center px-4 py-8 max-w-lg mx-auto w-full">
-      <p className="text-slate-500 text-xs mb-2">
+      <p className="text-ink-secondary text-xs mb-2">
         Question {idx + 1} of {deck.questions.length}
       </p>
-      <p className="text-xl font-semibold text-white text-center mb-8">{q.prompt}</p>
+      <p className="text-xl font-semibold text-ink text-center mb-8">{q.prompt}</p>
       <div className="grid grid-cols-2 gap-3 w-full">
         {q.choices.map(choice => (
           <button
@@ -76,8 +76,8 @@ export function IntroQuizRunner({ deck }: Props) {
                   ? 'bg-emerald-900 text-emerald-100 border border-emerald-600'
                   : choice === picked
                     ? 'bg-red-900/80 text-red-100 border border-red-700'
-                    : 'bg-slate-800 text-slate-500 border border-slate-700'
-                : 'bg-slate-800 hover:bg-slate-700 text-white border border-slate-600'
+                    : 'bg-surface text-ink-secondary border border-border'
+                : 'bg-surface hover:bg-surface-muted text-ink border border-border-strong'
             }`}
           >
             {choice}

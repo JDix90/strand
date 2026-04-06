@@ -90,13 +90,13 @@ export function AssignmentFormScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="bg-slate-900 border-b border-slate-800 px-6 py-5">
+    <div className="min-h-screen bg-page text-ink">
+      <div className="bg-surface-elevated border-b border-border px-6 py-5">
         <div className="max-w-2xl mx-auto flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="text-slate-400 hover:text-white">
+          <button onClick={() => navigate(-1)} className="text-ink-secondary hover:text-ink">
             ← Back
           </button>
-          <h1 className="text-xl font-bold text-white">New Assignment</h1>
+          <h1 className="text-xl font-bold text-ink">New Assignment</h1>
         </div>
       </div>
 
@@ -105,44 +105,44 @@ export function AssignmentFormScreen() {
           <div className="bg-red-950 border border-red-700 text-red-300 text-sm rounded-xl px-4 py-3">{error}</div>
         )}
 
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">
+        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4">
           <div>
-            <label className="text-slate-300 text-sm font-semibold block mb-1.5">Title</label>
+            <label className="text-ink-secondary text-sm font-semibold block mb-1.5">Title</label>
             <input
               type="text"
               value={title}
               onChange={e => setTitle(e.target.value)}
-              className="w-full bg-slate-700 border border-slate-600 text-white rounded-xl px-4 py-2.5 focus:outline-none focus:border-blue-500"
+              className="w-full bg-surface-muted border border-border-strong text-ink rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand"
               placeholder="e.g. Genitive Case Practice"
               required
             />
           </div>
 
           <div>
-            <label className="text-slate-300 text-sm font-semibold block mb-1.5">Description (optional)</label>
+            <label className="text-ink-secondary text-sm font-semibold block mb-1.5">Description (optional)</label>
             <textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
               rows={2}
-              className="w-full bg-slate-700 border border-slate-600 text-white rounded-xl px-4 py-2.5 focus:outline-none focus:border-blue-500 resize-none"
+              className="w-full bg-surface-muted border border-border-strong text-ink rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand resize-none"
               placeholder="Instructions for students..."
             />
           </div>
         </div>
 
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">
-          <h2 className="text-white font-bold">Curriculum unit (optional)</h2>
-          <p className="text-slate-500 text-sm">
+        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4">
+          <h2 className="text-ink font-bold">Curriculum unit (optional)</h2>
+          <p className="text-ink-secondary text-sm">
             Tie this assignment to a unit so students see it in context. Selecting a Russian declension unit can
             pre-fill cases and categories below.
           </p>
-          <label className="block text-slate-300 text-sm font-semibold mb-1.5">Search catalog</label>
+          <label className="block text-ink-secondary text-sm font-semibold mb-1.5">Search catalog</label>
           <input
             type="search"
             value={unitSearch}
             onChange={e => setUnitSearch(e.target.value)}
             placeholder="Filter by title or slug…"
-            className="w-full bg-slate-700 border border-slate-600 text-white rounded-xl px-4 py-2.5 mb-3 focus:outline-none focus:border-blue-500"
+            className="w-full bg-surface-muted border border-border-strong text-ink rounded-xl px-4 py-2.5 mb-3 focus:outline-none focus:border-brand"
           />
           {catalogLoadError && (
             <p className="text-amber-400 text-xs mb-2">Could not load units: {catalogLoadError}</p>
@@ -159,7 +159,7 @@ export function AssignmentFormScreen() {
                 setSelectedCategories(cfg.categories.length > 0 ? [...cfg.categories] : ['pronoun']);
               }
             }}
-            className="w-full bg-slate-700 border border-slate-600 text-white rounded-xl px-4 py-2.5 focus:outline-none focus:border-blue-500"
+            className="w-full bg-surface-muted border border-border-strong text-ink rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand"
           >
             <option value="">— None —</option>
             {catalogUnits.map(u => (
@@ -170,8 +170,8 @@ export function AssignmentFormScreen() {
           </select>
         </div>
 
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">
-          <h2 className="text-white font-bold">Game Mode</h2>
+        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4">
+          <h2 className="text-ink font-bold">Game Mode</h2>
           <div className="flex gap-3">
             {ALL_MODES.map(m => (
               <button
@@ -180,8 +180,8 @@ export function AssignmentFormScreen() {
                 onClick={() => setModeId(m.value)}
                 className={`flex-1 py-2 rounded-xl font-semibold text-sm transition-colors ${
                   modeId === m.value
-                    ? 'bg-blue-600 text-white border-2 border-blue-400'
-                    : 'bg-slate-700 text-slate-300 border-2 border-slate-600 hover:border-slate-400'
+                    ? 'bg-brand text-white border-2 border-brand-muted'
+                    : 'bg-surface-muted text-ink-secondary border-2 border-border-strong hover:border-border-strong'
                 }`}
               >
                 {m.label}
@@ -190,8 +190,8 @@ export function AssignmentFormScreen() {
           </div>
         </div>
 
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">
-          <h2 className="text-white font-bold">Cases</h2>
+        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4">
+          <h2 className="text-ink font-bold">Cases</h2>
           <div className="flex flex-wrap gap-2">
             {ALL_CASES.map(c => (
               <button
@@ -200,8 +200,8 @@ export function AssignmentFormScreen() {
                 onClick={() => toggleCase(c)}
                 className={`px-3 py-1.5 rounded-lg text-sm font-semibold capitalize transition-colors ${
                   selectedCases.includes(c)
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                    ? 'bg-brand text-white'
+                    : 'bg-surface-muted text-ink-secondary hover:bg-surface-muted'
                 }`}
               >
                 {c}
@@ -210,8 +210,8 @@ export function AssignmentFormScreen() {
           </div>
         </div>
 
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">
-          <h2 className="text-white font-bold">Word Categories</h2>
+        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4">
+          <h2 className="text-ink font-bold">Word Categories</h2>
           <div className="flex gap-3">
             {ALL_CATEGORIES.map(c => (
               <button
@@ -220,8 +220,8 @@ export function AssignmentFormScreen() {
                 onClick={() => toggleCategory(c.value)}
                 className={`px-4 py-2 rounded-xl font-semibold text-sm transition-colors ${
                   selectedCategories.includes(c.value)
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-700 text-slate-400 hover:bg-slate-600'
+                    ? 'bg-brand text-white'
+                    : 'bg-surface-muted text-ink-secondary hover:bg-surface-muted'
                 }`}
               >
                 {c.label}
@@ -230,48 +230,48 @@ export function AssignmentFormScreen() {
           </div>
         </div>
 
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">
-          <h2 className="text-white font-bold">Requirements</h2>
+        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4">
+          <h2 className="text-ink font-bold">Requirements</h2>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-slate-300 text-sm block mb-1.5">Min Questions</label>
+              <label className="text-ink-secondary text-sm block mb-1.5">Min Questions</label>
               <input
                 type="number"
                 value={minQuestions}
                 onChange={e => setMinQuestions(Number(e.target.value))}
                 min={5}
                 max={100}
-                className="w-full bg-slate-700 border border-slate-600 text-white rounded-xl px-4 py-2.5 focus:outline-none focus:border-blue-500"
+                className="w-full bg-surface-muted border border-border-strong text-ink rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand"
               />
             </div>
             <div>
-              <label className="text-slate-300 text-sm block mb-1.5">Min Accuracy (%)</label>
+              <label className="text-ink-secondary text-sm block mb-1.5">Min Accuracy (%)</label>
               <input
                 type="number"
                 value={minAccuracy}
                 onChange={e => setMinAccuracy(Number(e.target.value))}
                 min={0}
                 max={100}
-                className="w-full bg-slate-700 border border-slate-600 text-white rounded-xl px-4 py-2.5 focus:outline-none focus:border-blue-500"
+                className="w-full bg-surface-muted border border-border-strong text-ink rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand"
               />
             </div>
           </div>
         </div>
 
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">
-          <h2 className="text-white font-bold">Due Date (optional)</h2>
+        <div className="bg-surface rounded-2xl border border-border p-6 space-y-4">
+          <h2 className="text-ink font-bold">Due Date (optional)</h2>
           <input
             type="date"
             value={dueDate}
             onChange={e => setDueDate(e.target.value)}
-            className="w-full bg-slate-700 border border-slate-600 text-white rounded-xl px-4 py-2.5 focus:outline-none focus:border-blue-500"
+            className="w-full bg-surface-muted border border-border-strong text-ink rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand"
           />
         </div>
 
         <button
           type="submit"
           disabled={submitting}
-          className="w-full py-3 bg-green-600 hover:bg-green-500 disabled:bg-green-800 text-white rounded-xl font-bold text-base transition-colors"
+          className="w-full py-3 bg-green-600 hover:bg-green-500 disabled:bg-green-800 text-ink rounded-xl font-bold text-base transition-colors"
         >
           {submitting ? 'Creating...' : 'Create Assignment'}
         </button>

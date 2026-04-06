@@ -19,18 +19,18 @@ export function GameHeader({ title, subtitle, onQuit, rightSlot }: GameHeaderPro
   };
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 bg-slate-900 border-b border-slate-700">
+    <div className="flex items-center justify-between px-4 py-3 bg-surface-elevated border-b border-border">
       <div className="flex items-center gap-3">
         <button
           onClick={handleQuit}
-          className="text-slate-400 hover:text-white transition-colors p-1 rounded"
+          className="text-ink-secondary hover:text-ink transition-colors p-1 rounded"
           title="Quit to home"
         >
           ✕
         </button>
         <div>
-          <h2 className="text-white font-bold text-base leading-tight">{title}</h2>
-          {subtitle && <p className="text-slate-400 text-xs">{subtitle}</p>}
+          <h2 className="text-ink font-bold text-base leading-tight">{title}</h2>
+          {subtitle && <p className="text-ink-secondary text-xs">{subtitle}</p>}
         </div>
       </div>
       {rightSlot && <div className="flex items-center gap-2">{rightSlot}</div>}

@@ -94,7 +94,7 @@ export function StudentHomeLayout() {
     return (
       <>
         {effectiveRole === 'student' && loadError && (
-          <div className="bg-red-950 border-b border-red-800 text-red-200 text-sm px-4 py-2 flex items-center justify-between gap-3">
+          <div className="bg-red-50 border-b border-red-200 text-red-900 text-sm px-4 py-2 flex items-center justify-between gap-3">
             <span>Could not load classes: {loadError}</span>
             <button
               type="button"
@@ -102,7 +102,7 @@ export function StudentHomeLayout() {
                 setLoadError(null);
                 setRetryKey(k => k + 1);
               }}
-              className="shrink-0 px-2 py-1 rounded bg-red-900 hover:bg-red-800 text-white text-xs"
+              className="shrink-0 px-2 py-1 rounded bg-red-100 hover:bg-red-200 text-red-900 text-xs font-semibold"
             >
               Retry
             </button>
@@ -116,7 +116,7 @@ export function StudentHomeLayout() {
   const current = classes.find(c => c.id === selectedClassId);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex">
+    <div className="min-h-screen bg-page text-ink flex">
       <StudentCurriculumSidebar
         classId={selectedClassId}
         classLabel={current?.name}

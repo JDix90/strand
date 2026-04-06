@@ -173,10 +173,10 @@ export function SpeedScreen() {
 
   if (phase === 'countdown') {
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center gap-6">
-        <h1 className="text-white text-2xl font-bold">⚡ Speed Round</h1>
+      <div className="min-h-screen bg-page flex flex-col items-center justify-center gap-6">
+        <h1 className="text-ink text-2xl font-bold">⚡ Speed Round</h1>
         <div className="text-8xl font-bold text-yellow-400 animate-pulse">{countdown}</div>
-        <p className="text-slate-400">Get ready!</p>
+        <p className="text-ink-secondary">Get ready!</p>
       </div>
     );
   }
@@ -184,36 +184,36 @@ export function SpeedScreen() {
   if (phase === 'complete') {
     const accuracy = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center px-4 gap-6">
+      <div className="min-h-screen bg-page flex flex-col items-center justify-center px-4 gap-6">
         <div className="text-center space-y-2">
           <div className="text-5xl">⚡</div>
-          <h1 className="text-3xl font-bold text-white">Time's Up!</h1>
+          <h1 className="text-3xl font-bold text-ink">Time's Up!</h1>
         </div>
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-8 w-full max-w-sm space-y-4">
+        <div className="bg-surface rounded-2xl border border-border p-8 w-full max-w-sm space-y-4">
           <div className="text-center">
             <p className="text-5xl font-bold text-yellow-400">{score.toLocaleString()}</p>
-            <p className="text-slate-400 text-sm mt-1">Final Score</p>
+            <p className="text-ink-secondary text-sm mt-1">Final Score</p>
           </div>
           <div className="grid grid-cols-3 gap-3 text-center">
             <div>
-              <p className="text-xl font-bold text-white">{totalAnswered}</p>
-              <p className="text-slate-500 text-xs">Answered</p>
+              <p className="text-xl font-bold text-ink">{totalAnswered}</p>
+              <p className="text-ink-secondary text-xs">Answered</p>
             </div>
             <div>
               <p className="text-xl font-bold text-green-400">{accuracy}%</p>
-              <p className="text-slate-500 text-xs">Accuracy</p>
+              <p className="text-ink-secondary text-xs">Accuracy</p>
             </div>
             <div>
               <p className="text-xl font-bold text-orange-400">{bestStreak}</p>
-              <p className="text-slate-500 text-xs">Best Streak</p>
+              <p className="text-ink-secondary text-xs">Best Streak</p>
             </div>
           </div>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => navigate('/home')} className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-semibold transition-colors">
+          <button onClick={() => navigate('/home')} className="px-6 py-3 bg-surface-muted hover:bg-surface-muted text-ink rounded-xl font-semibold transition-colors">
             Home
           </button>
-          <button onClick={() => window.location.reload()} className="px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-white rounded-xl font-semibold transition-colors">
+          <button onClick={() => window.location.reload()} className="px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-ink rounded-xl font-semibold transition-colors">
             Play Again
           </button>
         </div>
@@ -222,12 +222,12 @@ export function SpeedScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="bg-slate-900 border-b border-slate-800 px-4 py-3">
+    <div className="min-h-screen bg-page text-ink">
+      <div className="bg-surface-elevated border-b border-border px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/home')} className="text-slate-400 hover:text-white">✕</button>
-            <span className="text-white font-bold">⚡ Speed Round</span>
+            <button onClick={() => navigate('/home')} className="text-ink-secondary hover:text-ink">✕</button>
+            <span className="text-ink font-bold">⚡ Speed Round</span>
           </div>
           <div className="flex items-center gap-3">
             <StreakDisplay streak={streak} />
@@ -241,17 +241,17 @@ export function SpeedScreen() {
       </div>
 
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-        <div className="flex justify-between text-sm text-slate-400">
-          <span>Score: <span className="text-white font-bold">{score.toLocaleString()}</span></span>
+        <div className="flex justify-between text-sm text-ink-secondary">
+          <span>Score: <span className="text-ink font-bold">{score.toLocaleString()}</span></span>
           <span>{correctCount}/{totalAnswered} correct</span>
         </div>
 
         {question && (
           <>
-            <div className="bg-slate-800 rounded-2xl border border-slate-600 p-6 text-center">
-              <p className="text-3xl font-bold text-white">{question.template.prompt}</p>
+            <div className="bg-surface rounded-2xl border border-border-strong p-6 text-center">
+              <p className="text-3xl font-bold text-ink">{question.template.prompt}</p>
               {settings.showHelperWords && (
-                <p className="text-slate-400 text-sm mt-2">Helper: {question.template.helperWord}</p>
+                <p className="text-ink-secondary text-sm mt-2">Helper: {question.template.helperWord}</p>
               )}
             </div>
             <div className="grid grid-cols-2 gap-3">

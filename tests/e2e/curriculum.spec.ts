@@ -11,8 +11,9 @@ test.describe('curriculum shell (unauthenticated)', () => {
     await expect(page.getByRole('heading', { name: /sample practice question/i })).toBeVisible();
   });
 
-  test('login page shows app branding', async ({ page }) => {
+  test('login page shows Languini branding', async ({ page }) => {
     await page.goto('/login');
-    await expect(page.getByRole('heading', { name: /^strand$/i })).toBeVisible();
+    await expect(page.getByTestId('brand-logo')).toBeVisible();
+    await expect(page.getByText('Languini')).toBeVisible();
   });
 });

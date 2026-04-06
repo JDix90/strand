@@ -45,52 +45,52 @@ export function ResultsScreen() {
     : '—';
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center px-4 py-8 gap-6">
+    <div className="min-h-screen bg-page text-ink flex flex-col items-center justify-center px-4 py-8 gap-6">
       <div className="text-center space-y-2">
         <div className="text-5xl">{mode.icon}</div>
-        <h1 className="text-2xl font-bold text-white">{mode.label} Complete!</h1>
+        <h1 className="text-2xl font-bold text-ink">{mode.label} Complete!</h1>
         <div
           className="inline-flex items-center justify-center w-20 h-20 rounded-full text-4xl font-black border-4 mx-auto"
           style={{ borderColor: color, color, backgroundColor: color + '22' }}
         >
           {grade}
         </div>
-        <p className="text-slate-300 text-lg">{message}</p>
+        <p className="text-ink-secondary text-lg">{message}</p>
       </div>
 
-      <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 w-full max-w-sm space-y-4">
+      <div className="bg-surface rounded-2xl border border-border p-6 w-full max-w-sm space-y-4">
         <div className="text-center">
           <p className="text-4xl font-bold" style={{ color }}>{summary.score.toLocaleString()}</p>
-          <p className="text-slate-400 text-sm">Final Score</p>
+          <p className="text-ink-secondary text-sm">Final Score</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="bg-slate-900 rounded-xl p-3 text-center">
-            <p className="text-xl font-bold text-white">{accuracy}%</p>
-            <p className="text-slate-500 text-xs">Accuracy</p>
+          <div className="bg-surface-elevated rounded-xl p-3 text-center">
+            <p className="text-xl font-bold text-ink">{accuracy}%</p>
+            <p className="text-ink-secondary text-xs">Accuracy</p>
           </div>
-          <div className="bg-slate-900 rounded-xl p-3 text-center">
-            <p className="text-xl font-bold text-white">{summary.correctAnswers}/{summary.totalQuestions}</p>
-            <p className="text-slate-500 text-xs">Correct</p>
+          <div className="bg-surface-elevated rounded-xl p-3 text-center">
+            <p className="text-xl font-bold text-ink">{summary.correctAnswers}/{summary.totalQuestions}</p>
+            <p className="text-ink-secondary text-xs">Correct</p>
           </div>
-          <div className="bg-slate-900 rounded-xl p-3 text-center">
-            <p className="text-xl font-bold text-orange-400">{summary.bestStreak}</p>
-            <p className="text-slate-500 text-xs">Best Streak</p>
+          <div className="bg-surface-elevated rounded-xl p-3 text-center">
+            <p className="text-xl font-bold text-coral">{summary.bestStreak}</p>
+            <p className="text-ink-secondary text-xs">Best Streak</p>
           </div>
-          <div className="bg-slate-900 rounded-xl p-3 text-center">
-            <p className="text-xl font-bold text-blue-400">{avgSec}s</p>
-            <p className="text-slate-500 text-xs">Avg Response</p>
+          <div className="bg-surface-elevated rounded-xl p-3 text-center">
+            <p className="text-xl font-bold text-link">{avgSec}s</p>
+            <p className="text-ink-secondary text-xs">Avg Response</p>
           </div>
         </div>
 
         {summary.weakForms && summary.weakForms.length > 0 && (
-          <div className="bg-red-950 rounded-xl p-3 border border-red-800">
-            <p className="text-red-300 text-sm font-semibold mb-1">Forms to review:</p>
+          <div className="bg-red-50 rounded-xl p-3 border border-red-200">
+            <p className="text-red-800 text-sm font-semibold mb-1">Forms to review:</p>
             <div className="flex flex-wrap gap-1">
               {summary.weakForms.slice(0, 6).map(f => {
                 const parts = f.split(':');
                 return (
-                  <span key={f} className="text-red-200 text-xs bg-red-900 px-2 py-0.5 rounded">
+                  <span key={f} className="text-red-900 text-xs bg-red-100 px-2 py-0.5 rounded">
                     {parts[2] ?? f}
                   </span>
                 );
@@ -119,7 +119,7 @@ export function ResultsScreen() {
           onClick={() =>
             fromIntro ? navigate('/intro/play') : navigate(-1)
           }
-          className="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-semibold transition-colors"
+          className="w-full py-3 bg-surface-muted hover:bg-surface-muted text-ink rounded-xl font-semibold transition-colors"
         >
           Play Again
         </button>
@@ -127,7 +127,7 @@ export function ResultsScreen() {
           onClick={() =>
             navigate(fromIntro ? '/intro' : classUnit ? `/class/${classUnit.params.classId}` : '/home')
           }
-          className="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-semibold transition-colors"
+          className="w-full py-3 bg-mustard hover:bg-mustard-hover text-ink rounded-xl font-bold transition-colors shadow-sm"
         >
           {fromIntro ? 'Intro hub' : 'Home'}
         </button>

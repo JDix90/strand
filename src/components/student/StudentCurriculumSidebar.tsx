@@ -146,18 +146,18 @@ export function StudentCurriculumSidebar({
   const headerTitle = classLabel?.trim() || `Class ${classId.slice(0, 8)}…`;
 
   return (
-    <aside className="w-64 shrink-0 border-r border-slate-800 bg-slate-900/80 flex flex-col min-h-screen">
-      <div className="p-4 border-b border-slate-800">
-        <Link to={homeTo} className="text-slate-400 hover:text-white text-sm">
+    <aside className="w-64 shrink-0 border-r border-border bg-surface-elevated/95 flex flex-col min-h-screen">
+      <div className="p-4 border-b border-border">
+        <Link to={homeTo} className="text-ink-secondary hover:text-ink text-sm">
           ← Overview
         </Link>
         {classOptions && classOptions.length > 1 && onClassChange ? (
           <label className="block mt-3">
-            <span className="text-xs text-slate-500 uppercase tracking-wide">Class</span>
+            <span className="text-xs text-ink-secondary uppercase tracking-wide">Class</span>
             <select
               value={classId}
               onChange={e => onClassChange(e.target.value)}
-              className="mt-1 w-full bg-slate-800 border border-slate-600 text-white text-sm rounded-lg px-2 py-1.5"
+              className="mt-1 w-full bg-surface border border-border-strong text-ink text-sm rounded-lg px-2 py-1.5"
             >
               {classOptions.map(c => (
                 <option key={c.id} value={c.id}>
@@ -168,8 +168,8 @@ export function StudentCurriculumSidebar({
           </label>
         ) : (
           <>
-            <p className="text-white font-semibold mt-2">Class</p>
-            <p className="text-xs text-slate-500 truncate" title={classId}>
+            <p className="text-ink font-semibold mt-2">Class</p>
+            <p className="text-xs text-ink-secondary truncate" title={classId}>
               {headerTitle}
             </p>
           </>
@@ -191,12 +191,12 @@ export function StudentCurriculumSidebar({
         </div>
       )}
       <nav className="flex-1 overflow-y-auto p-3 space-y-1" aria-label="Class curriculum">
-        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide px-2 mb-2">
+        <p className="text-xs font-semibold text-ink-secondary uppercase tracking-wide px-2 mb-2">
           Units & tasks
         </p>
-        {loading && <p className="text-slate-500 text-sm px-2">Loading…</p>}
+        {loading && <p className="text-ink-secondary text-sm px-2">Loading…</p>}
         {!loading && !error && suggested.length === 0 && (
-          <p className="text-slate-500 text-sm px-2">
+          <p className="text-ink-secondary text-sm px-2">
             No units yet. Your teacher will add curriculum here.
           </p>
         )}
@@ -211,10 +211,10 @@ export function StudentCurriculumSidebar({
                 <div
                   key={row.unit_id}
                   title={reason}
-                  className="rounded-lg px-3 py-2 text-sm text-slate-500 cursor-not-allowed border border-slate-800/80"
+                  className="rounded-lg px-3 py-2 text-sm text-ink-secondary cursor-not-allowed border border-border/80"
                 >
                   <span className="block font-medium truncate">{u.title}</span>
-                  <span className="text-[10px] text-slate-600">{reason ?? 'Locked'}</span>
+                  <span className="text-[10px] text-ink-secondary">{reason ?? 'Locked'}</span>
                 </div>
               );
             }
@@ -224,7 +224,7 @@ export function StudentCurriculumSidebar({
                 to={`/class/${classId}/unit/${row.unit_id}/practice`}
                 aria-current={active ? 'page' : undefined}
                 className={`block rounded-lg px-3 py-2 text-sm transition-colors ${
-                  active ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/80'
+                  active ? 'bg-surface text-ink' : 'text-ink-secondary hover:bg-surface/80'
                 }`}
               >
                 <span className="block font-medium truncate">{u.title}</span>
@@ -237,7 +237,7 @@ export function StudentCurriculumSidebar({
                         : u.description
                       : '');
                   return sub ? (
-                    <span className="text-[10px] text-slate-500 block truncate" title={sub}>
+                    <span className="text-[10px] text-ink-secondary block truncate" title={sub}>
                       {sub}
                     </span>
                   ) : null;
@@ -247,7 +247,7 @@ export function StudentCurriculumSidebar({
           })}
         {pendingAssignments.length > 0 && (
           <>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide px-2 mt-4 mb-2">
+            <p className="text-xs font-semibold text-ink-secondary uppercase tracking-wide px-2 mt-4 mb-2">
               Assignments
             </p>
             {pendingAssignments.map(a => {
@@ -255,16 +255,16 @@ export function StudentCurriculumSidebar({
               const href =
                 a.unit_id != null ? buildClassUnitModePath(classId, a.unit_id, modeId) : null;
               return (
-                <div key={a.id} className="px-3 py-2 text-xs border border-slate-800 rounded-lg">
+                <div key={a.id} className="px-3 py-2 text-xs border border-border rounded-lg">
                   {href ? (
-                    <Link to={href} className="text-slate-200 font-medium hover:text-white block">
+                    <Link to={href} className="text-ink font-medium hover:text-ink block">
                       {a.title}
                     </Link>
                   ) : (
-                    <span className="text-slate-200">{a.title}</span>
+                    <span className="text-ink">{a.title}</span>
                   )}
                   {a.due_date && (
-                    <span className="block text-slate-500">Due {new Date(a.due_date).toLocaleDateString()}</span>
+                    <span className="block text-ink-secondary">Due {new Date(a.due_date).toLocaleDateString()}</span>
                   )}
                 </div>
               );
@@ -273,16 +273,16 @@ export function StudentCurriculumSidebar({
         )}
         {completedRows.length > 0 && (
           <>
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide px-2 mt-4 mb-2">
+            <p className="text-xs font-semibold text-ink-secondary uppercase tracking-wide px-2 mt-4 mb-2">
               Completed
             </p>
             {completedRows.map(c => (
               <div
                 key={c.assignment_id}
-                className="px-3 py-1.5 text-xs text-slate-500 border border-slate-800/80 rounded-lg"
+                className="px-3 py-1.5 text-xs text-ink-secondary border border-border/80 rounded-lg"
               >
-                <span className="text-slate-400 line-through">{c.title}</span>
-                <span className="block text-slate-600">
+                <span className="text-ink-secondary line-through">{c.title}</span>
+                <span className="block text-ink-secondary">
                   {new Date(c.completed_at).toLocaleDateString()}
                 </span>
               </div>

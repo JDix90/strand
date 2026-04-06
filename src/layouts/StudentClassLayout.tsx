@@ -30,14 +30,14 @@ export function StudentClassLayout() {
 
   if (!classId) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-400 flex items-center justify-center">
+      <div className="min-h-screen bg-page text-ink-secondary flex items-center justify-center">
         Invalid class
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex">
+    <div className="min-h-screen bg-page text-ink flex">
       <StudentCurriculumSidebar classId={classId} classLabel={className || undefined} homeTo="/home" />
       <main className="flex-1 min-w-0">
         <Outlet />

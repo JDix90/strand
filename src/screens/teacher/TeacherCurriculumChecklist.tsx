@@ -32,8 +32,8 @@ export function TeacherCurriculumChecklist({ classId }: Props) {
   };
 
   return (
-    <div className="rounded-2xl border border-slate-700 bg-slate-800/60 px-5 py-4">
-      <h2 className="text-slate-200 text-sm font-semibold uppercase tracking-wider mb-3">
+    <div className="rounded-2xl border border-border bg-surface/60 px-5 py-4">
+      <h2 className="text-ink text-sm font-semibold uppercase tracking-wider mb-3">
         Curriculum checklist
       </h2>
       {loadError ? (
@@ -41,29 +41,29 @@ export function TeacherCurriculumChecklist({ classId }: Props) {
       ) : (
         <ol className="space-y-2 text-sm">
           <li className="flex items-start gap-2">
-            <span className={hasUnits ? 'text-emerald-400' : 'text-slate-500'} aria-hidden>
+            <span className={hasUnits ? 'text-emerald-400' : 'text-ink-secondary'} aria-hidden>
               {hasUnits ? '✓' : '○'}
             </span>
-            <span className={hasUnits ? 'text-slate-200' : 'text-slate-400'}>
+            <span className={hasUnits ? 'text-ink' : 'text-ink-secondary'}>
               Add units from the catalog to this class.
             </span>
           </li>
           <li className="flex items-start gap-2">
-            <span className={hasVisible ? 'text-emerald-400' : 'text-slate-500'} aria-hidden>
+            <span className={hasVisible ? 'text-emerald-400' : 'text-ink-secondary'} aria-hidden>
               {hasVisible ? '✓' : '○'}
             </span>
-            <span className={hasVisible ? 'text-slate-200' : 'text-slate-400'}>
-              Set at least one unit <strong className="text-slate-300">visible</strong> so students see it in the sidebar.
+            <span className={hasVisible ? 'text-ink' : 'text-ink-secondary'}>
+              Set at least one unit <strong className="text-ink-secondary">visible</strong> so students see it in the sidebar.
             </span>
           </li>
-          <li className="flex items-start gap-2 text-slate-500">
-            <span className="text-slate-600" aria-hidden>
+          <li className="flex items-start gap-2 text-ink-secondary">
+            <span className="text-ink-secondary" aria-hidden>
               ·
             </span>
             <span>
-              Optional: use <strong className="text-slate-400">Unlock at</strong> for timed releases. Advanced prerequisite
-              rules use JSON in <code className="text-slate-500 text-xs">lock_policy</code> — see{' '}
-              <code className="text-slate-500 text-xs">docs/curriculum-lock-policy.md</code> in the repo.
+              Optional: use <strong className="text-ink-secondary">Unlock at</strong> for timed releases. Advanced prerequisite
+              rules use JSON in <code className="text-ink-secondary text-xs">lock_policy</code> — see{' '}
+              <code className="text-ink-secondary text-xs">docs/curriculum-lock-policy.md</code> in the repo.
             </span>
           </li>
         </ol>
@@ -71,7 +71,7 @@ export function TeacherCurriculumChecklist({ classId }: Props) {
       <button
         type="button"
         onClick={scrollToCurriculum}
-        className="mt-4 text-sm font-semibold text-blue-400 hover:text-blue-300"
+        className="mt-4 text-sm font-semibold text-link hover:text-link"
       >
         Jump to curriculum section
       </button>

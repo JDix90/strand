@@ -210,18 +210,18 @@ export function MemoryScreen() {
 
   if (phase === 'setup') {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center px-4 gap-8">
+      <div className="min-h-screen bg-page text-ink flex flex-col items-center justify-center px-4 gap-8">
         <div className="text-center space-y-2">
           <div className="text-6xl">🃏</div>
-          <h1 className="text-3xl font-bold text-white">Memory Match</h1>
-          <p className="text-slate-400">Flip cards to find matching pairs</p>
+          <h1 className="text-3xl font-bold text-ink">Memory Match</h1>
+          <p className="text-ink-secondary">Flip cards to find matching pairs</p>
         </div>
 
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-6 w-full max-w-sm space-y-5">
+        <div className="bg-surface rounded-2xl border border-border p-6 w-full max-w-sm space-y-5">
           {/* Category selector */}
           <div>
-            <label className="text-slate-300 text-sm font-semibold block mb-1">Word Categories</label>
-            <p className="text-slate-500 text-xs mb-2 leading-relaxed">
+            <label className="text-ink-secondary text-sm font-semibold block mb-1">Word Categories</label>
+            <p className="text-ink-secondary text-xs mb-2 leading-relaxed">
               Only affects this game. Home filters stay unchanged.
             </p>
             <div className="flex gap-2">
@@ -233,7 +233,7 @@ export function MemoryScreen() {
                     key={cat}
                     type="button"
                     onClick={() => toggleMemoryCategory(cat)}
-                    className={`flex-1 py-2 rounded-xl font-semibold text-sm transition-colors ${active ? 'bg-purple-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                    className={`flex-1 py-2 rounded-xl font-semibold text-sm transition-colors ${active ? 'bg-purple-600 text-ink' : 'bg-surface-muted text-ink-secondary hover:bg-surface-muted'}`}
                   >
                     {info.icon} {info.label}
                   </button>
@@ -243,7 +243,7 @@ export function MemoryScreen() {
           </div>
 
           <div>
-            <label className="text-slate-300 text-sm font-semibold block mb-2">Match Type</label>
+            <label className="text-ink-secondary text-sm font-semibold block mb-2">Match Type</label>
             <div className="space-y-2">
               {([
                 ['pronoun_form', '🔤 Word ↔ Declined Form'],
@@ -253,7 +253,7 @@ export function MemoryScreen() {
                 <button
                   key={type}
                   onClick={() => setMatchType(type)}
-                  className={`w-full py-2 px-4 rounded-xl text-left text-sm font-medium transition-colors ${matchType === type ? 'bg-purple-700 text-white border-2 border-purple-400' : 'bg-slate-700 text-slate-300 border-2 border-slate-600 hover:border-slate-400'}`}
+                  className={`w-full py-2 px-4 rounded-xl text-left text-sm font-medium transition-colors ${matchType === type ? 'bg-purple-700 text-ink border-2 border-purple-400' : 'bg-surface-muted text-ink-secondary border-2 border-border-strong hover:border-border-strong'}`}
                 >
                   {label}
                 </button>
@@ -262,13 +262,13 @@ export function MemoryScreen() {
           </div>
 
           <div>
-            <label className="text-slate-300 text-sm font-semibold block mb-2">Grid Size</label>
+            <label className="text-ink-secondary text-sm font-semibold block mb-2">Grid Size</label>
             <div className="flex gap-3">
               {([['easy', '4×2'], ['medium', '4×3'], ['hard', '4×4']] as [Difficulty, string][]).map(([d, label]) => (
                 <button
                   key={d}
                   onClick={() => setDifficulty(d)}
-                  className={`flex-1 py-2 rounded-xl font-semibold text-sm transition-colors ${difficulty === d ? 'bg-purple-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}`}
+                  className={`flex-1 py-2 rounded-xl font-semibold text-sm transition-colors ${difficulty === d ? 'bg-purple-600 text-ink' : 'bg-surface-muted text-ink-secondary hover:bg-surface-muted'}`}
                 >
                   {label}
                 </button>
@@ -278,7 +278,7 @@ export function MemoryScreen() {
 
           <button
             onClick={handleStart}
-            className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-bold text-lg transition-colors"
+            className="w-full py-3 bg-purple-600 hover:bg-purple-500 text-ink rounded-xl font-bold text-lg transition-colors"
           >
             Start!
           </button>
@@ -291,51 +291,51 @@ export function MemoryScreen() {
     const mins = Math.floor(elapsedSeconds / 60);
     const secs = elapsedSeconds % 60;
     return (
-      <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center px-4 gap-6">
+      <div className="min-h-screen bg-page flex flex-col items-center justify-center px-4 gap-6">
         <div className="text-center space-y-2">
           <div className="text-6xl">🎉</div>
-          <h1 className="text-3xl font-bold text-white">All Matched!</h1>
+          <h1 className="text-3xl font-bold text-ink">All Matched!</h1>
         </div>
-        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-8 w-full max-w-sm space-y-4">
+        <div className="bg-surface rounded-2xl border border-border p-8 w-full max-w-sm space-y-4">
           <div className="text-center">
             <p className="text-5xl font-bold text-purple-400">{score.toLocaleString()}</p>
-            <p className="text-slate-400 text-sm mt-1">Final Score</p>
+            <p className="text-ink-secondary text-sm mt-1">Final Score</p>
           </div>
           <div className="grid grid-cols-3 gap-3 text-center">
             <div>
-              <p className="text-xl font-bold text-white">{moves}</p>
-              <p className="text-slate-500 text-xs">Moves</p>
+              <p className="text-xl font-bold text-ink">{moves}</p>
+              <p className="text-ink-secondary text-xs">Moves</p>
             </div>
             <div>
               <p className="text-xl font-bold text-orange-400">{bestStreak}</p>
-              <p className="text-slate-500 text-xs">Best Streak</p>
+              <p className="text-ink-secondary text-xs">Best Streak</p>
             </div>
             <div>
-              <p className="text-xl font-bold text-blue-400">{mins}:{String(secs).padStart(2, '0')}</p>
-              <p className="text-slate-500 text-xs">Time</p>
+              <p className="text-xl font-bold text-link">{mins}:{String(secs).padStart(2, '0')}</p>
+              <p className="text-ink-secondary text-xs">Time</p>
             </div>
           </div>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => navigate('/home')} className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-semibold">Home</button>
-          <button onClick={() => setPhase('setup')} className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white rounded-xl font-semibold">Play Again</button>
+          <button onClick={() => navigate('/home')} className="px-6 py-3 bg-surface-muted hover:bg-surface-muted text-ink rounded-xl font-semibold">Home</button>
+          <button onClick={() => setPhase('setup')} className="px-6 py-3 bg-purple-600 hover:bg-purple-500 text-ink rounded-xl font-semibold">Play Again</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="bg-slate-900 border-b border-slate-800 px-4 py-3">
+    <div className="min-h-screen bg-page text-ink">
+      <div className="bg-surface-elevated border-b border-border px-4 py-3">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button onClick={() => navigate('/home')} className="text-slate-400 hover:text-white">✕</button>
-            <span className="text-white font-bold">🃏 Memory Match</span>
+            <button onClick={() => navigate('/home')} className="text-ink-secondary hover:text-ink">✕</button>
+            <span className="text-ink font-bold">🃏 Memory Match</span>
           </div>
           <div className="flex items-center gap-4 text-sm">
             {streak > 1 && <span className="text-orange-400 font-bold">🔥 {streak}</span>}
-            <span className="text-white font-bold">{score.toLocaleString()}</span>
-            <span className="text-slate-400">{matchedCount}/{totalPairs}</span>
+            <span className="text-ink font-bold">{score.toLocaleString()}</span>
+            <span className="text-ink-secondary">{matchedCount}/{totalPairs}</span>
           </div>
         </div>
       </div>
@@ -359,7 +359,7 @@ export function MemoryScreen() {
                     ? 'opacity-40 cursor-default'
                     : isFlipped
                     ? 'cursor-default'
-                    : 'cursor-pointer hover:scale-105 hover:border-slate-400'
+                    : 'cursor-pointer hover:scale-105 hover:border-border-strong'
                   }
                 `}
                 style={{
@@ -371,7 +371,7 @@ export function MemoryScreen() {
                 {isFlipped ? (
                   <span className="leading-tight">{card.content}</span>
                 ) : (
-                  <span className="text-slate-600 text-2xl">?</span>
+                  <span className="text-ink-secondary text-2xl">?</span>
                 )}
               </button>
             );

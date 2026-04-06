@@ -61,23 +61,23 @@ export function JoinClassScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="bg-slate-900 border-b border-slate-800 px-6 py-5">
+    <div className="min-h-screen bg-page text-ink">
+      <div className="bg-surface-elevated border-b border-border px-6 py-5">
         <div className="max-w-md mx-auto flex items-center gap-4">
-          <button onClick={() => navigate('/home')} className="text-slate-400 hover:text-white">
+          <button onClick={() => navigate('/home')} className="text-ink-secondary hover:text-ink">
             ← Back
           </button>
-          <h1 className="text-xl font-bold text-white">Join a Class</h1>
+          <h1 className="text-xl font-bold text-ink">Join a Class</h1>
         </div>
       </div>
 
       <div className="max-w-md mx-auto px-6 py-12">
         <div className="text-center mb-8">
           <div className="text-5xl mb-3">🏫</div>
-          <p className="text-slate-400 text-sm">Enter the code your teacher gave you.</p>
+          <p className="text-ink-secondary text-sm">Enter the code your teacher gave you.</p>
         </div>
 
-        <form onSubmit={handleJoin} className="bg-slate-800 rounded-2xl border border-slate-700 p-6 space-y-4">
+        <form onSubmit={handleJoin} className="bg-surface rounded-2xl border border-border p-6 space-y-4">
           {error && (
             <div className="bg-red-950 border border-red-700 text-red-300 text-sm rounded-xl px-4 py-3">{error}</div>
           )}
@@ -86,13 +86,13 @@ export function JoinClassScreen() {
           )}
 
           <div>
-            <label className="text-slate-300 text-sm font-semibold block mb-1.5">Join Code</label>
+            <label className="text-ink-secondary text-sm font-semibold block mb-1.5">Join Code</label>
             <input
               type="text"
               value={code}
               onChange={e => setCode(e.target.value.toUpperCase())}
               maxLength={8}
-              className="w-full bg-slate-700 border border-slate-600 text-white rounded-xl px-4 py-3 text-center font-mono text-2xl tracking-widest uppercase focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+              className="w-full bg-surface-muted border border-border-strong text-ink rounded-xl px-4 py-3 text-center font-mono text-2xl tracking-widest uppercase focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand"
               placeholder="ABC123"
               autoFocus
             />
@@ -101,7 +101,7 @@ export function JoinClassScreen() {
           <button
             type="submit"
             disabled={submitting || code.trim().length < 4}
-            className="w-full py-3 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 disabled:text-blue-400 text-white rounded-xl font-bold text-base transition-colors"
+            className="w-full py-3 bg-brand hover:bg-brand-hover disabled:bg-slate-300 disabled:text-ink-secondary text-white rounded-xl font-bold text-base transition-colors"
           >
             {submitting ? 'Joining...' : 'Join Class'}
           </button>

@@ -7,10 +7,10 @@ interface AnswerButtonProps {
 }
 
 const stateStyles = {
-  default: 'bg-slate-800 border-slate-600 text-slate-100 hover:bg-slate-700 hover:border-slate-400 cursor-pointer',
-  correct: 'bg-green-900 border-green-400 text-green-200 cursor-default',
-  wrong: 'bg-red-900 border-red-400 text-red-200 cursor-default',
-  disabled: 'bg-slate-900 border-slate-700 text-slate-500 cursor-not-allowed',
+  default: 'bg-surface border-border-strong text-ink hover:bg-surface-muted hover:border-border-strong cursor-pointer shadow-[var(--shadow-card)]',
+  correct: 'bg-emerald-100 border-emerald-500 text-emerald-900 cursor-default',
+  wrong: 'bg-red-100 border-red-400 text-red-900 cursor-default',
+  disabled: 'bg-surface-elevated border-border text-ink-secondary cursor-not-allowed',
 };
 
 const indexLabels = ['A', 'B', 'C', 'D'];

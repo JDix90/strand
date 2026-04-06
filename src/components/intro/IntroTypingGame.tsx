@@ -67,19 +67,19 @@ export function IntroTypingGame() {
 
   return (
     <div className="px-4 py-8 max-w-lg mx-auto w-full space-y-6">
-      <div className="flex justify-between text-xs text-slate-500">
+      <div className="flex justify-between text-xs text-ink-secondary">
         <span>
           Prompt {idx + 1} of {prompts.length}
         </span>
         <span>{correctCount} correct</span>
       </div>
-      <p className="text-lg text-white font-medium text-center">{p.prompt}</p>
+      <p className="text-lg text-ink font-medium text-center">{p.prompt}</p>
       <input
         type="text"
         value={input}
         onChange={e => setInput(e.target.value)}
         onKeyDown={e => e.key === 'Enter' && check()}
-        className="w-full rounded-xl bg-slate-900 border border-slate-600 px-4 py-3 text-white text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full rounded-xl bg-surface-elevated border border-border-strong px-4 py-3 text-ink text-lg focus:outline-none focus:ring-2 focus:ring-brand"
         placeholder="Type in Russian…"
         autoCapitalize="off"
         autoCorrect="off"
@@ -93,7 +93,7 @@ export function IntroTypingGame() {
         type="button"
         onClick={check}
         disabled={!input.trim() || feedback === 'ok'}
-        className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold"
+        className="w-full py-3 rounded-xl bg-brand hover:bg-brand-hover disabled:opacity-50 text-ink font-semibold"
       >
         Check
       </button>

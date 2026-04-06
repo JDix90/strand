@@ -36,7 +36,7 @@ export function SyncToastHost() {
               }
             })();
           }}
-          className="rounded-lg bg-red-800 px-3 py-1.5 font-semibold text-white hover:bg-red-700"
+          className="rounded-lg bg-red-800 px-3 py-1.5 font-semibold text-ink hover:bg-red-700"
         >
           Retry
         </button>

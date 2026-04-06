@@ -1,20 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+/* Languini design tokens — cream / navy / teal system */
 :root {
-  --case-nominative: #3b82f6;
-  --case-genitive: #ef4444;
-  --case-dative: #22c55e;
-  --case-accusative: #f97316;
-  --case-instrumental: #a855f7;
-  --case-prepositional: #14b8a6;
+  --case-nominative: #2563eb;
+  --case-genitive: #dc2626;
+  --case-dative: #16a34a;
+  --case-accusative: #ea580c;
+  --case-instrumental: #9333ea;
+  --case-prepositional: #0d9488;
+  --shadow-card: 0 4px 24px -4px rgb(46 78 142 / 0.08), 0 2px 8px -2px rgb(46 78 142 / 0.06);
+  --shadow-card-hover: 0 8px 32px -6px rgb(46 78 142 / 0.12), 0 4px 12px -4px rgb(46 78 142 / 0.08);
+}
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+
+  --color-page: #faf7f0;
+  --color-ink: #2e4e8e;
+  --color-ink-secondary: #64748b;
+  --color-brand: #2a9d8f;
+  --color-brand-hover: #248577;
+  --color-brand-muted: #3db5a4;
+  --color-mustard: #f2bc51;
+  --color-mustard-hover: #e5a93c;
+  --color-coral: #e07a5f;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1f5f9;
+  --color-surface-elevated: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+  --color-link: #2563eb;
+  --color-success: #16a34a;
+  --color-danger: #dc2626;
+  --color-warning: #d97706;
+
+  --radius-brand: 1.25rem;
+  --radius-pill: 9999px;
 }
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background-color: #0f172a;
-  color: #f1f5f9;
+  font-family: var(--font-sans);
+  background-color: var(--color-page);
+  color: var(--color-ink);
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
 #root {

@@ -45,8 +45,8 @@ import {
 
 function RouteFallback() {
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-      <div className="text-slate-400 text-lg">Loading...</div>
+    <div className="min-h-screen bg-page flex items-center justify-center">
+      <div className="text-ink-secondary text-lg">Loading...</div>
     </div>
   );
 }
