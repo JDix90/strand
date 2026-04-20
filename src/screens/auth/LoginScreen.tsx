@@ -54,7 +54,10 @@ export function LoginScreen() {
             </div>
           )}
           {error && (
-            <div className="bg-red-950 border border-red-700 text-red-300 text-sm rounded-xl px-4 py-3">
+            <div
+              data-testid="login-error"
+              className="bg-red-950 border border-red-700 text-red-300 text-sm rounded-xl px-4 py-3"
+            >
               {error}
             </div>
           )}
