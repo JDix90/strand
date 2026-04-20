@@ -5,6 +5,8 @@ import type { SessionSummary } from '../../types';
 interface ResultsLocationState {
   summary?: SessionSummary;
   fromIntro?: boolean;
+  /** Set by Practice (and similar) when session goal was reached. */
+  sessionGoalMet?: boolean;
 }
 
 const modeLabels: Record<string, { icon: string; label: string }> = {
@@ -30,6 +32,7 @@ export function ResultsScreen() {
   const state = location.state as ResultsLocationState | undefined;
   const summary = state?.summary;
   const fromIntro = state?.fromIntro === true;
+  const sessionGoalMet = state?.sessionGoalMet === true;
 
   useEffect(() => {
     if (!summary) navigate('/home');
@@ -56,6 +59,11 @@ export function ResultsScreen() {
           {grade}
         </div>
         <p className="text-ink-secondary text-lg">{message}</p>
+        {sessionGoalMet && (
+          <p className="text-emerald-400 text-sm font-semibold mt-1" role="status">
+            Session goal completed — great focus.
+          </p>
+        )}
       </div>
 
       <div className="bg-surface rounded-2xl border border-border p-6 w-full max-w-sm space-y-4">

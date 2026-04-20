@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase, isSupabaseConfigured } from './supabase';
 import type { MasteryRecord, SessionSummary } from '../types';
 import type { AppSettings } from './storage';
 import { masteryStorageKey, normalizeMasteryRecord } from './masteryKeys';
@@ -65,12 +65,20 @@ export async function cloudLoadSettings(userId: string): Promise<Partial<AppSett
 
   if (error || !data) return {};
 
+  const row = data as Record<string, unknown>;
   return {
-    audioEnabled: data.audio_enabled,
-    difficulty: data.difficulty,
-    showHelperWords: data.show_helper_words,
-    showEnglishGloss: data.show_english_gloss,
-    activeCategories: data.active_categories,
+    audioEnabled: row.audio_enabled as boolean,
+    difficulty: row.difficulty as AppSettings['difficulty'],
+    showHelperWords: row.show_helper_words as boolean,
+    showEnglishGloss: row.show_english_gloss as boolean,
+    activeCategories: row.active_categories as AppSettings['activeCategories'],
+    streakCurrent: typeof row.streak_current === 'number' ? row.streak_current : undefined,
+    streakBest: typeof row.streak_best === 'number' ? row.streak_best : undefined,
+    lastStreakActivityDate: (row.last_streak_activity_date as string | null) ?? undefined,
+    sessionGoalType: (row.session_goal_type as AppSettings['sessionGoalType']) ?? undefined,
+    sessionGoalMinutes: typeof row.session_goal_minutes === 'number' ? row.session_goal_minutes : undefined,
+    sessionGoalForms: typeof row.session_goal_forms === 'number' ? row.session_goal_forms : undefined,
+    uiLocale: (row.ui_locale as AppSettings['uiLocale']) ?? undefined,
   };
 }
 
@@ -82,6 +90,13 @@ export async function cloudSaveSettings(userId: string, settings: AppSettings): 
     show_helper_words: settings.showHelperWords,
     show_english_gloss: settings.showEnglishGloss,
     active_categories: settings.activeCategories,
+    streak_current: settings.streakCurrent,
+    streak_best: settings.streakBest,
+    last_streak_activity_date: settings.lastStreakActivityDate,
+    session_goal_type: settings.sessionGoalType,
+    session_goal_minutes: settings.sessionGoalMinutes,
+    session_goal_forms: settings.sessionGoalForms,
+    ui_locale: settings.uiLocale,
   });
   if (error) throw new Error(error.message);
 }
@@ -133,6 +148,19 @@ export async function cloudAppendSessionSummary(userId: string, summary: Session
     categories: summary.categories ?? [],
   });
   if (error) throw new Error(error.message);
+}
+
+/** Deletes all synced practice progress for this user (mastery + session history). RLS: own rows only. */
+export async function cloudClearUserProgress(userId: string): Promise<{ error: string | null }> {
+  if (!isSupabaseConfigured) return { error: null };
+
+  const { error: e1 } = await supabase.from('mastery_records').delete().eq('user_id', userId);
+  if (e1) return { error: e1.message };
+
+  const { error: e2 } = await supabase.from('session_summaries').delete().eq('user_id', userId);
+  if (e2) return { error: e2.message };
+
+  return { error: null };
 }
 
 export async function migrateLocalToCloud(

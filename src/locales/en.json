@@ -1,0 +1,41 @@
+{
+  "nav": {
+    "home": "Overview",
+    "settings": "Settings"
+  },
+  "home": {
+    "welcome": "Welcome back, {{name}}!",
+    "streakLabel": "{{count}}-day streak",
+    "streakBest": "Best: {{count}}",
+    "modesTitle": "Modes",
+    "calendarCardTitle": "Class calendar",
+    "calendarCardSubtitle": "Meetings and absences for your enrollments",
+    "streakNudge": "Practice today to keep your {{count}}-day streak going.",
+    "dismiss": "Dismiss",
+    "modesHeadingStudent": "Choose a Mode",
+    "modesHeadingGuest": "Case declensions",
+    "goalsHint": "Set optional session goals and see your daily streak in Settings."
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Game preferences and account",
+    "sessionGoalsTitle": "Session goals",
+    "sessionGoalsHelp": "Optional targets for Practice mode (time and form-count goals are alternatives—pick one type).",
+    "goalNone": "No goal",
+    "goalTime": "Time goal",
+    "goalForms": "Answer count goal",
+    "minutes": "Minutes",
+    "forms": "Form answers",
+    "streakTitle": "Daily streak",
+    "streakCurrent": "Current streak: {{count}} days",
+    "streakBest": "Best: {{count}} days",
+    "uiLanguage": "Interface language",
+    "uiLanguageHelp": "English or Russian for buttons and menus. Learning content stays the same.",
+    "faqUrlTitle": "Why did my URL change?",
+    "faqUrlBody": "When you enroll in a class, practice links use your class and unit so progress lines up with your teacher’s curriculum. Overview and flat routes still work if you are not in a class."
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Create account"
+  }
+}

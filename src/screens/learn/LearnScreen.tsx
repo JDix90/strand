@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { caseMetadata, caseOrder } from '../../data/caseMetadata';
 import { useGameStore } from '../../store/gameStore';
 import { useCurriculum, useEffectiveUnitId } from '../../contexts/CurriculumContext';
-import { VOCABULARY_STUB_MODULE } from '../../lib/curriculumConstants';
+import { VOCABULARY_TAXONOMY } from '../../data/vocabulary/taxonomy';
+import { isVocabularyModule } from '../../lib/contentModules';
 import { masteryStorageKey } from '../../lib/masteryKeys';
+import { getMasteryTableIndicator, MASTERY_LEGEND_ROWS } from '../../lib/masteryIndicators';
 import { getLemmasByCategory, getForm, CATEGORY_LABELS } from '../../data/allForms';
 import type { CaseId, WordCategory } from '../../types';
 
@@ -17,7 +19,7 @@ const GENDER_LABELS: Record<string, string> = {
 export function LearnScreen() {
   const navigate = useNavigate();
   const { masteryRecords, settings } = useGameStore();
-  const { contentModule, classId, unitId: ctxUnitId } = useCurriculum();
+  const { contentModule, classId, unitId: ctxUnitId, unitRow } = useCurriculum();
   const unitId = useEffectiveUnitId();
   const [hoveredCase, setHoveredCase] = useState<CaseId | null>(null);
   const [hoveredLemma, setHoveredLemma] = useState<string | null>(null);
@@ -58,33 +60,45 @@ export function LearnScreen() {
     ? getFormForCell(selectedCell.lemmaId, selectedCell.caseId)
     : null;
 
-  const statusDot = (lemmaId: string, caseId: CaseId) => {
+  const masteryIndicatorForCell = (lemmaId: string, caseId: CaseId) => {
     const m = getMastery(lemmaId, caseId);
-    if (!m || m.status === 'unseen') return null;
-    const colors: Record<string, string> = {
-      introduced: '#f59e0b',
-      shaky: '#ef4444',
-      improving: '#3b82f6',
-      strong: '#22c55e',
-      mastered: '#a855f7',
-    };
-    return colors[m.status] ?? null;
+    if (!m) return null;
+    return getMasteryTableIndicator(m.status);
   };
 
-  if (contentModule === VOCABULARY_STUB_MODULE) {
+  if (isVocabularyModule(contentModule)) {
     const back = classId && ctxUnitId ? `/class/${classId}/unit/${ctxUnitId}` : '/home';
     return (
-      <div className="min-h-screen bg-page text-ink flex flex-col items-center justify-center px-6">
-        <p className="text-lg font-semibold mb-2">Vocabulary module</p>
-        <p className="text-ink-secondary text-center max-w-md mb-6">
-          The learn table is for declension units. This preview unit uses short vocabulary drills in Practice.
+      <div className="min-h-screen bg-page text-ink px-6 py-10 max-w-xl mx-auto">
+        <button type="button" onClick={() => navigate(back)} className="text-ink-secondary hover:text-ink text-sm mb-6">
+          ← Back to unit
+        </button>
+        <h1 className="text-2xl font-bold text-ink mb-2">{unitRow?.title ?? 'Vocabulary'}</h1>
+        <p className="text-ink-secondary mb-6">
+          Declension “learn table” does not apply here. Open <strong>Practice</strong> for Russian–English multiple
+          choice. Your class lists each subtopic as its own unit in the sidebar (food, travel, verbs, and more).
         </p>
+        <div className="rounded-xl border border-border bg-surface p-4 mb-8 max-h-72 overflow-y-auto">
+          <p className="text-xs font-semibold text-ink-secondary uppercase tracking-wide mb-3">Curriculum overview</p>
+          <ul className="space-y-3 text-sm">
+            {VOCABULARY_TAXONOMY.map(cat => (
+              <li key={cat.id}>
+                <span className="font-semibold text-ink">{cat.label}</span>
+                <ul className="mt-1 ml-3 list-disc text-ink-secondary">
+                  {cat.subcategories.map(s => (
+                    <li key={s.vocabularySetId}>{s.label}</li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
         <button
           type="button"
           onClick={() => navigate(`${back}/practice`)}
-          className="px-4 py-2 rounded-lg bg-blue-700 hover:bg-brand text-white font-medium"
+          className="w-full px-4 py-3 rounded-xl bg-brand hover:opacity-90 text-white font-semibold"
         >
-          Open vocabulary practice
+          Start vocabulary practice
         </button>
       </div>
     );
@@ -120,7 +134,7 @@ export function LearnScreen() {
               <button
                 key={cat}
                 onClick={() => { setActiveCategory(cat); setSelectedCell(null); }}
-                className={`px-4 py-2 rounded-xl font-semibold text-sm transition-all ${
+                className={`px-4 py-2 min-h-[44px] rounded-xl font-semibold text-sm transition-all ${
                   isActive
                     ? 'bg-brand text-white'
                     : 'bg-surface text-ink-secondary hover:bg-surface-muted hover:text-ink'
@@ -142,7 +156,7 @@ export function LearnScreen() {
                 onMouseEnter={() => setHoveredCase(caseId)}
                 onMouseLeave={() => setHoveredCase(null)}
                 onClick={() => setSelectedCell(null)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-semibold transition-all"
+                className="flex items-center gap-2 px-3 py-2 min-h-[44px] rounded-full text-sm font-semibold transition-all"
                 style={{
                   backgroundColor: hoveredCase === caseId ? meta.color + '33' : meta.color + '11',
                   color: meta.color,
@@ -157,12 +171,14 @@ export function LearnScreen() {
           })}
         </div>
 
-        {/* Table */}
-        <div className="overflow-x-auto rounded-2xl border border-border">
-          <table className="w-full border-collapse">
+        {/* Table — horizontal scroll on narrow viewports; first column stays visible */}
+        <div className="overflow-x-auto rounded-2xl border border-border -mx-4 px-4 sm:mx-0 sm:px-0">
+          <table className="w-full border-collapse min-w-[640px]">
             <thead>
               <tr className="bg-surface">
-                <th className="px-4 py-3 text-left text-ink-secondary font-semibold text-sm w-32">Case</th>
+                <th className="sticky left-0 z-20 px-4 py-3 text-left text-ink-secondary font-semibold text-sm w-32 bg-surface border-r border-border shadow-[2px_0_8px_-4px_rgba(0,0,0,0.2)]">
+                  Case
+                </th>
                 {lemmas.map(lemma => (
                   <th
                     key={lemma.lemmaId}
@@ -193,9 +209,17 @@ export function LearnScreen() {
                   <tr
                     key={caseId}
                     className={rowIdx % 2 === 0 ? 'bg-surface-elevated' : 'bg-page'}
+                    style={{
+                      borderLeftWidth: 4,
+                      borderLeftStyle: 'solid',
+                      borderLeftColor: meta.color,
+                      backgroundImage: `linear-gradient(90deg, ${meta.color}08 0%, transparent 48%)`,
+                    }}
                   >
                     <td
-                      className="px-4 py-3 cursor-pointer"
+                      className={`sticky left-0 z-10 px-4 py-3 cursor-pointer border-r border-border/80 shadow-[2px_0_8px_-4px_rgba(0,0,0,0.15)] ${
+                        rowIdx % 2 === 0 ? 'bg-surface-elevated' : 'bg-page'
+                      }`}
                       onMouseEnter={() => setHoveredCase(caseId)}
                       onMouseLeave={() => setHoveredCase(null)}
                     >
@@ -216,7 +240,7 @@ export function LearnScreen() {
                       const form = getFormForCell(lemma.lemmaId, caseId);
                       const highlighted = isCellHighlighted(lemma.lemmaId, caseId);
                       const isSelected = selectedCell?.lemmaId === lemma.lemmaId && selectedCell?.caseId === caseId;
-                      const dot = statusDot(lemma.lemmaId, caseId);
+                      const masteryInd = masteryIndicatorForCell(lemma.lemmaId, caseId);
 
                       return (
                         <td
@@ -226,7 +250,7 @@ export function LearnScreen() {
                             backgroundColor: isSelected
                               ? meta.color + '33'
                               : highlighted
-                              ? meta.color + '18'
+                              ? meta.color + '14'
                               : undefined,
                           }}
                           onClick={() =>
@@ -250,11 +274,14 @@ export function LearnScreen() {
                             >
                               {form?.surfaceForm ?? '—'}
                             </span>
-                            {dot && (
+                            {masteryInd && (
                               <span
-                                className="absolute -top-1 -right-2 w-2 h-2 rounded-full"
-                                style={{ backgroundColor: dot }}
-                              />
+                                className="absolute -top-1 -right-2 flex h-[18px] min-w-[18px] items-center justify-center rounded-md bg-page/95 px-0.5 text-[11px] leading-none text-ink-secondary shadow-sm ring-1 ring-border"
+                                title={`Mastery: ${masteryInd.label}`}
+                                aria-label={`Mastery: ${masteryInd.label}`}
+                              >
+                                {masteryInd.symbol}
+                              </span>
                             )}
                           </div>
                         </td>
@@ -331,32 +358,56 @@ export function LearnScreen() {
               if (!m || m.status === 'unseen') return (
                 <p className="text-ink-secondary text-sm">Not yet practiced. Try Practice mode!</p>
               );
+              const ind = getMasteryTableIndicator(m.status);
               return (
-                <div className="flex items-center gap-4 text-sm">
-                  <span className="text-ink-secondary">Mastery: <span className="text-ink font-bold">{m.masteryScore}</span></span>
-                  <span className="text-ink-secondary">Accuracy: <span className="text-ink font-bold">{m.attempts > 0 ? Math.round((m.correct / m.attempts) * 100) : 0}%</span></span>
-                  <span className="text-ink-secondary">Attempts: <span className="text-ink font-bold">{m.attempts}</span></span>
+                <div className="space-y-2 text-sm">
+                  {ind && (
+                    <p className="text-ink-secondary flex flex-wrap items-center gap-2">
+                      <span>Practice progress:</span>
+                      <span className="inline-flex items-center gap-1.5 rounded-lg bg-page px-2 py-0.5 font-medium text-ink ring-1 ring-border">
+                        <span className="tabular-nums" aria-hidden>
+                          {ind.symbol}
+                        </span>
+                        {ind.label}
+                      </span>
+                    </p>
+                  )}
+                  <div className="flex flex-wrap items-center gap-4">
+                    <span className="text-ink-secondary">
+                      Score: <span className="text-ink font-bold">{m.masteryScore}</span>
+                    </span>
+                    <span className="text-ink-secondary">
+                      Accuracy:{' '}
+                      <span className="text-ink font-bold">
+                        {m.attempts > 0 ? Math.round((m.correct / m.attempts) * 100) : 0}%
+                      </span>
+                    </span>
+                    <span className="text-ink-secondary">
+                      Attempts: <span className="text-ink font-bold">{m.attempts}</span>
+                    </span>
+                  </div>
                 </div>
               );
             })()}
           </div>
         )}
 
-        {/* Mastery Legend */}
-        <div className="flex flex-wrap gap-3 text-xs">
-          {[
-            { status: 'unseen', color: '#64748b', label: 'Unseen' },
-            { status: 'introduced', color: '#f59e0b', label: 'Introduced' },
-            { status: 'shaky', color: '#ef4444', label: 'Shaky' },
-            { status: 'improving', color: '#3b82f6', label: 'Improving' },
-            { status: 'strong', color: '#22c55e', label: 'Strong' },
-            { status: 'mastered', color: '#a855f7', label: 'Mastered' },
-          ].map(s => (
-            <span key={s.status} className="flex items-center gap-1.5 text-ink-secondary">
-              <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ backgroundColor: s.color }} />
-              {s.label}
-            </span>
-          ))}
+        {/* Mastery legend: symbols only — avoids clashing with case row colors */}
+        <div className="rounded-xl border border-border bg-surface/80 px-4 py-3">
+          <p className="text-ink-secondary text-xs font-semibold uppercase tracking-wide mb-1">Practice progress</p>
+          <p className="text-ink-secondary/90 text-[11px] leading-snug mb-2">
+            Shapes below are your practice level for each cell. They are not the same as the grammatical-case colors on each row.
+          </p>
+          <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-ink-secondary">
+            {MASTERY_LEGEND_ROWS.map(row => (
+              <span key={row.status} className="inline-flex items-center gap-1.5">
+                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded bg-page font-semibold text-ink-secondary ring-1 ring-border tabular-nums">
+                  {row.symbol}
+                </span>
+                <span>{row.label}</span>
+              </span>
+            ))}
+          </div>
         </div>
       </div>
     </div>

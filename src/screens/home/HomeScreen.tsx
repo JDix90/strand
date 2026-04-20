@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useGameStore } from '../../store/gameStore';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEffectiveRole } from '../../lib/authRoles';
@@ -15,6 +16,7 @@ import {
 } from '../../lib/studentNavigation';
 import { fetchUnitById } from '../../lib/curriculumApi';
 import { BrandLogo } from '../../components/brand/BrandLogo';
+import { StreakNudgeBanner } from '../../components/home/StreakNudgeBanner';
 
 interface ClassMembership {
   id: string;
@@ -132,6 +134,7 @@ async function navigateToMode(
 }
 
 export function HomeScreen() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { masteryRecords, sessionHistory, settings, toggleCategory } = useGameStore();
   const { profile } = useAuth();
@@ -238,12 +241,14 @@ export function HomeScreen() {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-start justify-between gap-3">
             <h1 className="text-xl font-bold text-ink tracking-tight min-w-0 pr-2">
-              Welcome back, {displayName}!
+              {t('home.welcome', { name: displayName })}
             </h1>
             <button
               onClick={() => navigate('/settings')}
-              className="text-ink-secondary hover:text-ink p-2 rounded-xl hover:bg-surface-muted transition-colors shrink-0 -mr-1"
-              title="Settings"
+              className="text-ink-secondary hover:text-ink p-2 rounded-xl hover:bg-surface-muted transition-colors shrink-0 -mr-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
+              title={t('nav.settings')}
+              type="button"
+              aria-label={t('nav.settings')}
             >
               ⚙️
             </button>
@@ -260,6 +265,25 @@ export function HomeScreen() {
       </div>
 
       <div className="max-w-4xl mx-auto px-6 py-8 space-y-8">
+        {effectiveRole === 'student' && <StreakNudgeBanner />}
+
+        {(settings.streakCurrent > 0 || settings.streakBest > 0) && (
+          <div className="rounded-2xl border border-border bg-surface px-4 py-3 flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
+            <span className="text-ink font-medium">{t('home.streakLabel', { count: settings.streakCurrent })}</span>
+            <span className="text-ink-secondary">{t('home.streakBest', { count: settings.streakBest })}</span>
+          </div>
+        )}
+
+        {sessionHistory.length === 0 && (
+          <p className="text-ink-secondary text-xs max-w-xl leading-relaxed">
+            {t('home.goalsHint')}{' '}
+            <Link to="/settings" className="text-link font-semibold hover:underline underline-offset-2">
+              {t('nav.settings')}
+            </Link>
+            .
+          </p>
+        )}
+
         {bestStreakEver >= 2 && (
           <div className="rounded-2xl bg-ink text-white px-5 py-4 flex items-center justify-between gap-3 shadow-[var(--shadow-card)]">
             <div className="flex items-center gap-3">
@@ -298,6 +322,26 @@ export function HomeScreen() {
               ›
             </span>
           </button>
+        )}
+
+        {effectiveRole === 'student' && myClasses.length > 0 && (
+          <Link
+            to="/home/calendar"
+            className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4 shadow-[var(--shadow-card)] hover:border-brand transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-2xl" aria-hidden>
+                📅
+              </span>
+              <div>
+                <p className="font-bold text-ink text-sm">{t('home.calendarCardTitle')}</p>
+                <p className="text-ink-secondary text-xs mt-0.5">{t('home.calendarCardSubtitle')}</p>
+              </div>
+            </div>
+            <span className="text-ink-secondary text-lg" aria-hidden>
+              ›
+            </span>
+          </Link>
         )}
 
         {/* Category Quick-Toggles */}
@@ -480,7 +524,7 @@ export function HomeScreen() {
         {/* Mode Grid */}
         <div>
           <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-4">
-            {effectiveRole === 'student' && myClasses.length === 0 ? 'Case declensions' : 'Choose a Mode'}
+            {effectiveRole === 'student' && myClasses.length === 0 ? t('home.modesHeadingGuest') : t('home.modesHeadingStudent')}
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {modes.map(mode => (

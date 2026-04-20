@@ -1,12 +1,19 @@
 import { Link, useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 import { useCurriculum } from '../../contexts/CurriculumContext';
+import { ClassNotesPanel } from '../../components/class/ClassNotesPanel';
 import { fetchClassCurriculum } from '../../lib/curriculumApi';
 import type { ClassCurriculumRow } from '../../lib/curriculumApi';
+import {
+  buildCurriculumNavItems,
+  getUnitFromRow,
+} from '../../lib/studentCurriculumDisplay';
 import { supabase } from '../../lib/supabase';
 
 export function StudentClassHome() {
   const { classId } = useParams<{ classId: string }>();
+  const { profile } = useAuth();
   const { setScope } = useCurriculum();
   const [curriculum, setCurriculum] = useState<ClassCurriculumRow[]>([]);
   const [className, setClassName] = useState<string>('');
@@ -34,6 +41,11 @@ export function StudentClassHome() {
     })();
   }, [classId]);
 
+  const navItems = useMemo(
+    () => buildCurriculumNavItems(curriculum),
+    [curriculum]
+  );
+
   if (!classId) return null;
 
   return (
@@ -49,8 +61,26 @@ export function StudentClassHome() {
           </div>
         )}
         <ul className="space-y-2">
-          {curriculum.map(row => {
-            const u = Array.isArray(row.units) ? row.units[0] : row.units;
+          {navItems.map(item => {
+            if (item.kind === 'vocabulary_hub') {
+              const first = getUnitFromRow(item.rows[0]);
+              const subtitle =
+                first?.topics?.title?.trim() ||
+                'Browse all vocabulary categories for this class.';
+              return (
+                <li key="vocabulary-hub">
+                  <Link
+                    to={`/class/${classId}/vocabulary`}
+                    className="block rounded-xl border border-border bg-surface-elevated hover:border-border-strong px-4 py-3 transition-colors"
+                  >
+                    <span className="font-semibold text-ink">Vocabulary</span>
+                    <span className="block text-ink-secondary text-sm mt-1">{subtitle}</span>
+                  </Link>
+                </li>
+              );
+            }
+            const row = item.row;
+            const u = getUnitFromRow(row);
             if (!u) return null;
             return (
               <li key={row.unit_id}>
@@ -69,6 +99,10 @@ export function StudentClassHome() {
         </ul>
         {curriculum.length === 0 && (
           <p className="text-ink-secondary text-sm">No visible units yet. Check back after your teacher publishes curriculum.</p>
+        )}
+
+        {profile && classId && (
+          <ClassNotesPanel classId={classId} viewerId={profile.id} canManageClass={false} />
         )}
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Suspense, useEffect } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { CurriculumProvider } from './contexts/CurriculumContext';
 import { RequireAuth } from './components/auth/RequireAuth';
@@ -7,6 +8,8 @@ import { RootRoute } from './components/auth/RootRoute';
 import { AdminRoleBar } from './components/admin/AdminRoleBar';
 import { useGameStore } from './store/gameStore';
 import { SyncToastHost } from './components/ui/SyncToastHost';
+import { CloudSyncIndicator } from './components/ui/CloudSyncIndicator';
+import { I18nSync } from './components/curriculum/I18nSync';
 import { UnitScopedOutlet } from './components/student/UnitScopedOutlet';
 import { CurriculumV2FlatRedirect } from './components/curriculum/CurriculumV2FlatRedirect';
 
@@ -31,8 +34,11 @@ import {
   JoinClassScreen,
   AssignmentsScreen,
   StudentClassHome,
+  VocabularyHubScreen,
   StudentClassLayout,
   StudentHomeLayout,
+  StudentCalendarScreen,
+  TeacherCalendarScreen,
   AdminDashboard,
   AdminUsersScreen,
   AdminClassesScreen,
@@ -47,6 +53,21 @@ function RouteFallback() {
   return (
     <div className="min-h-screen bg-page flex items-center justify-center">
       <div className="text-ink-secondary text-lg">Loading...</div>
+    </div>
+  );
+}
+
+function AppErrorFallback() {
+  return (
+    <div className="min-h-screen bg-page flex flex-col items-center justify-center p-6 text-center gap-4">
+      <p className="text-lg font-semibold text-ink">Something went wrong</p>
+      <button
+        type="button"
+        onClick={() => window.location.reload()}
+        className="px-5 py-2.5 rounded-xl bg-brand hover:bg-brand-hover text-ink font-semibold"
+      >
+        Reload page
+      </button>
     </div>
   );
 }
@@ -83,6 +104,7 @@ function AppRoutes() {
           {/* Student / shared game routes */}
           <Route path="/home" element={<RequireAuth><StudentHomeLayout /></RequireAuth>}>
             <Route index element={<HomeScreen />} />
+            <Route path="calendar" element={<StudentCalendarScreen />} />
           </Route>
           <Route path="/settings" element={<RequireAuth><SettingsScreen /></RequireAuth>} />
           <Route path="/intro" element={<RequireAuth><IntroHubScreen /></RequireAuth>} />
@@ -162,6 +184,7 @@ function AppRoutes() {
             }
           >
             <Route index element={<StudentClassHome />} />
+            <Route path="vocabulary" element={<VocabularyHubScreen />} />
             <Route path="unit/:unitId" element={<UnitScopedOutlet />}>
               <Route index element={<Navigate to="practice" replace />} />
               <Route path="learn" element={<LearnScreen />} />
@@ -176,6 +199,7 @@ function AppRoutes() {
 
           {/* Teacher routes */}
           <Route path="/teacher" element={<RequireAuth requiredRole="teacher"><TeacherDashboard /></RequireAuth>} />
+          <Route path="/teacher/calendar" element={<RequireAuth requiredRole="teacher"><TeacherCalendarScreen /></RequireAuth>} />
           <Route path="/teacher/classes" element={<RequireAuth requiredRole="teacher"><ClassListScreen /></RequireAuth>} />
           <Route path="/teacher/class/:classId" element={<RequireAuth requiredRole="teacher"><ClassDetailScreen /></RequireAuth>} />
           <Route path="/teacher/student/:studentId" element={<RequireAuth requiredRole="teacher"><StudentDetailScreen /></RequireAuth>} />
@@ -198,11 +222,15 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <CurriculumProvider>
+          <I18nSync />
           <AppInit />
+          <CloudSyncIndicator />
           <SyncToastHost />
-          <Suspense fallback={<RouteFallback />}>
-            <AppRoutes />
-          </Suspense>
+          <ErrorBoundary FallbackComponent={AppErrorFallback}>
+            <Suspense fallback={<RouteFallback />}>
+              <AppRoutes />
+            </Suspense>
+          </ErrorBoundary>
         </CurriculumProvider>
       </AuthProvider>
     </BrowserRouter>

@@ -97,12 +97,27 @@ export function saveAdaptiveQueue(queue: AdaptiveReviewQueueItem[]): void {
 
 // ─── Settings ─────────────────────────────────────────────────────────────────
 
+export type SessionGoalType = 'none' | 'time' | 'forms';
+export type UiLocale = 'en' | 'ru';
+
 export interface AppSettings {
   audioEnabled: boolean;
   difficulty: 'beginner' | 'standard' | 'advanced';
   showHelperWords: boolean;
   showEnglishGloss: boolean;
   activeCategories: WordCategory[];
+  /** Daily streak (qualifying sessions). */
+  streakCurrent: number;
+  streakBest: number;
+  /** yyyy-MM-dd local date of last streak-counted session, or null. */
+  lastStreakActivityDate: string | null;
+  sessionGoalType: SessionGoalType;
+  /** Target minutes when sessionGoalType === 'time' (e.g. 5, 10, 15). */
+  sessionGoalMinutes: number | null;
+  /** Target answered questions when sessionGoalType === 'forms'. */
+  sessionGoalForms: number | null;
+  /** UI language for chrome only (not learning prompts). */
+  uiLocale: UiLocale;
 }
 
 export const defaultSettings: AppSettings = {
@@ -111,6 +126,13 @@ export const defaultSettings: AppSettings = {
   showHelperWords: true,
   showEnglishGloss: true,
   activeCategories: ['pronoun'],
+  streakCurrent: 0,
+  streakBest: 0,
+  lastStreakActivityDate: null,
+  sessionGoalType: 'none',
+  sessionGoalMinutes: null,
+  sessionGoalForms: null,
+  uiLocale: 'en',
 };
 
 export function loadSettings(): AppSettings {

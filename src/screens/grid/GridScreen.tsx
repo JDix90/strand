@@ -395,11 +395,13 @@ export function GridScreen() {
 
       <div className="flex-1 overflow-auto">
         <div className="max-w-5xl mx-auto px-2 py-4">
-          <div className="overflow-x-auto rounded-xl border border-border">
-            <table className="border-collapse w-full">
+          <div className="overflow-x-auto rounded-xl border border-border -mx-2 px-2 sm:mx-0 sm:px-0">
+            <table className="border-collapse w-full min-w-[480px]">
               <thead>
                 <tr className="bg-surface">
-                  <th className="px-3 py-2 text-left text-ink-secondary text-xs w-28">Case</th>
+                  <th className="sticky left-0 z-20 px-3 py-2 text-left text-ink-secondary text-xs w-28 bg-surface border-r border-border shadow-[2px_0_8px_-4px_rgba(0,0,0,0.2)]">
+                    Case
+                  </th>
                   {selectedLemmaIds.map(lemmaId => (
                     <th key={lemmaId} className="px-2 py-2 text-center text-ink font-bold text-base w-20">
                       {lemmaLabels[lemmaId] ?? lemmaId}
@@ -412,7 +414,11 @@ export function GridScreen() {
                   const meta = caseMetadata[caseId];
                   return (
                     <tr key={caseId} className={rowIdx % 2 === 0 ? 'bg-surface-elevated' : 'bg-page'}>
-                      <td className="px-3 py-2">
+                      <td
+                        className={`sticky left-0 z-10 px-3 py-2 border-r border-border/80 shadow-[2px_0_8px_-4px_rgba(0,0,0,0.15)] ${
+                          rowIdx % 2 === 0 ? 'bg-surface-elevated' : 'bg-page'
+                        }`}
+                      >
                         <div className="flex items-center gap-1.5">
                           <span className="text-sm">{meta.icon}</span>
                           <span className="text-xs font-semibold" style={{ color: meta.color }}>{meta.label}</span>

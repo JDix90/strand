@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { supabase, isSupabaseConfigured, SUPABASE_SETUP_MESSAGE } from '../lib/supabase';
+import { resetLastActiveThrottle, touchProfileLastActive } from '../lib/lastActive';
 import type { Session, User } from '@supabase/supabase-js';
 import type { UserProfile, UserRole, SignUpRole } from '../types';
 
@@ -24,6 +25,9 @@ interface AuthState {
   updateProfile: (updates: {
     displayName?: string;
     email?: string;
+    bio?: string | null;
+    headline?: string | null;
+    avatarUrl?: string | null;
   }) => Promise<{ error: string | null; info?: string }>;
   /** When `profile.role === 'admin'`, controls student vs teacher navigation and routes. */
   effectiveRole: 'student' | 'teacher';
@@ -64,18 +68,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role: string;
       display_name: string;
       email?: string | null;
+      avatar_url?: string | null;
+      bio?: string | null;
+      headline?: string | null;
     }) => {
       setProfile({
         id: row.id,
         role: row.role as UserRole,
         displayName: row.display_name,
         email: row.email ?? email,
+        avatarUrl: row.avatar_url ?? null,
+        bio: row.bio ?? null,
+        headline: row.headline ?? null,
       });
     };
 
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, role, display_name, email')
+      .select('id, role, display_name, email, avatar_url, bio, headline')
       .eq('id', userId)
       .maybeSingle();
 
@@ -130,6 +140,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
+        void touchProfileLastActive(s.user.id);
         loadProfile(s.user.id, s.user.email ?? '').finally(() => setLoading(false));
       } else {
         setLoading(false);
@@ -140,6 +151,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
+        if (
+          event === 'INITIAL_SESSION' ||
+          event === 'SIGNED_IN' ||
+          event === 'TOKEN_REFRESHED'
+        ) {
+          void touchProfileLastActive(s.user.id);
+        }
         // After sign-in, profile loads async; keep `loading` true until it arrives so
         // RootRoute / RequireAuth don't treat the user as logged-out and bounce to /login.
         if (event === 'SIGNED_IN') {
@@ -151,6 +169,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
         });
       } else {
+        resetLastActiveThrottle();
         setProfile(null);
         setLoading(false);
       }
@@ -221,15 +240,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     if (isSupabaseConfigured) await supabase.auth.signOut();
+    resetLastActiveThrottle();
     setProfile(null);
   }, []);
 
   const updateProfile = useCallback(
-    async (updates: { displayName?: string; email?: string }) => {
+    async (updates: {
+      displayName?: string;
+      email?: string;
+      bio?: string | null;
+      headline?: string | null;
+      avatarUrl?: string | null;
+    }) => {
       if (!isSupabaseConfigured) return { error: SUPABASE_SETUP_MESSAGE };
       const uid = user?.id;
       if (!uid) return { error: 'Not signed in.' };
-      if (updates.displayName === undefined && updates.email === undefined) return { error: null };
+      if (
+        updates.displayName === undefined &&
+        updates.email === undefined &&
+        updates.bio === undefined &&
+        updates.headline === undefined &&
+        updates.avatarUrl === undefined
+      ) {
+        return { error: null };
+      }
 
       let info: string | undefined;
 
@@ -241,6 +275,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const { error } = await supabase.from('profiles').update({ display_name: displayTrimmed }).eq('id', uid);
           if (error) return { error: error.message };
           setProfile(prev => (prev ? { ...prev, displayName: displayTrimmed! } : prev));
+        }
+
+        if (updates.bio !== undefined) {
+          const bio = updates.bio === null ? null : updates.bio.trim().slice(0, 500);
+          const { error } = await supabase.from('profiles').update({ bio }).eq('id', uid);
+          if (error) return { error: error.message };
+          setProfile(prev => (prev ? { ...prev, bio } : prev));
+        }
+        if (updates.headline !== undefined) {
+          const headline = updates.headline === null ? null : updates.headline.trim().slice(0, 120);
+          const { error } = await supabase.from('profiles').update({ headline }).eq('id', uid);
+          if (error) return { error: error.message };
+          setProfile(prev => (prev ? { ...prev, headline } : prev));
+        }
+        if (updates.avatarUrl !== undefined) {
+          const { error } = await supabase.from('profiles').update({ avatar_url: updates.avatarUrl }).eq('id', uid);
+          if (error) return { error: error.message };
+          setProfile(prev => (prev ? { ...prev, avatarUrl: updates.avatarUrl ?? null } : prev));
         }
 
         let emailTrimmed: string | undefined;

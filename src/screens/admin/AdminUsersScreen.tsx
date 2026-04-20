@@ -8,6 +8,7 @@ interface ProfileRow {
   display_name: string;
   email: string | null;
   created_at: string;
+  last_active_at: string | null;
 }
 
 export function AdminUsersScreen() {
@@ -21,7 +22,7 @@ export function AdminUsersScreen() {
     (async () => {
       const { data, error: qErr } = await supabase
         .from('profiles')
-        .select('id, role, display_name, email, created_at')
+        .select('id, role, display_name, email, created_at, last_active_at')
         .order('created_at', { ascending: false });
       if (cancelled) return;
       if (qErr) setError(qErr.message);
@@ -60,6 +61,7 @@ export function AdminUsersScreen() {
                   <th className="px-4 py-3 font-semibold">Role</th>
                   <th className="px-4 py-3 font-semibold">User ID</th>
                   <th className="px-4 py-3 font-semibold">Created</th>
+                  <th className="px-4 py-3 font-semibold">Last active</th>
                 </tr>
               </thead>
               <tbody>
@@ -71,6 +73,9 @@ export function AdminUsersScreen() {
                     <td className="px-4 py-3 text-ink-secondary font-mono text-xs">{r.id}</td>
                     <td className="px-4 py-3 text-ink-secondary whitespace-nowrap">
                       {new Date(r.created_at).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-ink-secondary whitespace-nowrap">
+                      {r.last_active_at ? new Date(r.last_active_at).toLocaleString() : '—'}
                     </td>
                   </tr>
                 ))}

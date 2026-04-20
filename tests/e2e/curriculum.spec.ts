@@ -9,6 +9,7 @@ test.describe('curriculum shell (unauthenticated)', () => {
     await page.goto('/');
     await expect(page.getByRole('heading', { name: /master russian cases/i })).toBeVisible();
     await expect(page.getByRole('heading', { name: /sample practice question/i })).toBeVisible();
+    await expect(page.getByText(/demo score/i)).toBeVisible();
   });
 
   test('login page shows Languini branding', async ({ page }) => {

@@ -8,7 +8,8 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_SKIP_WEBSERVER
     ? undefined
     : {
-        command: 'npm run dev -- --host 127.0.0.1 --port 5173',
+        /** Short practice sessions for authenticated flow tests. */
+        command: 'VITE_E2E=true npm run dev -- --host 127.0.0.1 --port 5173',
         url: 'http://127.0.0.1:5173',
         reuseExistingServer: !process.env.CI,
       },

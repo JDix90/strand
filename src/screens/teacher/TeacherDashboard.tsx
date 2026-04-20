@@ -76,6 +76,13 @@ export function TeacherDashboard() {
           </div>
           <div className="flex items-center gap-3">
             <button
+              type="button"
+              onClick={() => navigate('/teacher/calendar')}
+              className="text-ink-secondary hover:text-ink text-sm px-3 py-1.5 rounded-lg hover:bg-surface transition-colors border border-border"
+            >
+              Calendar
+            </button>
+            <button
               onClick={() => navigate('/settings')}
               className="text-ink-secondary hover:text-ink p-2 rounded-lg hover:bg-surface transition-colors"
               title="Settings"
@@ -93,6 +100,26 @@ export function TeacherDashboard() {
       </div>
 
       <div className="max-w-4xl mx-auto px-6 py-8 space-y-8">
+        {profile &&
+          profile.role === 'teacher' &&
+          (!profile.avatarUrl?.trim() || !profile.bio?.trim()) && (
+            <div className="rounded-2xl border border-amber-700/60 bg-amber-950/40 px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <p className="font-semibold text-amber-100 text-sm">Complete your profile</p>
+                <p className="text-amber-200/90 text-xs mt-1">
+                  Add a photo and a short bio so students recognize you in class discussion.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => navigate('/settings')}
+                className="shrink-0 px-4 py-2 rounded-xl bg-brand hover:bg-brand-hover text-ink text-sm font-semibold"
+              >
+                Open settings
+              </button>
+            </div>
+          )}
+
         <div className="flex items-center justify-between">
           <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider">
             My Classes

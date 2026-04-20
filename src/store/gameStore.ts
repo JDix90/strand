@@ -11,8 +11,10 @@ import {
   loadSessionHistory,
   appendSessionSummary,
   checkAndMigrateSchema,
+  defaultSettings,
   type AppSettings,
 } from '../lib/storage';
+import { modeQualifiesForStreak, nextStreakState, localCalendarDateFromISO } from '../lib/streakEngine';
 import { enqueueStaleReviews } from '../lib/adaptiveEngine';
 import {
   cloudLoadMasteryRecords,
@@ -90,6 +92,21 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const sync = opts?.syncToCloud !== false;
     const uid = get().userId;
     if (sync && uid) void runCloudWriteWithRetry('session', () => cloudAppendSessionSummary(uid, summary));
+
+    if (sync && modeQualifiesForStreak(summary.modeId)) {
+      const cur = get().settings;
+      const sessionDate = localCalendarDateFromISO(summary.completedAt);
+      const next = nextStreakState(cur.lastStreakActivityDate, sessionDate, cur.streakCurrent, cur.streakBest);
+      const newSettings: AppSettings = {
+        ...cur,
+        streakCurrent: next.current,
+        streakBest: next.best,
+        lastStreakActivityDate: next.lastActivityDate,
+      };
+      saveSettings(newSettings);
+      set({ settings: newSettings });
+      if (uid) void runCloudWriteWithRetry('settings', () => cloudSaveSettings(uid, newSettings));
+    }
   },
 
   setCurrentMode: (mode) => set({ currentMode: mode }),
@@ -147,7 +164,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     ]);
 
     const localSettings = loadSettings();
-    const mergedSettings: AppSettings = { ...localSettings, ...cloudSettingsPartial };
+    const mergedSettings: AppSettings = {
+      ...defaultSettings,
+      ...localSettings,
+      ...cloudSettingsPartial,
+    };
 
     saveMasteryRecords(cloudMastery);
     saveSettings(mergedSettings);

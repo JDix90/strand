@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
 import { ClassCurriculumSection } from './ClassCurriculumSection';
 import { TeacherCurriculumChecklist } from './TeacherCurriculumChecklist';
+import { ClassScheduleEditor } from '../../components/teacher/ClassScheduleEditor';
+import { ClassNotesPanel } from '../../components/class/ClassNotesPanel';
 
 interface ClassInfo {
   id: string;
   name: string;
   join_code: string;
+  teacher_id: string;
 }
 
 interface StudentRow {
@@ -30,6 +34,7 @@ interface AssignmentRow {
 export function ClassDetailScreen() {
   const { classId } = useParams<{ classId: string }>();
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const [classInfo, setClassInfo] = useState<ClassInfo | null>(null);
   const [students, setStudents] = useState<StudentRow[]>([]);
   const [assignments, setAssignments] = useState<AssignmentRow[]>([]);
@@ -42,7 +47,7 @@ export function ClassDetailScreen() {
     const load = async () => {
       const { data: cls } = await supabase
         .from('classes')
-        .select('id, name, join_code')
+        .select('id, name, join_code, teacher_id')
         .eq('id', classId)
         .single();
 
@@ -194,6 +199,13 @@ export function ClassDetailScreen() {
           </button>
           <button
             type="button"
+            onClick={() => navigate('/teacher/calendar')}
+            className="px-4 py-2 bg-surface hover:bg-surface-muted border border-border-strong text-ink rounded-xl text-sm"
+          >
+            Class calendar
+          </button>
+          <button
+            type="button"
             onClick={() => {
               const url = `${window.location.origin}/class/${classId}`;
               void navigator.clipboard.writeText(url);
@@ -203,6 +215,19 @@ export function ClassDetailScreen() {
             Copy student class link
           </button>
         </div>
+
+        {classId && <ClassScheduleEditor classId={classId} />}
+
+        {profile && classId && (
+          <ClassNotesPanel
+            classId={classId}
+            viewerId={profile.id}
+            canManageClass={
+              profile.role === 'admin' ||
+              (profile.role === 'teacher' && classInfo.teacher_id === profile.id)
+            }
+          />
+        )}
 
         <div id="class-curriculum">
           <ClassCurriculumSection classId={classId!} />

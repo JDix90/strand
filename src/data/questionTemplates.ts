@@ -1,4 +1,5 @@
 import type { QuestionTemplate } from '../types';
+import { genitiveWorkbookQuestionTemplates } from './genitiveWorkbookTemplates';
 
 export const questionTemplates: QuestionTemplate[] = [
   // ============ GENITIVE ============
@@ -990,6 +991,8 @@ export const questionTemplates: QuestionTemplate[] = [
     explanation: 'After the preposition с, 3rd-person pronouns gain н-: им → ним.',
     difficulty: 'standard', tags: ['pronoun', 'instrumental', 'on', 'n_prefix', 'contrast'],
   },
+
+  ...genitiveWorkbookQuestionTemplates,
 ];
 
 export function getQuestionsForMode(modeId: string): QuestionTemplate[] {

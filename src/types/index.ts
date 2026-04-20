@@ -8,6 +8,10 @@ export interface UserProfile {
   role: UserRole;
   displayName: string;
   email: string;
+  /** Public storage URL for avatar image */
+  avatarUrl?: string | null;
+  bio?: string | null;
+  headline?: string | null;
 }
 
 export type CaseId =

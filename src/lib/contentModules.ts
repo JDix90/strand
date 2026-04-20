@@ -1,16 +1,25 @@
 import type { CaseId, ModeId, WordCategory } from '../types';
-import { RUSSIAN_DECLENSION_MODULE, VOCABULARY_STUB_MODULE } from './curriculumConstants';
+import {
+  RUSSIAN_DECLENSION_MODULE,
+  VOCABULARY_MODULE,
+  VOCABULARY_STUB_MODULE,
+} from './curriculumConstants';
 
 export interface RussianDeclensionUnitConfig {
   caseIds: CaseId[];
   categories: WordCategory[];
 }
 
-export interface VocabularyStubUnitConfig {
+/** `units.content_config` for vocabulary (and legacy `deckId`). */
+export interface VocabularyUnitConfig {
+  vocabularySetId?: string;
+  /** @deprecated use vocabularySetId */
   deckId?: string;
+  sessionLength?: number;
+  direction?: 'ru-en' | 'en-ru';
 }
 
-export type UnitContentConfig = RussianDeclensionUnitConfig | VocabularyStubUnitConfig | Record<string, unknown>;
+export type UnitContentConfig = RussianDeclensionUnitConfig | VocabularyUnitConfig | Record<string, unknown>;
 
 const ALL_CASES: CaseId[] = [
   'nominative',
@@ -40,9 +49,13 @@ export function parseRussianDeclensionConfig(raw: unknown): RussianDeclensionUni
   };
 }
 
-/** Modes supported per module (vocabulary stub uses a subset for now). */
+export function isVocabularyModule(moduleId: string): boolean {
+  return moduleId === VOCABULARY_MODULE || moduleId === VOCABULARY_STUB_MODULE;
+}
+
+/** Modes supported per module (vocabulary: practice + learn placeholder). */
 export function modesForContentModule(moduleId: string): ModeId[] {
-  if (moduleId === VOCABULARY_STUB_MODULE) {
+  if (isVocabularyModule(moduleId)) {
     return ['practice', 'learn_table'];
   }
   return ['learn_table', 'practice', 'speed_round', 'boss_battle', 'memory_match', 'grid_challenge'];

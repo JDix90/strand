@@ -63,6 +63,7 @@ export function LoginScreen() {
             <label className="text-ink text-sm font-semibold block mb-1.5">Email</label>
             <input
               type="email"
+              data-testid="login-email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
@@ -76,6 +77,7 @@ export function LoginScreen() {
             <label className="text-ink text-sm font-semibold block mb-1.5">Password</label>
             <input
               type="password"
+              data-testid="login-password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
@@ -87,6 +89,7 @@ export function LoginScreen() {
 
           <button
             type="submit"
+            data-testid="login-submit"
             disabled={submitting || !supabaseConfigured}
             className="w-full py-3 bg-brand hover:bg-brand-hover disabled:bg-slate-300 disabled:text-ink-secondary text-white rounded-xl font-bold text-base transition-colors"
           >

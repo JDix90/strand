@@ -12,13 +12,15 @@ import {
   consumeQueueItem,
 } from '../../lib/adaptiveEngine';
 import { masteryStorageKey, filterMasteryRecordsByUnit } from '../../lib/masteryKeys';
-import { VOCABULARY_STUB_MODULE } from '../../lib/curriculumConstants';
-import { VocabularyStubPractice } from '../../components/game/VocabularyStubPractice';
+import { isVocabularyModule } from '../../lib/contentModules';
+import { practiceSessionQuestionCap, practiceTimeGoalMs } from '../../lib/sessionGoals';
+import { VocabularyPractice } from '../../components/game/VocabularyPractice';
 import { AnswerButton } from '../../components/ui/AnswerButton';
 import { FeedbackPanel } from '../../components/ui/FeedbackPanel';
 import { QuestionCard } from '../../components/game/QuestionCard';
 import { StreakDisplay } from '../../components/ui/StreakDisplay';
 import { ScorePill } from '../../components/ui/ScorePill';
+import { CurriculumScopeBar } from '../../components/curriculum/CurriculumScopeBar';
 import type { SessionAnswerEvent, SessionSummary } from '../../types';
 
 type Phase = 'question' | 'feedback' | 'complete';
@@ -27,8 +29,14 @@ export function PracticeScreen() {
   const navigate = useNavigate();
   const { settings, masteryRecords, adaptiveQueue, updateMasteryRecord: storeMastery, setAdaptiveQueue, addSessionSummary } =
     useGameStore();
-  const { effectiveCategories, filterCaseIds, contentModule, topicId, classId, unitId: ctxUnitId } = useCurriculum();
+  const { effectiveCategories, filterCaseIds, contentModule, topicId, classId, unitId: ctxUnitId, unitRow } =
+    useCurriculum();
   const unitId = useEffectiveUnitId();
+
+  const maxQuestions = practiceSessionQuestionCap(settings);
+  const timeGoalMs = practiceTimeGoalMs(settings);
+  const sessionStartRef = useRef(Date.now());
+  const [elapsedMs, setElapsedMs] = useState(0);
 
   const [phase, setPhase] = useState<Phase>('question');
   const [question, setQuestion] = useState<GeneratedQuestion | null>(null);
@@ -57,13 +65,20 @@ export function PracticeScreen() {
     setLocalMastery(filterMasteryRecordsByUnit(masteryRecords, unitId));
   }, [masteryRecords, unitId]);
 
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setElapsedMs(Date.now() - sessionStartRef.current);
+    }, 400);
+    return () => clearInterval(id);
+  }, []);
+
   const resultsPath = useMemo(() => {
     if (classId && ctxUnitId) return `/class/${classId}/unit/${ctxUnitId}/results`;
     return '/results';
   }, [classId, ctxUnitId]);
 
   const loadNextQuestion = useCallback(() => {
-    if (contentModule === VOCABULARY_STUB_MODULE) return;
+    if (isVocabularyModule(contentModule)) return;
 
     const confusionCounts: Record<string, number> = {};
     for (const record of Object.values(localMastery)) {
@@ -129,7 +144,7 @@ export function PracticeScreen() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    if (contentModule !== VOCABULARY_STUB_MODULE) loadNextQuestion();
+    if (!isVocabularyModule(contentModule)) loadNextQuestion();
   }, []);
 
   const handleAnswer = (choice: string, idx: number) => {
@@ -192,8 +207,14 @@ export function PracticeScreen() {
     setPhase('feedback');
   };
 
+  const shouldEndSession = useCallback(() => {
+    if (questionCount >= maxQuestions) return true;
+    if (timeGoalMs && elapsedMs >= timeGoalMs && questionCount >= 1) return true;
+    return false;
+  }, [questionCount, maxQuestions, timeGoalMs, elapsedMs]);
+
   const handleContinue = () => {
-    if (questionCount >= 20) {
+    if (shouldEndSession()) {
       const summary: SessionSummary = {
         id: Date.now().toString(),
         modeId: 'practice',
@@ -210,18 +231,24 @@ export function PracticeScreen() {
         completedAt: new Date().toISOString(),
         categories,
       };
+      const sessionGoalMet =
+        (settings.sessionGoalType === 'forms' &&
+          settings.sessionGoalForms != null &&
+          questionCount >= settings.sessionGoalForms) ||
+        (settings.sessionGoalType === 'time' && timeGoalMs != null && elapsedMs >= timeGoalMs && questionCount >= 1);
       addSessionSummary(summary);
-      navigate(resultsPath, { state: { summary } });
+      navigate(resultsPath, { state: { summary, sessionGoalMet } });
       return;
     }
     setPhase('question');
     loadNextQuestion();
   };
 
-  if (contentModule === VOCABULARY_STUB_MODULE) {
+  if (isVocabularyModule(contentModule)) {
     const backPath = classId && ctxUnitId ? `/class/${classId}/unit/${ctxUnitId}` : '/home';
     return (
-      <VocabularyStubPractice
+      <VocabularyPractice
+        unitRow={unitRow}
         resultsPath={resultsPath}
         unitId={unitId}
         topicId={topicId}
@@ -237,46 +264,79 @@ export function PracticeScreen() {
     );
   }
 
+  const goalProgressLabel =
+    timeGoalMs != null
+      ? `${Math.min(100, Math.round((elapsedMs / timeGoalMs) * 100))}% time`
+      : settings.sessionGoalType === 'forms' && settings.sessionGoalForms
+        ? `${questionCount} / ${maxQuestions} answers`
+        : null;
+
+  const progressBarPct = timeGoalMs
+    ? Math.min(100, (elapsedMs / timeGoalMs) * 100)
+    : Math.min(100, maxQuestions > 0 ? (questionCount / maxQuestions) * 100 : 0);
+
   return (
     <div className="min-h-screen bg-page text-ink">
+      <CurriculumScopeBar />
       <div className="bg-surface-elevated border-b border-border px-4 py-3">
-        <div className="max-w-2xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="max-w-2xl mx-auto flex items-center justify-between gap-2">
+          <div className="flex items-center gap-3 min-w-0">
             <button
+              type="button"
+              aria-label="Close practice"
               onClick={() => navigate(classId && ctxUnitId ? `/class/${classId}/unit/${ctxUnitId}` : '/home')}
-              className="text-ink-secondary hover:text-ink"
+              className="text-ink-secondary hover:text-ink shrink-0 min-w-11 min-h-11 flex items-center justify-center rounded-xl"
             >
               ✕
             </button>
-            <span className="text-ink font-bold">🎯 Practice</span>
+            <span className="text-ink font-bold truncate">🎯 Practice</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <StreakDisplay streak={streak} />
             <ScorePill score={score} icon="⭐" />
           </div>
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 pt-4">
-        <div className="flex justify-between text-xs text-ink-secondary mb-1">
+      <div className="max-w-2xl mx-auto px-4 pt-4 space-y-2">
+        <div className="flex justify-between text-xs text-ink-secondary mb-1 gap-2">
           <span>
-            Question {questionCount + 1} of 20
+            Question {questionCount + 1} of {maxQuestions}
           </span>
           <span>{correctCount} correct</span>
         </div>
+        {timeGoalMs != null && (
+          <div className="flex justify-between text-xs text-ink-secondary">
+            <span>Session time</span>
+            <span>
+              {Math.floor(elapsedMs / 60000)}:
+              {String(Math.floor((elapsedMs % 60000) / 1000)).padStart(2, '0')} / {Math.floor(timeGoalMs / 60000)}:
+              {String(Math.floor((timeGoalMs % 60000) / 1000)).padStart(2, '0')}
+            </span>
+          </div>
+        )}
+        {goalProgressLabel && (
+          <p className="text-[11px] text-ink-secondary" aria-hidden>
+            Goal: {goalProgressLabel}
+          </p>
+        )}
         <div className="h-1.5 bg-surface rounded-full overflow-hidden">
           <div
             className="h-full bg-green-500 rounded-full transition-all duration-300"
-            style={{ width: `${(questionCount / 20) * 100}%` }}
+            style={{ width: `${progressBarPct}%` }}
           />
         </div>
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
+      <div
+        className="max-w-2xl mx-auto px-4 py-6 space-y-4"
+        aria-live="polite"
+        aria-relevant="additions text"
+      >
         <QuestionCard question={question} showHelper={settings.showHelperWords} />
 
         {phase === 'question' && (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {question.choices.map((choice, idx) => (
               <AnswerButton
                 key={choice}
@@ -296,6 +356,7 @@ export function PracticeScreen() {
               (question.template.acceptedAnswers?.includes(selectedAnswer) ?? false)
             }
             correctAnswer={question.template.correctAnswer}
+            sentencePrompt={question.template.prompt}
             explanation={question.template.explanation}
             onContinue={handleContinue}
             responseMs={events[events.length - 1]?.responseMs}

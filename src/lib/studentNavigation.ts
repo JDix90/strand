@@ -37,6 +37,27 @@ export function buildClassUnitModePath(classId: string, unitId: string, modeId: 
   return `/class/${classId}/unit/${unitId}/${seg}`;
 }
 
+const FLAT_PATH_BY_MODE: Record<ModeId, string> = {
+  learn_table: '/learn',
+  practice: '/practice',
+  speed_round: '/speed',
+  boss_battle: '/boss',
+  memory_match: '/memory',
+  grid_challenge: '/grid',
+};
+
+/**
+ * Prefer class-scoped URL when a student has a class and unit; otherwise flat mode path.
+ */
+export function buildStudentModePath(
+  classId: string | null | undefined,
+  unitId: string | null | undefined,
+  modeId: ModeId,
+): string {
+  if (classId && unitId) return buildClassUnitModePath(classId, unitId, modeId);
+  return FLAT_PATH_BY_MODE[modeId] ?? '/practice';
+}
+
 /** Map assignment mode_id string (nullable) to ModeId; default practice. */
 export function assignmentModeToModeId(modeId: string | null | undefined): ModeId {
   const m = modeId as ModeId;

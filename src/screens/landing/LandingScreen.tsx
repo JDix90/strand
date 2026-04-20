@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { generateQuestion } from '../../lib/questionGenerator';
 import { QuestionCard } from '../../components/game/QuestionCard';
@@ -50,10 +50,33 @@ const MODE_PREVIEWS = [
   },
 ] as const;
 
-const DEMO_FORM_KEYS = ['ty:accusative', 'ya:dative', 'on:genitive', 'my:instrumental'] as const;
+const DEMO_FORM_KEYS = [
+  'ty:accusative',
+  'ya:dative',
+  'on:genitive',
+  'my:instrumental',
+  'ty:genitive',
+  'on:accusative',
+  'my:nominative',
+] as const;
+
+/** Ephemeral demo-only counter; never mixed with signed-in progress (`cd_*` keys). */
+const DEMO_SCORE_KEY = 'demo_landing_score';
+
+function readDemoScore(): number {
+  try {
+    const v = localStorage.getItem(DEMO_SCORE_KEY);
+    if (v == null) return 0;
+    const n = Number(v);
+    return Number.isFinite(n) ? Math.min(9999, Math.max(0, n)) : 0;
+  } catch {
+    return 0;
+  }
+}
 
 export function LandingScreen() {
   const [demoRotate, setDemoRotate] = useState(0);
+  const [demoScore, setDemoScore] = useState(() => readDemoScore());
   const demoQuestion = useMemo(() => {
     const key = DEMO_FORM_KEYS[demoRotate % DEMO_FORM_KEYS.length];
     return generateQuestion('practice', 'standard', undefined, [], key, ['pronoun']);
@@ -63,9 +86,20 @@ export function LandingScreen() {
   const answered = pickedIndex !== null;
   const isCorrect = answered && demoQuestion ? pickedIndex === demoQuestion.correctIndex : false;
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(DEMO_SCORE_KEY, String(demoScore));
+    } catch {
+      /* ignore */
+    }
+  }, [demoScore]);
+
   const handlePick = (index: number) => {
     if (!demoQuestion || answered) return;
     setPickedIndex(index);
+    if (index === demoQuestion.correctIndex) {
+      setDemoScore(s => s + 1);
+    }
   };
 
   const handleTryAnother = () => {
@@ -132,6 +166,10 @@ export function LandingScreen() {
               This is the same style as Practice mode—no account required for this preview. Your real
               sessions save progress when you sign in.
             </p>
+            <p className="text-ink-secondary text-xs max-w-lg mx-auto">
+              Demo score: <span className="text-ink font-semibold tabular-nums">{demoScore}</span> (stored only in this
+              browser for fun — not your real profile.)
+            </p>
           </div>
 
           {demoQuestion ? (
@@ -175,6 +213,23 @@ export function LandingScreen() {
           ) : (
             <p className="text-center text-ink-secondary text-sm">Could not load a sample question.</p>
           )}
+        </section>
+
+        <section className="rounded-2xl border border-dashed border-border bg-surface-elevated/40 px-5 py-8 space-y-3 text-center">
+          <p className="text-2xl" aria-hidden>
+            ⚡
+          </p>
+          <h2 className="text-lg font-bold text-ink">Speed round teaser</h2>
+          <p className="text-ink-secondary text-sm max-w-md mx-auto leading-relaxed">
+            Answer as many questions as you can before time runs out — ideal for fluency drills next to slow Practice. Unlock
+            Speed (and streaks, goals, and class sync) after you create an account.
+          </p>
+          <Link
+            to="/signup"
+            className="inline-flex items-center justify-center text-sm font-semibold text-link hover:text-link"
+          >
+            Sign up to play Speed →
+          </Link>
         </section>
 
         <section className="space-y-6">

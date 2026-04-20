@@ -12,6 +12,10 @@ import {
   assignmentModeToModeId,
   describeRowLock,
 } from '../../lib/studentNavigation';
+import {
+  buildCurriculumNavItems,
+  getUnitFromRow,
+} from '../../lib/studentCurriculumDisplay';
 
 interface AssignmentDue {
   id: string;
@@ -143,13 +147,32 @@ export function StudentCurriculumSidebar({
     [assignments, completedIds]
   );
 
+  const navItems = useMemo(() => buildCurriculumNavItems(suggested), [suggested]);
+
   const headerTitle = classLabel?.trim() || `Class ${classId.slice(0, 8)}…`;
+
+  function vocabHubIsActive(vocabRows: typeof suggested): boolean {
+    if (location.pathname.includes(`/class/${classId}/vocabulary`)) return true;
+    const ids = new Set(vocabRows.map(r => r.unit_id));
+    const match = location.pathname.match(/\/unit\/([^/]+)/);
+    return match != null && ids.has(match[1]);
+  }
 
   return (
     <aside className="w-64 shrink-0 border-r border-border bg-surface-elevated/95 flex flex-col min-h-screen">
-      <div className="p-4 border-b border-border">
+      <div className="p-4 border-b border-border space-y-2">
         <Link to={homeTo} className="text-ink-secondary hover:text-ink text-sm">
           ← Overview
+        </Link>
+        <Link
+          to="/home/calendar"
+          className={`block text-sm rounded-lg px-2 py-1.5 transition-colors ${
+            location.pathname === '/home/calendar'
+              ? 'bg-surface text-ink'
+              : 'text-ink-secondary hover:bg-surface/80'
+          }`}
+        >
+          📅 Calendar
         </Link>
         {classOptions && classOptions.length > 1 && onClassChange ? (
           <label className="block mt-3">
@@ -201,8 +224,37 @@ export function StudentCurriculumSidebar({
           </p>
         )}
         {!loading &&
-          suggested.map(row => {
-            const u = Array.isArray(row.units) ? row.units[0] : row.units;
+          navItems.map(item => {
+            if (item.kind === 'vocabulary_hub') {
+              const vocabRows = item.rows;
+              const active = vocabHubIsActive(vocabRows);
+              const first = getUnitFromRow(vocabRows[0]);
+              const topicLine =
+                first?.topics?.title?.trim() ||
+                first?.description?.trim() ||
+                'All topics';
+              return (
+                <Link
+                  key="vocabulary-hub"
+                  to={`/class/${classId}/vocabulary`}
+                  aria-current={active ? 'page' : undefined}
+                  className={`block rounded-lg px-3 py-2 text-sm transition-colors ${
+                    active ? 'bg-surface text-ink' : 'text-ink-secondary hover:bg-surface/80'
+                  }`}
+                >
+                  <span className="block font-medium truncate">Vocabulary</span>
+                  <span
+                    className="text-[10px] text-ink-secondary block truncate"
+                    title={topicLine}
+                  >
+                    {topicLine.length > 48 ? `${topicLine.slice(0, 48)}…` : topicLine}
+                  </span>
+                </Link>
+              );
+            }
+
+            const row = item.row;
+            const u = getUnitFromRow(row);
             if (!u) return null;
             const { locked, reason } = describeRowLock(row, masteryRecords);
             const active = location.pathname.includes(`/unit/${row.unit_id}`);
