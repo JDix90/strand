@@ -200,7 +200,7 @@ export function StudentCurriculumSidebar({
       </div>
       {error && (
         <div className="px-3 py-2 text-xs text-red-300 bg-red-950/50 border-b border-red-900 flex items-center justify-between gap-2">
-          <span className="break-words">{error}</span>
+          <span className="wrap-break-word">{error}</span>
           <button
             type="button"
             onClick={() => {
@@ -248,6 +248,25 @@ export function StudentCurriculumSidebar({
                     title={topicLine}
                   >
                     {topicLine.length > 48 ? `${topicLine.slice(0, 48)}…` : topicLine}
+                  </span>
+                </Link>
+              );
+            }
+            if (item.kind === 'cases_hub') {
+              const subtitle = 'Names, pronouns, and nouns';
+              const active = location.pathname.includes(`/class/${classId}/cases`);
+              return (
+                <Link
+                  key="cases-hub"
+                  to={`/class/${classId}/cases`}
+                  aria-current={active ? 'page' : undefined}
+                  className={`block rounded-lg px-3 py-2 text-sm transition-colors ${
+                    active ? 'bg-surface text-ink' : 'text-ink-secondary hover:bg-surface/80'
+                  }`}
+                >
+                  <span className="block font-medium truncate">Grammar - Cases</span>
+                  <span className="text-[10px] text-ink-secondary block truncate" title={subtitle}>
+                    {subtitle.length > 48 ? `${subtitle.slice(0, 48)}…` : subtitle}
                   </span>
                 </Link>
               );

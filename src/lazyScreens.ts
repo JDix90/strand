@@ -61,6 +61,12 @@ export const StudentClassHome = lazy(() =>
 export const VocabularyHubScreen = lazy(() =>
   import('./screens/student/VocabularyHubScreen').then(m => ({ default: m.VocabularyHubScreen }))
 );
+export const VocabularyMixedPracticeScreen = lazy(() =>
+  import('./screens/student/VocabularyMixedPracticeScreen').then(m => ({ default: m.VocabularyMixedPracticeScreen }))
+);
+export const CasesHubScreen = lazy(() =>
+  import('./screens/student/CasesHubScreen').then(m => ({ default: m.CasesHubScreen }))
+);
 
 export const StudentClassLayout = lazy(() =>
   import('./layouts/StudentClassLayout').then(m => ({ default: m.StudentClassLayout }))
@@ -70,6 +76,9 @@ export const StudentHomeLayout = lazy(() =>
 );
 export const StudentCalendarScreen = lazy(() =>
   import('./screens/student/StudentCalendarScreen').then(m => ({ default: m.StudentCalendarScreen }))
+);
+export const StudentProgressScreen = lazy(() =>
+  import('./screens/student/StudentProgressScreen').then(m => ({ default: m.StudentProgressScreen }))
 );
 export const TeacherCalendarScreen = lazy(() =>
   import('./screens/teacher/TeacherCalendarScreen').then(m => ({ default: m.TeacherCalendarScreen }))

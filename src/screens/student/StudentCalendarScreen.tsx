@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { addMonths, format, startOfMonth, endOfMonth } from 'date-fns';
 import { useAuth } from '../../contexts/AuthContext';
 import { MonthGrid } from '../../components/calendar/MonthGrid';
 import {
   fetchStudentAbsences,
+  fetchStudentCalendarNotes,
   fetchStudentClassesWithSchedules,
   upsertStudentAbsence,
 } from '../../lib/calendarApi';
+import type { ClassNote } from '../../lib/classSocialApi';
 import { generateOccurrences, type ClassCalendarConfig, type Occurrence } from '../../lib/calendar/generateOccurrences';
 
 function mergeOccurrences(configs: ClassCalendarConfig[], rangeStart: Date, rangeEnd: Date): Map<string, Occurrence[]> {
@@ -35,6 +37,7 @@ export function StudentCalendarScreen() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [modalDate, setModalDate] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [calendarNotes, setCalendarNotes] = useState<ClassNote[]>([]);
 
   const rangeStart = useMemo(() => startOfMonth(anchor), [anchor]);
   const rangeEnd = useMemo(() => endOfMonth(anchor), [anchor]);
@@ -56,6 +59,43 @@ export function StudentCalendarScreen() {
     void reload();
   }, [reload]);
 
+  useEffect(() => {
+    if (!profile?.id) return;
+    let cancelled = false;
+    const start = format(rangeStart, 'yyyy-MM-dd');
+    const end = format(rangeEnd, 'yyyy-MM-dd');
+    void (async () => {
+      const { notes, error } = await fetchStudentCalendarNotes(profile.id, start, end);
+      if (cancelled) return;
+      if (error) setLoadError(prev => prev ?? error);
+      setCalendarNotes(notes);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [profile?.id, rangeStart, rangeEnd]);
+
+  const classNameById = useMemo(() => {
+    const m: Record<string, string> = {};
+    for (const c of configs) m[c.classId] = c.className;
+    return m;
+  }, [configs]);
+
+  const notesByDate = useMemo(() => {
+    const m = new Map<string, ClassNote[]>();
+    for (const n of calendarNotes) {
+      const d = n.visible_on_date;
+      if (!d) continue;
+      const list = m.get(d) ?? [];
+      list.push(n);
+      m.set(d, list);
+    }
+    for (const [, list] of m) {
+      list.sort((a, b) => (a.pinned === b.pinned ? 0 : a.pinned ? -1 : 1));
+    }
+    return m;
+  }, [calendarNotes]);
+
   const occByDate = useMemo(
     () => mergeOccurrences(configs, rangeStart, rangeEnd),
     [configs, rangeStart, rangeEnd],
@@ -67,6 +107,18 @@ export function StudentCalendarScreen() {
   );
 
   const modalOccurrences = modalDate ? occByDate.get(modalDate) ?? [] : [];
+  const modalNotes = modalDate ? notesByDate.get(modalDate) ?? [] : [];
+
+  const agendaDates = useMemo(() => {
+    const s = new Set<string>();
+    occByDate.forEach((occs, iso) => {
+      if (occs.length > 0) s.add(iso);
+    });
+    notesByDate.forEach((notes, iso) => {
+      if (notes.length > 0) s.add(iso);
+    });
+    return [...s].sort();
+  }, [occByDate, notesByDate]);
 
   const toggleAbsence = async (classId: string, iso: string, currentlyAbsent: boolean) => {
     if (!profile?.id) return;
@@ -94,7 +146,8 @@ export function StudentCalendarScreen() {
             </button>
             <h1 className="text-2xl font-bold">Calendar</h1>
             <p className="text-ink-secondary text-sm mt-1">
-              Class meetings from your teachers’ schedules. Mark absences for specific dates.
+              Class meetings from your teachers’ schedules, plus any notes your teachers pinned to a day. Mark absences for
+              specific dates.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -135,21 +188,43 @@ export function StudentCalendarScreen() {
               anchor={anchor}
               renderCell={iso => {
                 const list = occByDate.get(iso) ?? [];
-                if (list.length === 0) return null;
+                const notes = notesByDate.get(iso) ?? [];
+                if (list.length === 0 && notes.length === 0) return null;
+                type Line = { key: string; node: ReactNode };
+                const lines: Line[] = [];
+                for (const o of list) {
+                  lines.push({
+                    key: o.scheduleId + o.startsAt,
+                    node: (
+                      <div className="truncate text-ink-secondary">
+                        <span className="text-ink">{o.className}</span> · {o.startsAt}
+                      </div>
+                    ),
+                  });
+                }
+                for (const n of notes) {
+                  lines.push({
+                    key: `note-${n.id}`,
+                    node: (
+                      <div className="truncate text-teal-300/95">
+                        📝 <span className="text-ink">{n.title?.trim() || 'Note'}</span>
+                        <span className="text-ink-secondary"> · {classNameById[n.class_id] ?? 'Class'}</span>
+                      </div>
+                    ),
+                  });
+                }
+                const shown = lines.slice(0, 2);
+                const more = lines.length - 2;
                 return (
                   <button
                     type="button"
                     className="w-full text-left rounded-lg hover:bg-brand/10 px-0.5 py-0.5 transition-colors"
                     onClick={() => setModalDate(iso)}
                   >
-                    {list.slice(0, 2).map(o => (
-                      <div key={o.scheduleId + o.startsAt} className="truncate text-ink-secondary">
-                        <span className="text-ink">{o.className}</span> · {o.startsAt}
-                      </div>
+                    {shown.map(l => (
+                      <div key={l.key}>{l.node}</div>
                     ))}
-                    {list.length > 2 && (
-                      <div className="text-ink-secondary">+{list.length - 2} more</div>
-                    )}
+                    {more > 0 && <div className="text-ink-secondary">+{more} more</div>}
                   </button>
                 );
               }}
@@ -160,26 +235,35 @@ export function StudentCalendarScreen() {
         <div className="bg-surface border border-border rounded-2xl p-5">
           <h2 className="text-ink font-semibold text-sm uppercase tracking-wide mb-3">Agenda (this month)</h2>
           <ul className="space-y-2 max-h-64 overflow-y-auto">
-            {[...occByDate.entries()]
-              .filter(([, occs]) => occs.length > 0)
-              .sort(([a], [b]) => a.localeCompare(b))
-              .map(([iso, occs]) => (
+            {agendaDates.map(iso => {
+              const occs = occByDate.get(iso) ?? [];
+              const nl = notesByDate.get(iso) ?? [];
+              const summary: string[] = [];
+              if (occs.length > 0) summary.push(occs.map(o => o.className).join(', '));
+              if (nl.length > 0) {
+                const titles = nl.map(n => n.title?.trim() || 'Note');
+                const head = titles.slice(0, 2).join(', ');
+                const extra = titles.length > 2 ? ` +${titles.length - 2}` : '';
+                summary.push(`${nl.length} teacher note${nl.length === 1 ? '' : 's'}: ${head}${extra}`);
+              }
+              return (
                 <li key={iso} className="flex flex-wrap items-baseline gap-2 text-sm border-b border-border/60 pb-2">
                   <span className="font-mono text-ink-secondary shrink-0">{iso}</span>
-                  <span className="text-ink">
-                    {occs.map(o => o.className).join(', ')}
-                  </span>
+                  <span className="text-ink min-w-0">{summary.join(' · ')}</span>
                   <button
                     type="button"
-                    className="text-link text-xs underline ml-auto"
+                    className="text-link text-xs underline ml-auto shrink-0"
                     onClick={() => setModalDate(iso)}
                   >
-                    Absences
+                    {occs.length > 0 ? 'Absences & notes' : 'Notes'}
                   </button>
                 </li>
-              ))}
-            {occByDate.size === 0 && configs.length > 0 && (
-              <li className="text-ink-secondary text-sm">No meetings in this month (check term dates or schedule).</li>
+              );
+            })}
+            {agendaDates.length === 0 && configs.length > 0 && (
+              <li className="text-ink-secondary text-sm">
+                No meetings or dated notes in this month (check term dates, schedule, or teacher notes).
+              </li>
             )}
           </ul>
         </div>
@@ -196,7 +280,13 @@ export function StudentCalendarScreen() {
             <h2 id="cal-modal-title" className="text-lg font-bold text-ink">
               {modalDate}
             </h2>
-            <p className="text-ink-secondary text-sm mt-1">Mark or clear absence for each class that meets this day.</p>
+            {modalOccurrences.length > 0 ? (
+              <p className="text-ink-secondary text-sm mt-1">Mark or clear absence for each class that meets this day.</p>
+            ) : modalNotes.length > 0 ? (
+              <p className="text-ink-secondary text-sm mt-1">No class meetings—teacher notes for this day are below.</p>
+            ) : (
+              <p className="text-ink-secondary text-sm mt-1">Nothing scheduled for this day.</p>
+            )}
             <ul className="mt-4 space-y-3">
               {modalOccurrences.map(o => {
                 const absent = absenceKey(o.classId, modalDate);
@@ -226,8 +316,29 @@ export function StudentCalendarScreen() {
                 );
               })}
             </ul>
-            {modalOccurrences.length === 0 && (
-              <p className="text-ink-secondary text-sm mt-3">No classes meet on this day.</p>
+            {modalNotes.length > 0 && (
+              <div className="mt-5 border-t border-border pt-4">
+                <h3 className="text-sm font-semibold text-ink mb-2">Teacher notes (this day)</h3>
+                <ul className="space-y-3">
+                  {modalNotes.map(n => (
+                    <li key={n.id} className="rounded-xl border border-border bg-page px-3 py-2">
+                      <div className="flex flex-wrap items-baseline justify-between gap-2">
+                        <span className="font-medium text-ink">{n.title?.trim() || 'Note'}</span>
+                        {n.pinned && (
+                          <span className="text-[10px] uppercase tracking-wide text-amber-200/90">Pinned</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-ink-secondary mt-0.5">{classNameById[n.class_id] ?? 'Class'}</p>
+                      <Link
+                        to={`/class/${n.class_id}`}
+                        className="text-link text-sm font-semibold mt-2 inline-block hover:underline"
+                      >
+                        Open class home for full notes →
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
             <div className="mt-6 flex justify-end">
               <button

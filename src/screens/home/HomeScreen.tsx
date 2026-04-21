@@ -105,6 +105,17 @@ const FLAT_PATH_BY_MODE: Record<ModeId, string> = {
   grid_challenge: '/grid',
 };
 
+function currentClassLabelFromStorage(classes: ClassMembership[]): string | undefined {
+  if (classes.length === 0) return undefined;
+  try {
+    const sid = localStorage.getItem(SELECTED_CLASS_STORAGE_KEY);
+    const hit = classes.find(c => c.id === sid);
+    return hit?.name ?? classes[0].name;
+  } catch {
+    return classes[0].name;
+  }
+}
+
 async function navigateToMode(
   navigate: NavigateFunction,
   modeId: ModeId,
@@ -234,43 +245,104 @@ export function HomeScreen() {
     ? Math.max(...sessionHistory.map(s => s.bestStreak), 0)
     : 0;
   const displayName = profile?.displayName?.trim() || 'there';
+  const isEnrolledStudent = effectiveRole === 'student' && myClasses.length > 0;
+  const currentClassLabel = isEnrolledStudent ? currentClassLabelFromStorage(myClasses) : undefined;
+  const showStreakStrip =
+    settings.streakCurrent > 0 || settings.streakBest > 0 || bestStreakEver >= 2;
 
   return (
     <div className="min-h-screen bg-page text-ink">
-      <div className="bg-surface border-b border-border shadow-[var(--shadow-card)] px-4 sm:px-6 py-4 sm:py-5">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-start justify-between gap-3">
-            <h1 className="text-xl font-bold text-ink tracking-tight min-w-0 pr-2">
-              {t('home.welcome', { name: displayName })}
-            </h1>
-            <button
-              onClick={() => navigate('/settings')}
-              className="text-ink-secondary hover:text-ink p-2 rounded-xl hover:bg-surface-muted transition-colors shrink-0 -mr-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
-              title={t('nav.settings')}
-              type="button"
-              aria-label={t('nav.settings')}
-            >
-              ⚙️
-            </button>
+      <div className="bg-surface border-b border-border shadow-[var(--shadow-card)] px-4 sm:px-6 py-3 sm:py-4">
+        <div className="max-w-4xl mx-auto flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1 flex items-start gap-3">
+            <BrandLogo size="sm" to="/home" className="gap-1.5 shrink-0 mt-0.5" />
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl font-bold text-ink tracking-tight leading-snug">
+                {t('home.welcome', { name: displayName })}
+              </h1>
+              {isEnrolledStudent && currentClassLabel && (
+                <p className="text-ink-secondary text-xs mt-1">{t('home.currentClass', { name: currentClassLabel })}</p>
+              )}
+            </div>
           </div>
-          <div className="mt-3">
-            <BrandLogo size="sm" to="/home" className="gap-1.5" />
-          </div>
-          {effectiveRole === 'student' && myClasses.length > 0 && (
-            <p className="text-ink-secondary text-xs mt-2 max-w-md">
-              Overview — stats and modes for all your work. Open this page anytime from Overview in the sidebar.
-            </p>
-          )}
+          <button
+            onClick={() => navigate('/settings')}
+            className="text-ink-secondary hover:text-ink p-2 rounded-xl hover:bg-surface-muted transition-colors shrink-0 -mr-1 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            title={t('nav.settings')}
+            type="button"
+            aria-label={t('nav.settings')}
+          >
+            ⚙️
+          </button>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-6 py-8 space-y-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-5 space-y-5">
         {effectiveRole === 'student' && <StreakNudgeBanner />}
 
-        {(settings.streakCurrent > 0 || settings.streakBest > 0) && (
-          <div className="rounded-2xl border border-border bg-surface px-4 py-3 flex flex-wrap items-center gap-x-6 gap-y-1 text-sm">
-            <span className="text-ink font-medium">{t('home.streakLabel', { count: settings.streakCurrent })}</span>
-            <span className="text-ink-secondary">{t('home.streakBest', { count: settings.streakBest })}</span>
+        {showStreakStrip && (
+          <div className="rounded-xl border border-border bg-surface px-3 py-2.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm">
+            {settings.streakCurrent > 0 && (
+              <span className="text-ink font-medium">{t('home.streakLabel', { count: settings.streakCurrent })}</span>
+            )}
+            {settings.streakCurrent > 0 && settings.streakBest > 0 && (
+              <span className="text-ink-secondary" aria-hidden>
+                ·
+              </span>
+            )}
+            {settings.streakBest > 0 && (
+              <span className="text-ink-secondary">{t('home.streakBest', { count: settings.streakBest })}</span>
+            )}
+            {bestStreakEver >= 2 && (
+              <>
+                <span className="text-ink-secondary hidden sm:inline" aria-hidden>
+                  ·
+                </span>
+                <span className="text-ink-secondary">{t('home.sessionBestInline', { count: bestStreakEver })}</span>
+              </>
+            )}
+          </div>
+        )}
+
+        {isEnrolledStudent && primaryUnitLabel && (
+          <button
+            type="button"
+            onClick={() => navigateToMode(navigate, 'practice', { effectiveRole, myClasses, masteryRecords })}
+            className="w-full flex items-center justify-between gap-3 rounded-2xl border-2 border-brand/40 bg-brand/10 hover:bg-brand/16 px-4 py-3.5 sm:py-4 text-left shadow-[var(--shadow-card)] transition-colors"
+          >
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="text-2xl shrink-0" aria-hidden>
+                🎯
+              </span>
+              <div className="min-w-0">
+                <p className="font-bold text-ink text-sm sm:text-base">{t('home.continuePractice')}</p>
+                <p className="text-ink-secondary text-xs mt-0.5 truncate">{primaryUnitLabel}</p>
+              </div>
+            </div>
+            <span className="text-ink-secondary text-xl shrink-0" aria-hidden>
+              ›
+            </span>
+          </button>
+        )}
+
+        {effectiveRole === 'student' && (
+          <div className="flex flex-wrap gap-2">
+            {myClasses.length > 0 && (
+              <Link
+                to="/home/calendar"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-sm font-medium text-ink hover:border-brand hover:bg-surface-muted transition-colors"
+              >
+                <span aria-hidden>📅</span>
+                {t('home.calendarShort')}
+              </Link>
+            )}
+            <Link
+              to="/home/progress"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-sm font-medium text-ink hover:border-brand hover:bg-surface-muted transition-colors"
+            >
+              <span aria-hidden>📊</span>
+              {t('home.progressShort')}
+            </Link>
           </div>
         )}
 
@@ -284,79 +356,20 @@ export function HomeScreen() {
           </p>
         )}
 
-        {bestStreakEver >= 2 && (
-          <div className="rounded-2xl bg-ink text-white px-5 py-4 flex items-center justify-between gap-3 shadow-[var(--shadow-card)]">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl" aria-hidden>
-                🔥
-              </span>
-              <div>
-                <p className="font-bold text-sm">Nice streak!</p>
-                <p className="text-white/80 text-xs">
-                  Best run in a single session: {bestStreakEver} correct in a row
-                </p>
-              </div>
-            </div>
-            <div className="hidden sm:block text-3xl opacity-90" aria-hidden>
-              ✨
-            </div>
-          </div>
-        )}
-
-        {effectiveRole === 'student' && myClasses.length > 0 && primaryUnitLabel && (
-          <button
-            type="button"
-            onClick={() => navigateToMode(navigate, 'practice', { effectiveRole, myClasses, masteryRecords })}
-            className="w-full flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4 text-left shadow-[var(--shadow-card)] hover:border-brand transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl" aria-hidden>
-                📖
-              </span>
-              <div>
-                <p className="font-bold text-ink text-sm">Continue practice</p>
-                <p className="text-ink-secondary text-xs mt-0.5">{primaryUnitLabel}</p>
-              </div>
-            </div>
-            <span className="text-ink-secondary text-lg" aria-hidden>
-              ›
-            </span>
-          </button>
-        )}
-
-        {effectiveRole === 'student' && myClasses.length > 0 && (
-          <Link
-            to="/home/calendar"
-            className="flex items-center justify-between rounded-2xl border border-border bg-surface px-5 py-4 shadow-[var(--shadow-card)] hover:border-brand transition-colors"
-          >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl" aria-hidden>
-                📅
-              </span>
-              <div>
-                <p className="font-bold text-ink text-sm">{t('home.calendarCardTitle')}</p>
-                <p className="text-ink-secondary text-xs mt-0.5">{t('home.calendarCardSubtitle')}</p>
-              </div>
-            </div>
-            <span className="text-ink-secondary text-lg" aria-hidden>
-              ›
-            </span>
-          </Link>
-        )}
-
         {/* Category Quick-Toggles */}
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {(['pronoun', 'name', 'noun'] as WordCategory[]).map(cat => {
             const info = CATEGORY_LABELS[cat];
             const active = settings.activeCategories.includes(cat);
             return (
               <button
                 key={cat}
+                type="button"
                 onClick={() => toggleCategory(cat)}
-                className={`px-4 py-2 rounded-xl font-semibold text-sm transition-all ${
+                className={`px-3 sm:px-4 py-2 rounded-xl font-semibold text-sm transition-all ${
                   active
                     ? 'bg-brand text-white'
-                    : 'bg-surface text-ink-secondary hover:bg-surface-muted hover:text-ink'
+                    : 'bg-surface text-ink-secondary hover:bg-surface-muted hover:text-ink border border-border'
                 }`}
               >
                 {info.icon} {info.label}
@@ -364,33 +377,50 @@ export function HomeScreen() {
             );
           })}
         </div>
-        {effectiveRole === 'student' && primaryUnitLabel && myClasses.length > 0 && (
-          <p className="text-ink-secondary text-xs leading-relaxed -mt-4">
-            Starting a mode from this page opens your class unit <span className="text-ink font-medium">{primaryUnitLabel}</span>
-            when available. Category pills above are global defaults; the active unit may narrow cases and word types after you enter
-            it.
+        {effectiveRole === 'student' && primaryUnitLabel && isEnrolledStudent && (
+          <p className="text-ink-secondary text-xs leading-relaxed -mt-1">
+            {t('home.categoryHint', { unit: primaryUnitLabel })}
           </p>
         )}
 
-        {/* Stats Bar */}
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-surface rounded-xl p-4 text-center border border-border">
-            <p className="text-2xl font-bold text-ink">{totalAttempts}</p>
-            <p className="text-ink-secondary text-xs mt-1">Total Answers</p>
-          </div>
-          <div className="bg-surface rounded-xl p-4 text-center border border-border">
-            <p className="text-2xl font-bold text-purple-700">{masteredCount}/{totalForms}</p>
-            <p className="text-ink-secondary text-xs mt-1">Forms Mastered</p>
-          </div>
-          <div className="bg-surface rounded-xl p-4 text-center border border-border">
-            <p className="text-2xl font-bold text-emerald-700">
-              {recentSession ? `${Math.round(recentSession.accuracy * 100)}%` : '—'}
-            </p>
-            <p className="text-ink-secondary text-xs mt-1">Last Accuracy</p>
+        {/* Mode Grid — primary exercises (moved up) */}
+        <div>
+          <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-1">
+            {effectiveRole === 'student' && myClasses.length === 0 ? t('home.modesHeadingGuest') : t('home.modesHeadingStudent')}
+          </h2>
+          <p className="text-ink-secondary text-xs mb-3 max-w-2xl">{t('home.modesSubtext')}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            {modes.map(mode => (
+              <button
+                type="button"
+                key={mode.id}
+                onClick={() =>
+                  navigateToMode(navigate, mode.id, {
+                    effectiveRole,
+                    myClasses,
+                    masteryRecords,
+                  })
+                }
+                className="group bg-surface hover:bg-surface-muted border border-border hover:border-border-strong rounded-2xl p-4 sm:p-5 text-left transition-all duration-200 hover:shadow-lg"
+                style={{ '--mode-color': mode.color } as React.CSSProperties}
+              >
+                <div className="flex items-start justify-between mb-2 sm:mb-3">
+                  <span className="text-2xl sm:text-3xl">{mode.icon}</span>
+                  <span
+                    className="text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full"
+                    style={{ backgroundColor: mode.color + '22', color: mode.color }}
+                  >
+                    {mode.tag}
+                  </span>
+                </div>
+                <h3 className="text-ink font-bold text-sm sm:text-base mb-1">{mode.title}</h3>
+                <p className="text-ink-secondary text-xs sm:text-sm leading-relaxed">{mode.description}</p>
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Review Due Indicator */}
+        {/* Review due — before stats so it stays near practice actions */}
         {dueCount > 0 && (
           <button
             type="button"
@@ -401,20 +431,40 @@ export function HomeScreen() {
                 masteryRecords,
               })
             }
-            className="w-full flex items-center justify-between bg-amber-50 hover:bg-amber-100/80 border border-amber-200 rounded-2xl px-5 py-4 transition-colors"
+            className="w-full flex items-center justify-between bg-amber-50 hover:bg-amber-100/80 border border-amber-200 rounded-2xl px-4 py-3 sm:px-5 sm:py-3.5 transition-colors"
           >
-            <div className="flex items-center gap-3">
-              <span className="text-2xl">🔔</span>
-              <div className="text-left">
+            <div className="flex items-center gap-3 min-w-0">
+              <span className="text-xl sm:text-2xl shrink-0">🔔</span>
+              <div className="text-left min-w-0">
                 <p className="text-amber-900 font-bold text-sm">
                   {dueCount} {dueCount === 1 ? 'form' : 'forms'} due for review
                 </p>
                 <p className="text-amber-800/80 text-xs">Practice now to keep your memory fresh</p>
               </div>
             </div>
-            <span className="text-amber-800 font-semibold text-sm">Practice &rarr;</span>
+            <span className="text-amber-800 font-semibold text-sm shrink-0">Practice &rarr;</span>
           </button>
         )}
+
+        {/* Stats Bar — compact */}
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+          <div className="bg-surface rounded-xl py-3 px-2 sm:px-3 text-center border border-border">
+            <p className="text-lg sm:text-xl font-bold text-ink tabular-nums">{totalAttempts}</p>
+            <p className="text-ink-secondary text-[10px] sm:text-xs mt-0.5 leading-tight">Total Answers</p>
+          </div>
+          <div className="bg-surface rounded-xl py-3 px-2 sm:px-3 text-center border border-border">
+            <p className="text-lg sm:text-xl font-bold text-purple-700 tabular-nums">
+              {masteredCount}/{totalForms}
+            </p>
+            <p className="text-ink-secondary text-[10px] sm:text-xs mt-0.5 leading-tight">Forms Mastered</p>
+          </div>
+          <div className="bg-surface rounded-xl py-3 px-2 sm:px-3 text-center border border-border">
+            <p className="text-lg sm:text-xl font-bold text-emerald-700 tabular-nums">
+              {recentSession ? `${Math.round(recentSession.accuracy * 100)}%` : '—'}
+            </p>
+            <p className="text-ink-secondary text-[10px] sm:text-xs mt-0.5 leading-tight">Last Accuracy</p>
+          </div>
+        </div>
 
         {/* Assignments Due (students only) */}
         {pendingAssignments.length > 0 && (
@@ -520,42 +570,6 @@ export function HomeScreen() {
             </button>
           </>
         )}
-
-        {/* Mode Grid */}
-        <div>
-          <h2 className="text-ink-secondary text-sm font-semibold uppercase tracking-wider mb-4">
-            {effectiveRole === 'student' && myClasses.length === 0 ? t('home.modesHeadingGuest') : t('home.modesHeadingStudent')}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {modes.map(mode => (
-              <button
-                type="button"
-                key={mode.id}
-                onClick={() =>
-                  navigateToMode(navigate, mode.id, {
-                    effectiveRole,
-                    myClasses,
-                    masteryRecords,
-                  })
-                }
-                className="group bg-surface hover:bg-surface-muted border border-border hover:border-border-strong rounded-2xl p-5 text-left transition-all duration-200 hover:scale-[1.02] hover:shadow-xl"
-                style={{ '--mode-color': mode.color } as React.CSSProperties}
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <span className="text-3xl">{mode.icon}</span>
-                  <span
-                    className="text-xs font-semibold px-2 py-0.5 rounded-full"
-                    style={{ backgroundColor: mode.color + '22', color: mode.color }}
-                  >
-                    {mode.tag}
-                  </span>
-                </div>
-                <h3 className="text-ink font-bold text-base mb-1">{mode.title}</h3>
-                <p className="text-ink-secondary text-sm leading-relaxed">{mode.description}</p>
-              </button>
-            ))}
-          </div>
-        </div>
 
         {/* Recent Activity */}
         {sessionHistory.length > 0 && (

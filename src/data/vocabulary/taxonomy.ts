@@ -88,6 +88,16 @@ export const VOCABULARY_TAXONOMY: VocabCategoryMeta[] = [
     sortOrder: 8,
     subcategories: [
       { id: 'shopping', label: 'Shopping & clothes', vocabularySetId: 'shopping_general' },
+      {
+        id: 'colors_nouns',
+        label: 'Colors with nouns (agreement)',
+        vocabularySetId: 'colors_nouns',
+      },
+      {
+        id: 'colors_case_sentences',
+        label: 'Colors in sentences (cases)',
+        vocabularySetId: 'colors_case_sentences',
+      },
       { id: 'school', label: 'School & learning', vocabularySetId: 'school_learning' },
       { id: 'tech', label: 'Technology', vocabularySetId: 'technology_digital' },
     ],

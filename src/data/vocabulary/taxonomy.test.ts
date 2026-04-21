@@ -10,6 +10,6 @@ describe('vocabulary taxonomy', () => {
   });
 
   it('targets ~1000 lemmas across decks (checked by validate:vocab in CI)', () => {
-    expect(VOCABULARY_SET_IDS.length).toBe(28);
+    expect(VOCABULARY_SET_IDS.length).toBe(30);
   });
 });

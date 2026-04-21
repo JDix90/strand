@@ -4,6 +4,7 @@ import type { UnitRow } from '../../lib/curriculumApi';
 import { loadVocabularyDeck } from '../../lib/vocabulary/deckRegistry';
 import { buildVocabularySession, type VocabMcQuestion } from '../../lib/vocabulary/questionGenerator';
 import { parseVocabularyUnitConfig } from '../../lib/vocabulary/parseVocabularyUnitConfig';
+import { deckSelectionKey, normalizeDeckSelection } from '../../lib/vocabulary/mixedDeckSelection';
 import { vocabularyFormKey } from '../../lib/vocabulary/masteryFormKey';
 import { createMasteryRecord, updateMasteryRecord } from '../../lib/adaptiveEngine';
 import { masteryStorageKey } from '../../lib/masteryKeys';
@@ -28,6 +29,11 @@ interface Props {
   resultsPath: string;
   addSessionSummary: (s: SessionSummary, opts?: { syncToCloud?: boolean }) => void;
   backPath: string;
+  customDeckIds?: string[];
+  unitIdByDeck?: Record<string, string>;
+  customTitle?: string;
+  customSessionLength?: number;
+  customDirection?: 'ru-en' | 'en-ru';
 }
 
 export function VocabularyPractice({
@@ -37,6 +43,11 @@ export function VocabularyPractice({
   addSessionSummary,
   backPath,
   resultsPath,
+  customDeckIds,
+  unitIdByDeck,
+  customTitle,
+  customSessionLength,
+  customDirection,
 }: Props) {
   const navigate = useNavigate();
   const updateMastery = useGameStore(s => s.updateMasteryRecord);
@@ -45,6 +56,8 @@ export function VocabularyPractice({
     () => parseVocabularyUnitConfig(unitRow?.content_config),
     [unitRow?.content_config],
   );
+  const normalizedCustomDeckIds = useMemo(() => normalizeDeckSelection(customDeckIds), [customDeckIds]);
+  const customDeckKey = useMemo(() => deckSelectionKey(customDeckIds), [customDeckIds]);
 
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -54,6 +67,7 @@ export function VocabularyPractice({
   const [picked, setPicked] = useState<string | null>(null);
   const weakSessionRef = useRef<string[]>([]);
   const presentedAtRef = useRef<number>(Date.now());
+  const setIdByLemmaRef = useRef<Record<string, string>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -61,7 +75,15 @@ export function VocabularyPractice({
       setLoading(true);
       setErr(null);
       try {
-        const lemmas = await loadVocabularyDeck(cfg.vocabularySetId);
+        const deckIds = normalizedCustomDeckIds.length > 0 ? normalizedCustomDeckIds : [cfg.vocabularySetId];
+        const deckRows = await Promise.all(deckIds.map(id => loadVocabularyDeck(id)));
+        const merged = deckRows.flat();
+        const uniq = new Map<string, (typeof merged)[number]>();
+        for (const l of merged) {
+          if (!uniq.has(l.lemmaId)) uniq.set(l.lemmaId, l);
+        }
+        const lemmas = [...uniq.values()];
+        setIdByLemmaRef.current = Object.fromEntries(lemmas.map(l => [l.lemmaId, l.vocabularySetId]));
         if (cancelled) return;
         if (lemmas.length === 0) {
           setErr('No vocabulary entries for this unit yet.');
@@ -70,8 +92,8 @@ export function VocabularyPractice({
         }
         const session = buildVocabularySession(
           lemmas,
-          cfg.sessionLength ?? 15,
-          cfg.direction ?? 'ru-en',
+          customSessionLength ?? cfg.sessionLength ?? 15,
+          customDirection ?? cfg.direction ?? 'ru-en',
         );
         setQuestions(session);
         setIdx(0);
@@ -87,7 +109,7 @@ export function VocabularyPractice({
     return () => {
       cancelled = true;
     };
-  }, [cfg.vocabularySetId, cfg.sessionLength, cfg.direction]);
+  }, [cfg.vocabularySetId, cfg.sessionLength, cfg.direction, customDeckKey, customSessionLength, customDirection]);
 
   useEffect(() => {
     warmSpeechSynthesisVoices();
@@ -95,15 +117,17 @@ export function VocabularyPractice({
 
   const q = questions[idx];
   const speechEnabled = q ? canSpeakLang(q.speakLang) : false;
-  const unitTitle = unitRow?.title ?? 'Vocabulary';
+  const unitTitle = customTitle ?? unitRow?.title ?? 'Vocabulary';
 
   const applyMastery = useCallback(
     (lemmaId: string, wasCorrect: boolean, selected: string, correct: string, responseMs: number) => {
-      const dir = cfg.direction ?? 'ru-en';
-      const fk = vocabularyFormKey(cfg.vocabularySetId, lemmaId, dir);
-      const sk = masteryStorageKey(unitId, fk);
+      const dir = customDirection ?? cfg.direction ?? 'ru-en';
+      const setId = setIdByLemmaRef.current[lemmaId] ?? cfg.vocabularySetId;
+      const fk = vocabularyFormKey(setId, lemmaId, dir);
+      const targetUnitId = unitIdByDeck?.[setId] ?? unitId;
+      const sk = masteryStorageKey(targetUnitId, fk);
       const prev =
-        useGameStore.getState().masteryRecords[sk] ?? createMasteryRecord(fk, unitId, VOCABULARY_MODULE);
+        useGameStore.getState().masteryRecords[sk] ?? createMasteryRecord(fk, targetUnitId, VOCABULARY_MODULE);
       const event: SessionAnswerEvent = {
         questionId: fk,
         presentedAtMs: presentedAtRef.current,
@@ -122,7 +146,7 @@ export function VocabularyPractice({
         weakSessionRef.current = [...weakSessionRef.current, fk];
       }
     },
-    [cfg.direction, cfg.vocabularySetId, unitId, updateMastery],
+    [cfg.direction, cfg.vocabularySetId, customDirection, unitIdByDeck, unitId, updateMastery],
   );
 
   const handlePick = (choice: string) => {
@@ -253,7 +277,9 @@ export function VocabularyPractice({
           ))}
         </div>
         <p className="text-ink-secondary text-xs text-center mt-8">
-          Russian–English vocabulary · progress is saved per word for this unit.
+          {customDeckIds?.length
+            ? 'Mixed vocabulary practice · progress is saved per word for each included subcategory.'
+            : 'Russian–English vocabulary · progress is saved per word for this unit.'}
         </p>
       </div>
     </div>

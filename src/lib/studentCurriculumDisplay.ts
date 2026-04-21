@@ -1,5 +1,5 @@
 import type { ClassCurriculumRow, UnitRow } from './curriculumApi';
-import { isVocabularyModule } from './contentModules';
+import { isRussianDeclensionModule, isVocabularyModule } from './contentModules';
 
 export function getUnitFromRow(row: ClassCurriculumRow): UnitRow | null {
   const u = row.units;
@@ -12,10 +12,16 @@ export function isVocabularyCurriculumRow(row: ClassCurriculumRow): boolean {
   return u != null && isVocabularyModule(u.content_module);
 }
 
-/** One sidebar/home entry for all vocabulary units, or a single non-vocab unit row. */
+export function isGrammarCasesRow(row: ClassCurriculumRow): boolean {
+  const u = getUnitFromRow(row);
+  return u != null && isRussianDeclensionModule(u.content_module);
+}
+
+/** One sidebar/home entry for all vocabulary units, one for grammar/cases rows, or a single unit row. */
 export type CurriculumNavItem =
   | { kind: 'unit'; row: ClassCurriculumRow }
-  | { kind: 'vocabulary_hub'; rows: ClassCurriculumRow[] };
+  | { kind: 'vocabulary_hub'; rows: ClassCurriculumRow[] }
+  | { kind: 'cases_hub'; rows: ClassCurriculumRow[] };
 
 /**
  * Collapses consecutive vocabulary rows (in `orderedRows` order) into one hub item
@@ -23,16 +29,23 @@ export type CurriculumNavItem =
  */
 export function buildCurriculumNavItems(orderedRows: ClassCurriculumRow[]): CurriculumNavItem[] {
   const vocabRows = orderedRows.filter(isVocabularyCurriculumRow);
-  if (vocabRows.length === 0) {
+  const casesRows = orderedRows.filter(isGrammarCasesRow);
+  if (vocabRows.length === 0 && casesRows.length === 0) {
     return orderedRows.map(row => ({ kind: 'unit' as const, row }));
   }
   const out: CurriculumNavItem[] = [];
-  let hubAdded = false;
+  let vocabHubAdded = false;
+  let casesHubAdded = false;
   for (const row of orderedRows) {
     if (isVocabularyCurriculumRow(row)) {
-      if (!hubAdded) {
+      if (!vocabHubAdded) {
         out.push({ kind: 'vocabulary_hub', rows: vocabRows });
-        hubAdded = true;
+        vocabHubAdded = true;
+      }
+    } else if (isGrammarCasesRow(row)) {
+      if (!casesHubAdded) {
+        out.push({ kind: 'cases_hub', rows: casesRows });
+        casesHubAdded = true;
       }
     } else {
       out.push({ kind: 'unit', row });

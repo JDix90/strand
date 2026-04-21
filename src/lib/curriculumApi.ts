@@ -34,6 +34,14 @@ export async function fetchUnitById(unitId: string): Promise<UnitRow | null> {
   return data as UnitRow;
 }
 
+export async function fetchUnitsByIds(unitIds: string[]): Promise<UnitRow[]> {
+  const ids = [...new Set(unitIds)].filter(Boolean);
+  if (ids.length === 0) return [];
+  const { data, error } = await supabase.from('units').select('*').in('id', ids);
+  if (error || !data) return [];
+  return data as UnitRow[];
+}
+
 export interface FetchClassCurriculumResult {
   rows: ClassCurriculumRow[];
   error: string | null;

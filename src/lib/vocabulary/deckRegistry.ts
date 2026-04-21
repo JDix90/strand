@@ -30,6 +30,8 @@ export const VOCABULARY_SET_CHUNK: Record<string, string> = {
   verbs_motion: 'verbsAdj',
   adjectives_quality: 'verbsAdj',
   adjectives_quantity: 'verbsAdj',
+  colors_nouns: 'colors',
+  colors_case_sentences: 'colorsCases',
 };
 
 type ChunkGetter = (vocabularySetId: string) => VocabEntry[] | undefined;
@@ -43,6 +45,8 @@ const chunkLoaders: Record<string, () => Promise<ChunkGetter>> = {
   timeBody: async () => (await import('../../data/vocabulary/chunks/chunkTimeBody')).getTimeBodyChunkDeck,
   workUrban: async () => (await import('../../data/vocabulary/chunks/chunkWorkUrban')).getWorkUrbanChunkDeck,
   verbsAdj: async () => (await import('../../data/vocabulary/chunks/chunkVerbsAdj')).getVerbsAdjChunkDeck,
+  colors: async () => (await import('../../data/vocabulary/chunks/chunkColors')).getColorsChunkDeck,
+  colorsCases: async () => (await import('../../data/vocabulary/chunks/chunkColorsCases')).getColorsCasesChunkDeck,
 };
 
 const chunkGetterCache = new Map<string, ChunkGetter>();

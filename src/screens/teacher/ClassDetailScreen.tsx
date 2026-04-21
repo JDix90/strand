@@ -258,7 +258,7 @@ export function ClassDetailScreen() {
                   {students.map(s => (
                     <tr
                       key={s.id}
-                      onClick={() => navigate(`/teacher/student/${s.id}`)}
+                      onClick={() => navigate(`/teacher/student/${s.id}?classId=${classId}`)}
                       className="border-b border-border/50 hover:bg-surface-muted/80 cursor-pointer transition-colors"
                     >
                       <td className="px-5 py-3 text-ink font-medium">{s.display_name}</td>

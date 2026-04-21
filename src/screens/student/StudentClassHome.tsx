@@ -79,6 +79,21 @@ export function StudentClassHome() {
                 </li>
               );
             }
+            if (item.kind === 'cases_hub') {
+              return (
+                <li key="cases-hub">
+                  <Link
+                    to={`/class/${classId}/cases`}
+                    className="block rounded-xl border border-border bg-surface-elevated hover:border-border-strong px-4 py-3 transition-colors"
+                  >
+                    <span className="font-semibold text-ink">Grammar - Cases</span>
+                    <span className="block text-ink-secondary text-sm mt-1">
+                      Pronouns, names, and nouns in all six cases.
+                    </span>
+                  </Link>
+                </li>
+              );
+            }
             const row = item.row;
             const u = getUnitFromRow(row);
             if (!u) return null;

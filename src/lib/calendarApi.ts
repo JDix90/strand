@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { filterNotesVisibleNow, type ClassNote } from './classSocialApi';
 import type { ClassCalendarConfig, ScheduleRow } from './calendar/generateOccurrences';
 
 export interface ClassRow {
@@ -55,6 +56,38 @@ export async function fetchStudentClassesWithSchedules(studentId: string): Promi
   }));
 
   return { configs, error: null };
+}
+
+/**
+ * Class notes anchored to a calendar day (`visible_on_date`) for the student’s enrollments.
+ * Respects visibility windows via `filterNotesVisibleNow`.
+ */
+export async function fetchStudentCalendarNotes(
+  studentId: string,
+  rangeStartIso: string,
+  rangeEndIso: string,
+): Promise<{ notes: ClassNote[]; error: string | null }> {
+  const { data: mem, error: mErr } = await supabase
+    .from('class_memberships')
+    .select('class_id')
+    .eq('student_id', studentId);
+  if (mErr) return { notes: [], error: mErr.message };
+  const classIds = [...new Set((mem ?? []).map(m => m.class_id))];
+  if (classIds.length === 0) return { notes: [], error: null };
+
+  const { data, error } = await supabase
+    .from('class_notes')
+    .select('*')
+    .in('class_id', classIds)
+    .not('visible_on_date', 'is', null)
+    .gte('visible_on_date', rangeStartIso)
+    .lte('visible_on_date', rangeEndIso)
+    .order('pinned', { ascending: false })
+    .order('created_at', { ascending: false });
+
+  if (error) return { notes: [], error: error.message };
+  const raw = (data ?? []) as ClassNote[];
+  return { notes: filterNotesVisibleNow(raw), error: null };
 }
 
 export async function fetchTeacherClassesWithSchedules(teacherId: string): Promise<{

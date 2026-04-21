@@ -35,9 +35,12 @@ import {
   AssignmentsScreen,
   StudentClassHome,
   VocabularyHubScreen,
+  VocabularyMixedPracticeScreen,
+  CasesHubScreen,
   StudentClassLayout,
   StudentHomeLayout,
   StudentCalendarScreen,
+  StudentProgressScreen,
   TeacherCalendarScreen,
   AdminDashboard,
   AdminUsersScreen,
@@ -105,6 +108,14 @@ function AppRoutes() {
           <Route path="/home" element={<RequireAuth><StudentHomeLayout /></RequireAuth>}>
             <Route index element={<HomeScreen />} />
             <Route path="calendar" element={<StudentCalendarScreen />} />
+            <Route
+              path="progress"
+              element={
+                <RequireAuth requiredRole="student">
+                  <StudentProgressScreen />
+                </RequireAuth>
+              }
+            />
           </Route>
           <Route path="/settings" element={<RequireAuth><SettingsScreen /></RequireAuth>} />
           <Route path="/intro" element={<RequireAuth><IntroHubScreen /></RequireAuth>} />
@@ -185,6 +196,8 @@ function AppRoutes() {
           >
             <Route index element={<StudentClassHome />} />
             <Route path="vocabulary" element={<VocabularyHubScreen />} />
+            <Route path="vocabulary/practice" element={<VocabularyMixedPracticeScreen />} />
+            <Route path="cases" element={<CasesHubScreen />} />
             <Route path="unit/:unitId" element={<UnitScopedOutlet />}>
               <Route index element={<Navigate to="practice" replace />} />
               <Route path="learn" element={<LearnScreen />} />

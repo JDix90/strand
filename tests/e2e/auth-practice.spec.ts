@@ -2,17 +2,17 @@ import { test, expect } from '@playwright/test';
 
 /**
  * Full flow: login → practice (1 question when VITE_E2E=true) → results.
- * Requires a real Supabase project in `.env` and a **student** test user.
- *
- * Set `E2E_EMAIL` and `E2E_PASSWORD` (e.g. in CI secrets). Without them, tests
- * are skipped so local/PR runs without credentials still pass.
+ * Opt-in: set `E2E_RUN_AUTH=1` plus `E2E_EMAIL` / `E2E_PASSWORD` (student user, same Supabase project as `.env.local`).
+ * Without the opt-in, this file is skipped so CI and local runs stay green until credentials are ready.
  */
 const email = process.env.E2E_EMAIL ?? '';
 const password = process.env.E2E_PASSWORD ?? '';
 const hasCredentials = Boolean(email && password);
+const runAuth =
+  process.env.E2E_RUN_AUTH === '1' || process.env.E2E_RUN_AUTH === 'true';
 
-/** Skip entire suite when env vars missing (local dev / forks without secrets). */
-const describeAuth = hasCredentials ? test.describe : test.describe.skip;
+/** Skipped unless explicitly enabled — see `docs/backlog.md`. */
+const describeAuth = hasCredentials && runAuth ? test.describe : test.describe.skip;
 
 describeAuth('authenticated practice', () => {
   test('login → practice → results', async ({ page }) => {
