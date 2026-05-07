@@ -1,0 +1,322 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for data/pronounForms.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">data</a> pronounForms.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">14.28% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>1/7</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/2</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/6</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">25% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>1/4</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import type { DeclensionForm } from '../types';
+&nbsp;
+export const pronounForms: DeclensionForm[] = [
+  // Я (I)
+  { lemmaId: 'ya', lemmaDisplay: 'я', englishGloss: 'I', category: 'pronoun', animacy: 'animate', caseId: 'nominative', surfaceForm: 'я', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Это я.', afterPreposition: false, acceptedVariants: ['я'] },
+  { lemmaId: 'ya', lemmaDisplay: 'я', englishGloss: 'I', category: 'pronoun', animacy: 'animate', caseId: 'genitive', surfaceForm: 'меня', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У меня нет книги.', afterPreposition: false, acceptedVariants: ['меня'] },
+  { lemmaId: 'ya', lemmaDisplay: 'я', englishGloss: 'I', category: 'pronoun', animacy: 'animate', caseId: 'dative', surfaceForm: 'мне', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Дай мне книгу.', afterPreposition: false, acceptedVariants: ['мне'] },
+  { lemmaId: 'ya', lemmaDisplay: 'я', englishGloss: 'I', category: 'pronoun', animacy: 'animate', caseId: 'accusative', surfaceForm: 'меня', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Он любит меня.', afterPreposition: false, acceptedVariants: ['меня'] },
+  { lemmaId: 'ya', lemmaDisplay: 'я', englishGloss: 'I', category: 'pronoun', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'мной', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Он идёт со мной.', afterPreposition: false, acceptedVariants: ['мной', 'мною'] },
+  { lemmaId: 'ya', lemmaDisplay: 'я', englishGloss: 'I', category: 'pronoun', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'мне', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Он думает обо мне.', afterPreposition: true, acceptedVariants: ['мне'] },
+&nbsp;
+  // ТЫ (you singular)
+  { lemmaId: 'ty', lemmaDisplay: 'ты', englishGloss: 'you (sg)', category: 'pronoun', animacy: 'animate', caseId: 'nominative', surfaceForm: 'ты', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Это ты.', afterPreposition: false, acceptedVariants: ['ты'] },
+  { lemmaId: 'ty', lemmaDisplay: 'ты', englishGloss: 'you (sg)', category: 'pronoun', animacy: 'animate', caseId: 'genitive', surfaceForm: 'тебя', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У меня нет тебя.', afterPreposition: false, acceptedVariants: ['тебя'] },
+  { lemmaId: 'ty', lemmaDisplay: 'ты', englishGloss: 'you (sg)', category: 'pronoun', animacy: 'animate', caseId: 'dative', surfaceForm: 'тебе', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я дам тебе книгу.', afterPreposition: false, acceptedVariants: ['тебе'] },
+  { lemmaId: 'ty', lemmaDisplay: 'ты', englishGloss: 'you (sg)', category: 'pronoun', animacy: 'animate', caseId: 'accusative', surfaceForm: 'тебя', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я люблю тебя.', afterPreposition: false, acceptedVariants: ['тебя'] },
+  { lemmaId: 'ty', lemmaDisplay: 'ты', englishGloss: 'you (sg)', category: 'pronoun', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'тобой', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я иду с тобой.', afterPreposition: false, acceptedVariants: ['тобой', 'тобою'] },
+  { lemmaId: 'ty', lemmaDisplay: 'ты', englishGloss: 'you (sg)', category: 'pronoun', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'тебе', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Я думаю о тебе.', afterPreposition: true, acceptedVariants: ['тебе'] },
+&nbsp;
+  // ОН (he)
+  { lemmaId: 'on', lemmaDisplay: 'он', englishGloss: 'he', category: 'pronoun', gender: 'masculine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'он', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Это он.', afterPreposition: false, acceptedVariants: ['он'] },
+  { lemmaId: 'on', lemmaDisplay: 'он', englishGloss: 'he', category: 'pronoun', gender: 'masculine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'его', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'Я не вижу его.', afterPreposition: false, acceptedVariants: ['его'], postPrepositionForm: 'него' },
+  { lemmaId: 'on', lemmaDisplay: 'он', englishGloss: 'he', category: 'pronoun', gender: 'masculine', animacy: 'animate', caseId: 'dative', surfaceForm: 'ему', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Дай ему книгу.', afterPreposition: false, acceptedVariants: ['ему'], postPrepositionForm: 'нему' },
+  { lemmaId: 'on', lemmaDisplay: 'он', englishGloss: 'he', category: 'pronoun', gender: 'masculine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'его', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я вижу его.', afterPreposition: false, acceptedVariants: ['его'], postPrepositionForm: 'него' },
+  { lemmaId: 'on', lemmaDisplay: 'он', englishGloss: 'he', category: 'pronoun', gender: 'masculine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'им', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Все довольны им.', afterPreposition: false, acceptedVariants: ['им'], postPrepositionForm: 'ним' },
+  { lemmaId: 'on', lemmaDisplay: 'он', englishGloss: 'he', category: 'pronoun', gender: 'masculine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'нём', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Я думаю о нём.', afterPreposition: true, acceptedVariants: ['нём'], postPrepositionForm: 'нём' },
+&nbsp;
+  // ОНА (she)
+  { lemmaId: 'ona', lemmaDisplay: 'она', englishGloss: 'she', category: 'pronoun', gender: 'feminine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'она', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Это она.', afterPreposition: false, acceptedVariants: ['она'] },
+  { lemmaId: 'ona', lemmaDisplay: 'она', englishGloss: 'she', category: 'pronoun', gender: 'feminine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'её', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'Я не вижу её.', afterPreposition: false, acceptedVariants: ['её', 'ее'], postPrepositionForm: 'неё', postPrepositionVariants: ['нее'] },
+  { lemmaId: 'ona', lemmaDisplay: 'она', englishGloss: 'she', category: 'pronoun', gender: 'feminine', animacy: 'animate', caseId: 'dative', surfaceForm: 'ей', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я дал ей книгу.', afterPreposition: false, acceptedVariants: ['ей'], postPrepositionForm: 'ней' },
+  { lemmaId: 'ona', lemmaDisplay: 'она', englishGloss: 'she', category: 'pronoun', gender: 'feminine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'её', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я вижу её.', afterPreposition: false, acceptedVariants: ['её', 'ее'], postPrepositionForm: 'неё', postPrepositionVariants: ['нее'] },
+  { lemmaId: 'ona', lemmaDisplay: 'она', englishGloss: 'she', category: 'pronoun', gender: 'feminine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'ей', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Все довольны ей.', afterPreposition: false, acceptedVariants: ['ей', 'ею'], postPrepositionForm: 'ней', postPrepositionVariants: ['ней', 'нею'] },
+  { lemmaId: 'ona', lemmaDisplay: 'она', englishGloss: 'she', category: 'pronoun', gender: 'feminine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'ней', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Я думаю о ней.', afterPreposition: true, acceptedVariants: ['ней'], postPrepositionForm: 'ней' },
+&nbsp;
+  // ОНО (it)
+  { lemmaId: 'ono', lemmaDisplay: 'оно', englishGloss: 'it', category: 'pronoun', gender: 'neuter', animacy: 'animate', caseId: 'nominative', surfaceForm: 'оно', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Это оно.', afterPreposition: false, acceptedVariants: ['оно'] },
+  { lemmaId: 'ono', lemmaDisplay: 'оно', englishGloss: 'it', category: 'pronoun', gender: 'neuter', animacy: 'animate', caseId: 'genitive', surfaceForm: 'его', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'Нет его здесь.', afterPreposition: false, acceptedVariants: ['его'], postPrepositionForm: 'него' },
+  { lemmaId: 'ono', lemmaDisplay: 'оно', englishGloss: 'it', category: 'pronoun', gender: 'neuter', animacy: 'animate', caseId: 'dative', surfaceForm: 'ему', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я рад ему.', afterPreposition: false, acceptedVariants: ['ему'], postPrepositionForm: 'нему' },
+  { lemmaId: 'ono', lemmaDisplay: 'оно', englishGloss: 'it', category: 'pronoun', gender: 'neuter', animacy: 'animate', caseId: 'accusative', surfaceForm: 'его', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я вижу его.', afterPreposition: false, acceptedVariants: ['его'], postPrepositionForm: 'него' },
+  { lemmaId: 'ono', lemmaDisplay: 'оно', englishGloss: 'it', category: 'pronoun', gender: 'neuter', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'им', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Все довольны им.', afterPreposition: false, acceptedVariants: ['им'], postPrepositionForm: 'ним' },
+  { lemmaId: 'ono', lemmaDisplay: 'оно', englishGloss: 'it', category: 'pronoun', gender: 'neuter', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'нём', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Я думаю о нём.', afterPreposition: true, acceptedVariants: ['нём'], postPrepositionForm: 'нём' },
+&nbsp;
+  // МЫ (we)
+  { lemmaId: 'my', lemmaDisplay: 'мы', englishGloss: 'we', category: 'pronoun', animacy: 'animate', caseId: 'nominative', surfaceForm: 'мы', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Это мы.', afterPreposition: false, acceptedVariants: ['мы'] },
+  { lemmaId: 'my', lemmaDisplay: 'мы', englishGloss: 'we', category: 'pronoun', animacy: 'animate', caseId: 'genitive', surfaceForm: 'нас', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'Без нас они не справятся.', afterPreposition: false, acceptedVariants: ['нас'] },
+  { lemmaId: 'my', lemmaDisplay: 'мы', englishGloss: 'we', category: 'pronoun', animacy: 'animate', caseId: 'dative', surfaceForm: 'нам', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Дай нам книгу.', afterPreposition: false, acceptedVariants: ['нам'] },
+  { lemmaId: 'my', lemmaDisplay: 'мы', englishGloss: 'we', category: 'pronoun', animacy: 'animate', caseId: 'accusative', surfaceForm: 'нас', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Он любит нас.', afterPreposition: false, acceptedVariants: ['нас'] },
+  { lemmaId: 'my', lemmaDisplay: 'мы', englishGloss: 'we', category: 'pronoun', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'нами', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Он идёт с нами.', afterPreposition: false, acceptedVariants: ['нами'] },
+  { lemmaId: 'my', lemmaDisplay: 'мы', englishGloss: 'we', category: 'pronoun', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'нас', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Он думает о нас.', afterPreposition: true, acceptedVariants: ['нас'] },
+&nbsp;
+  // ВЫ (you plural / formal)
+  { lemmaId: 'vy', lemmaDisplay: 'вы', englishGloss: 'you (pl)', category: 'pronoun', animacy: 'animate', caseId: 'nominative', surfaceForm: 'вы', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Это вы.', afterPreposition: false, acceptedVariants: ['вы'] },
+  { lemmaId: 'vy', lemmaDisplay: 'вы', englishGloss: 'you (pl)', category: 'pronoun', animacy: 'animate', caseId: 'genitive', surfaceForm: 'вас', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У меня нет вас.', afterPreposition: false, acceptedVariants: ['вас'] },
+  { lemmaId: 'vy', lemmaDisplay: 'вы', englishGloss: 'you (pl)', category: 'pronoun', animacy: 'animate', caseId: 'dative', surfaceForm: 'вам', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я дам вам книгу.', afterPreposition: false, acceptedVariants: ['вам'] },
+  { lemmaId: 'vy', lemmaDisplay: 'вы', englishGloss: 'you (pl)', category: 'pronoun', animacy: 'animate', caseId: 'accusative', surfaceForm: 'вас', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я вижу вас.', afterPreposition: false, acceptedVariants: ['вас'] },
+  { lemmaId: 'vy', lemmaDisplay: 'вы', englishGloss: 'you (pl)', category: 'pronoun', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'вами', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я иду с вами.', afterPreposition: false, acceptedVariants: ['вами'] },
+  { lemmaId: 'vy', lemmaDisplay: 'вы', englishGloss: 'you (pl)', category: 'pronoun', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'вас', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Я думаю о вас.', afterPreposition: true, acceptedVariants: ['вас'] },
+&nbsp;
+  // ОНИ (they)
+  { lemmaId: 'oni', lemmaDisplay: 'они', englishGloss: 'they', category: 'pronoun', animacy: 'animate', caseId: 'nominative', surfaceForm: 'они', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Это они.', afterPreposition: false, acceptedVariants: ['они'] },
+  { lemmaId: 'oni', lemmaDisplay: 'они', englishGloss: 'they', category: 'pronoun', animacy: 'animate', caseId: 'genitive', surfaceForm: 'их', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'Я не знаю их.', afterPreposition: false, acceptedVariants: ['их'], postPrepositionForm: 'них' },
+  { lemmaId: 'oni', lemmaDisplay: 'они', englishGloss: 'they', category: 'pronoun', animacy: 'animate', caseId: 'dative', surfaceForm: 'им', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Дай им книгу.', afterPreposition: false, acceptedVariants: ['им'], postPrepositionForm: 'ним' },
+  { lemmaId: 'oni', lemmaDisplay: 'они', englishGloss: 'they', category: 'pronoun', animacy: 'animate', caseId: 'accusative', surfaceForm: 'их', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я вижу их.', afterPreposition: false, acceptedVariants: ['их'], postPrepositionForm: 'них' },
+  { lemmaId: 'oni', lemmaDisplay: 'они', englishGloss: 'they', category: 'pronoun', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'ими', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Все довольны ими.', afterPreposition: false, acceptedVariants: ['ими'], postPrepositionForm: 'ними' },
+  { lemmaId: 'oni', lemmaDisplay: 'они', englishGloss: 'they', category: 'pronoun', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'них', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Я думаю о них.', afterPreposition: true, acceptedVariants: ['них'], postPrepositionForm: 'них' },
+];
+&nbsp;
+export function <span class="fstat-no" title="function not covered" >getForm(l</span>emmaId: string, caseId: string): DeclensionForm | undefined {
+<span class="cstat-no" title="statement not covered" >  return pronounForms.<span class="fstat-no" title="function not covered" >find(f</span> =&gt; <span class="cstat-no" title="statement not covered" >f.lemmaId === lemmaId &amp;&amp; f.caseId === caseId);</span></span>
+}
+&nbsp;
+export function <span class="fstat-no" title="function not covered" >getFormsForLemma(l</span>emmaId: string): DeclensionForm[] {
+<span class="cstat-no" title="statement not covered" >  return pronounForms.<span class="fstat-no" title="function not covered" >filter(f</span> =&gt; <span class="cstat-no" title="statement not covered" >f.lemmaId === lemmaId);</span></span>
+}
+&nbsp;
+export function <span class="fstat-no" title="function not covered" >getFormsForCase(c</span>aseId: string): DeclensionForm[] {
+<span class="cstat-no" title="statement not covered" >  return pronounForms.<span class="fstat-no" title="function not covered" >filter(f</span> =&gt; <span class="cstat-no" title="statement not covered" >f.caseId === caseId);</span></span>
+}
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-05-07T16:41:24.548Z
+            </div>
+        <script src="../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
+    </body>
+</html>
+    

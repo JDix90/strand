@@ -9,24 +9,50 @@ export const allForms: DeclensionForm[] = [
   ...nounForms,
 ];
 
+const formByLemmaCase = new Map<string, DeclensionForm>();
+const formsByCategory = new Map<WordCategory, DeclensionForm[]>();
+const formsByLemma = new Map<string, DeclensionForm[]>();
+const formsByCase = new Map<string, DeclensionForm[]>();
+
+for (const form of allForms) {
+  formByLemmaCase.set(`${form.lemmaId}:${form.caseId}`, form);
+
+  const byCategory = formsByCategory.get(form.category);
+  if (byCategory) byCategory.push(form);
+  else formsByCategory.set(form.category, [form]);
+
+  const byLemma = formsByLemma.get(form.lemmaId);
+  if (byLemma) byLemma.push(form);
+  else formsByLemma.set(form.lemmaId, [form]);
+
+  const byCase = formsByCase.get(form.caseId);
+  if (byCase) byCase.push(form);
+  else formsByCase.set(form.caseId, [form]);
+}
+
 export function getFormsByCategory(category: WordCategory): DeclensionForm[] {
-  return allForms.filter(f => f.category === category);
+  return formsByCategory.get(category) ?? [];
 }
 
 export function getFormsByCategories(categories: WordCategory[]): DeclensionForm[] {
-  return allForms.filter(f => categories.includes(f.category));
+  const out: DeclensionForm[] = [];
+  for (const category of categories) {
+    const forms = formsByCategory.get(category);
+    if (forms) out.push(...forms);
+  }
+  return out;
 }
 
 export function getForm(lemmaId: string, caseId: string): DeclensionForm | undefined {
-  return allForms.find(f => f.lemmaId === lemmaId && f.caseId === caseId);
+  return formByLemmaCase.get(`${lemmaId}:${caseId}`);
 }
 
 export function getFormsForLemma(lemmaId: string): DeclensionForm[] {
-  return allForms.filter(f => f.lemmaId === lemmaId);
+  return formsByLemma.get(lemmaId) ?? [];
 }
 
 export function getFormsForCase(caseId: string): DeclensionForm[] {
-  return allForms.filter(f => f.caseId === caseId);
+  return formsByCase.get(caseId) ?? [];
 }
 
 export interface LemmaInfo {

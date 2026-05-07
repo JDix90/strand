@@ -4,7 +4,6 @@ import type {
   SessionAnswerEvent,
   WordCategory,
 } from '../types';
-import { confusionPairs } from '../data/confusionPairs';
 import { getForm } from '../data/allForms';
 import {
   ADAPTIVE_FAST_THRESHOLD_MS,
@@ -12,20 +11,15 @@ import {
   ADAPTIVE_QUEUE_MAX_SIZE,
   ADAPTIVE_PRIORITY_THRESHOLD,
 } from '../data/gameConfigs';
-import { DEFAULT_RUSSIAN_UNIT_ID } from './curriculumConstants';
 import { masteryStorageKey } from './masteryKeys';
 
 // ─── Mastery ─────────────────────────────────────────────────────────────────
 
 export function createMasteryRecord(
-  formKey: string,
-  unitId: string = DEFAULT_RUSSIAN_UNIT_ID,
-  contentModule: string = 'russian_declension'
+  formKey: string
 ): MasteryRecord {
   return {
     formKey,
-    unitId,
-    contentModule,
     attempts: 0,
     correct: 0,
     lastSeenAt: new Date().toISOString(),
@@ -63,13 +57,7 @@ export function updateMasteryRecord(
     updated.consecutiveCorrect = 0;
     updated.easeScore -= 0.12;
 
-    // Track confusion pairs
-    const cp = confusionPairs.find(
-      p =>
-        (p.formA === event.selectedAnswer || p.formB === event.selectedAnswer) &&
-        (p.formA === event.correctAnswer || p.formB === event.correctAnswer)
-    );
-    if (cp && !updated.confusionWith.includes(event.selectedAnswer)) {
+    if (!updated.confusionWith.includes(event.selectedAnswer)) {
       updated.confusionWith = [...updated.confusionWith, event.selectedAnswer];
     }
   }
@@ -114,39 +102,18 @@ export function enqueueFromEvent(
 ): AdaptiveReviewQueueItem[] {
   let newQueue = [...queue];
 
-  const uid = masteryRecord.unitId ?? DEFAULT_RUSSIAN_UNIT_ID;
-
   if (!event.wasCorrect) {
     newQueue = addOrUpdateQueueItem(newQueue, {
       formKey: masteryRecord.formKey,
-      unitId: uid,
       priorityScore: 100,
       scheduledAfterQuestions: 2,
       questionsSinceEnqueue: 0,
       source: 'wrong_answer',
     });
 
-    // Check confusion pair
-    const cp = confusionPairs.find(
-      p =>
-        (p.formA === event.selectedAnswer || p.formB === event.selectedAnswer) &&
-        (p.formA === event.correctAnswer || p.formB === event.correctAnswer)
-    );
-    if (cp) {
-      const pairedForm = cp.formA === event.correctAnswer ? cp.formB : cp.formA;
-      newQueue = addOrUpdateQueueItem(newQueue, {
-        formKey: pairedForm,
-        unitId: uid,
-        priorityScore: 40,
-        scheduledAfterQuestions: 5,
-        questionsSinceEnqueue: 0,
-        source: 'confusion_pair',
-      });
-    }
   } else if (event.responseMs > ADAPTIVE_SLOW_THRESHOLD_MS) {
     newQueue = addOrUpdateQueueItem(newQueue, {
       formKey: masteryRecord.formKey,
-      unitId: uid,
       priorityScore: 50,
       scheduledAfterQuestions: 4,
       questionsSinceEnqueue: 0,
@@ -155,7 +122,6 @@ export function enqueueFromEvent(
   } else if (event.responseMs > ADAPTIVE_FAST_THRESHOLD_MS) {
     newQueue = addOrUpdateQueueItem(newQueue, {
       formKey: masteryRecord.formKey,
-      unitId: uid,
       priorityScore: 25,
       scheduledAfterQuestions: 6,
       questionsSinceEnqueue: 0,
@@ -168,7 +134,6 @@ export function enqueueFromEvent(
     const bonus = masteryRecord.status === 'shaky' ? 10 : 6;
     newQueue = addOrUpdateQueueItem(newQueue, {
       formKey: masteryRecord.formKey,
-      unitId: uid,
       priorityScore: bonus,
       scheduledAfterQuestions: 8,
       questionsSinceEnqueue: 0,
@@ -205,9 +170,7 @@ function addOrUpdateQueueItem(
 }
 
 function queueItemsMatch(a: AdaptiveReviewQueueItem, b: AdaptiveReviewQueueItem): boolean {
-  const ua = a.unitId ?? DEFAULT_RUSSIAN_UNIT_ID;
-  const ub = b.unitId ?? DEFAULT_RUSSIAN_UNIT_ID;
-  return ua === ub && a.formKey === b.formKey;
+  return a.formKey === b.formKey;
 }
 
 export function advanceQueue(queue: AdaptiveReviewQueueItem[]): AdaptiveReviewQueueItem[] {
@@ -295,14 +258,11 @@ export function selectNextAdaptiveFormKey(
   recentFormKeys: string[],
   confusionCounts: Record<string, number>,
   activeCategories: WordCategory[] | undefined,
-  unitId: string
+  filterCaseIds?: import('../types').CaseId[]
 ): string | null {
   let eligible = queue.filter(
     item => item.questionsSinceEnqueue >= item.scheduledAfterQuestions
   );
-
-  const uid = unitId;
-  eligible = eligible.filter(item => (item.unitId ?? DEFAULT_RUSSIAN_UNIT_ID) === uid);
 
   if (activeCategories && activeCategories.length > 0) {
     eligible = eligible.filter(item => {
@@ -312,10 +272,29 @@ export function selectNextAdaptiveFormKey(
     });
   }
 
+  if (filterCaseIds && filterCaseIds.length > 0) {
+    eligible = eligible.filter(item => {
+      const [, caseId] = item.formKey.split(':');
+      return filterCaseIds.includes(caseId as import('../types').CaseId);
+    });
+  }
+
+  // Hard repetition exclusion. The soft priority penalty in computeEffectivePriority
+  // (-60 for last-2, -25 for last-5) is not enough to override a high-priority
+  // wrong-answer item in short focused-drill rounds, which led to the same form
+  // (e.g. дверь:accusative) being re-served 3+ times in a row. We hard-reject any
+  // form key that appears in the recent window so the dynamic generator's form-key
+  // dedup can take over and pick a fresh lemma.
+  // Window size is generous (8) to span an entire focused-drill round.
+  const recentWindow = new Set(recentFormKeys.slice(-8));
+  if (recentWindow.size > 0) {
+    eligible = eligible.filter(item => !recentWindow.has(item.formKey));
+  }
+
   if (eligible.length === 0) return null;
 
   const scored = eligible.map(item => {
-    const sk = masteryStorageKey(uid, item.formKey);
+    const sk = masteryStorageKey(item.formKey);
     return {
       item,
       effectivePriority: computeEffectivePriority(
@@ -338,12 +317,11 @@ export function selectNextAdaptiveFormKey(
 
 export function consumeQueueItem(
   queue: AdaptiveReviewQueueItem[],
-  formKey: string,
-  unitId: string = DEFAULT_RUSSIAN_UNIT_ID
+  formKey: string
 ): AdaptiveReviewQueueItem[] {
   return queue
     .map(item =>
-      item.formKey === formKey && (item.unitId ?? DEFAULT_RUSSIAN_UNIT_ID) === unitId
+      item.formKey === formKey
         ? { ...item, priorityScore: item.priorityScore - 50 }
         : item
     )
@@ -356,15 +334,13 @@ export function enqueueFromGridResults(
   queue: AdaptiveReviewQueueItem[],
   incorrectFormKeys: string[],
   blankFormKeys: string[],
-  editedFormKeys: string[],
-  unitId: string = DEFAULT_RUSSIAN_UNIT_ID
+  editedFormKeys: string[]
 ): AdaptiveReviewQueueItem[] {
   let newQueue = [...queue];
 
   for (const fk of incorrectFormKeys) {
     newQueue = addOrUpdateQueueItem(newQueue, {
       formKey: fk,
-      unitId,
       priorityScore: 80,
       scheduledAfterQuestions: 2,
       questionsSinceEnqueue: 0,
@@ -375,7 +351,6 @@ export function enqueueFromGridResults(
   for (const fk of blankFormKeys) {
     newQueue = addOrUpdateQueueItem(newQueue, {
       formKey: fk,
-      unitId,
       priorityScore: 60,
       scheduledAfterQuestions: 3,
       questionsSinceEnqueue: 0,
@@ -386,7 +361,6 @@ export function enqueueFromGridResults(
   for (const fk of editedFormKeys) {
     newQueue = addOrUpdateQueueItem(newQueue, {
       formKey: fk,
-      unitId,
       priorityScore: 25,
       scheduledAfterQuestions: 5,
       questionsSinceEnqueue: 0,
@@ -452,7 +426,6 @@ export function enqueueStaleReviews(
     if (shouldEnqueue) {
       newQueue = addOrUpdateQueueItem(newQueue, {
         formKey: record.formKey,
-        unitId: record.unitId ?? DEFAULT_RUSSIAN_UNIT_ID,
         priorityScore: priority,
         scheduledAfterQuestions: 0,
         questionsSinceEnqueue: 0,

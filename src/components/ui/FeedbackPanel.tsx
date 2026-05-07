@@ -7,12 +7,59 @@ import { canSpeakRussian, speakRussian, warmSpeechSynthesisVoices } from '../../
 
 interface FeedbackPanelProps {
   isCorrect: boolean;
+  selectedAnswer: string;
   correctAnswer: string;
   /** Prompt with `___` blank(s); used to build the spoken full sentence. */
   sentencePrompt: string;
   explanation: string;
+  helperWord?: string;
+  questionPrompt?: string;
+  targetCaseId?: string;
   onContinue: () => void;
   responseMs?: number;
+}
+
+const CASE_LABELS: Record<string, string> = {
+  nominative: 'nominative',
+  genitive: 'genitive',
+  dative: 'dative',
+  accusative: 'accusative',
+  instrumental: 'instrumental',
+  prepositional: 'prepositional',
+};
+
+function normalizeExplanationText(text: string): string {
+  return text
+    .replace(/\brequires\b/gi, 'uses')
+    .replace(/\bAfter a preposition:/gi, 'Because this word comes after a preposition,')
+    .replace(/\bAfter preposition\b/gi, 'After a preposition')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function buildWrongAnswerExplanation(params: {
+  selectedAnswer: string;
+  correctAnswer: string;
+  helperWord?: string;
+  questionPrompt?: string;
+  targetCaseId?: string;
+  explanation: string;
+}): string {
+  const { selectedAnswer, correctAnswer, helperWord, questionPrompt, targetCaseId, explanation } = params;
+  const pieces: string[] = [];
+  pieces.push(`You picked "${selectedAnswer}", but this sentence needs "${correctAnswer}".`);
+
+  if (helperWord || questionPrompt || targetCaseId) {
+    const clueBits: string[] = [];
+    if (helperWord) clueBits.push(`the clue word is "${helperWord}"`);
+    if (questionPrompt) clueBits.push(`it asks "${questionPrompt}"`);
+    if (targetCaseId && CASE_LABELS[targetCaseId]) clueBits.push(`so we use the ${CASE_LABELS[targetCaseId]} form`);
+    pieces.push(`Here, ${clueBits.join(', ')}.`);
+  }
+
+  const normalized = normalizeExplanationText(explanation);
+  if (normalized.length > 0) pieces.push(normalized);
+  return pieces.join(' ');
 }
 
 function SpeakerIcon({ className }: { className?: string }) {
@@ -30,9 +77,13 @@ function SpeakerIcon({ className }: { className?: string }) {
 
 export function FeedbackPanel({
   isCorrect,
+  selectedAnswer,
   correctAnswer,
   sentencePrompt,
   explanation,
+  helperWord,
+  questionPrompt,
+  targetCaseId,
   onContinue,
   responseMs,
 }: FeedbackPanelProps) {
@@ -62,6 +113,16 @@ export function FeedbackPanel({
         btn: 'text-red-800 hover:bg-red-100/90 focus-visible:ring-red-500',
         muted: 'text-red-700/80',
       };
+  const explanationText = isCorrect
+    ? normalizeExplanationText(explanation)
+    : buildWrongAnswerExplanation({
+        selectedAnswer,
+        correctAnswer,
+        helperWord,
+        questionPrompt,
+        targetCaseId,
+        explanation,
+      });
 
   return (
     <div
@@ -80,7 +141,7 @@ export function FeedbackPanel({
               Correct answer: <span className="font-bold text-ink text-lg">{correctAnswer}</span>
             </p>
           )}
-          {responseMs && (
+          {responseMs != null && (
             <p className="text-ink-secondary text-xs">{(responseMs / 1000).toFixed(1)}s</p>
           )}
         </div>
@@ -103,7 +164,7 @@ export function FeedbackPanel({
       <p className={`text-sm ${accent.muted}`} lang="ru">
         {spokenSentence}
       </p>
-      <p className="text-ink-secondary text-sm leading-relaxed">{explanation}</p>
+      <p className="text-ink-secondary text-sm leading-relaxed">{explanationText}</p>
       <button
         type="button"
         data-testid="practice-continue"

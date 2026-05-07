@@ -1,4 +1,5 @@
 import type { GeneratedQuestion } from '../../lib/questionGenerator';
+import { getForm } from '../../data/allForms';
 import { CaseBadge } from '../ui/CaseBadge';
 
 interface QuestionCardProps {
@@ -8,6 +9,14 @@ interface QuestionCardProps {
 
 export function QuestionCard({ question, showHelper = true }: QuestionCardProps) {
   const { template } = question;
+  const lemmaBase = template.targetLemmaId
+    ? getForm(template.targetLemmaId, 'nominative')
+    : undefined;
+  const targetHint = lemmaBase?.englishGloss
+    ? `${lemmaBase.lemmaDisplay} (${lemmaBase.englishGloss})`
+    : template.targetMeaning
+      ? `(${template.targetMeaning})`
+      : null;
 
   // Split prompt on ___ to highlight the blank
   const parts = template.prompt.split('___');
@@ -38,9 +47,9 @@ export function QuestionCard({ question, showHelper = true }: QuestionCardProps)
         </p>
       </div>
 
-      {template.targetMeaning && (
+      {targetHint && (
         <p className="text-center text-ink-secondary text-sm italic">
-          ({template.targetMeaning})
+          {targetHint}
         </p>
       )}
     </div>

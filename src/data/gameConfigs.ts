@@ -33,3 +33,6 @@ export const ADAPTIVE_PRIORITY_THRESHOLD = 40;
 
 export const MEMORY_MATCH_FLIP_DURATION_MS = 1000;
 export const MEMORY_MATCH_FAST_MATCH_THRESHOLD_MS = 3000;
+
+/** Number of questions per focused drill round (one category × case combination). */
+export const FOCUSED_ROUND_QUESTIONS = 8;

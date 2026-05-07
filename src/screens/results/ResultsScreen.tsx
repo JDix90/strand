@@ -1,20 +1,13 @@
-import { useEffect } from 'react';
-import { useLocation, useNavigate, useMatch } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import type { SessionSummary } from '../../types';
 
 interface ResultsLocationState {
   summary?: SessionSummary;
-  fromIntro?: boolean;
-  /** Set by Practice (and similar) when session goal was reached. */
-  sessionGoalMet?: boolean;
+  fromLesson?: 'case-practice' | 'vocabulary';
 }
 
 const modeLabels: Record<string, { icon: string; label: string }> = {
-  practice: { icon: '🎯', label: 'Practice' },
-  speed_round: { icon: '⚡', label: 'Speed Round' },
-  boss_battle: { icon: '⚔️', label: 'Boss Battle' },
-  memory_match: { icon: '🃏', label: 'Memory Match' },
-  grid_challenge: { icon: '🔲', label: 'Grid Challenge' },
+  practice: { icon: '🎯', label: 'Practice Session' },
 };
 
 const gradeFromAccuracy = (acc: number): { grade: string; color: string; message: string } => {
@@ -28,17 +21,27 @@ const gradeFromAccuracy = (acc: number): { grade: string; color: string; message
 export function ResultsScreen() {
   const navigate = useNavigate();
   const location = useLocation();
-  const classUnit = useMatch('/class/:classId/unit/:unitId/results');
   const state = location.state as ResultsLocationState | undefined;
   const summary = state?.summary;
-  const fromIntro = state?.fromIntro === true;
-  const sessionGoalMet = state?.sessionGoalMet === true;
+  const fromLesson = state?.fromLesson ?? 'case-practice';
 
-  useEffect(() => {
-    if (!summary) navigate('/home');
-  }, [summary, navigate]);
-
-  if (!summary) return null;
+  if (!summary) {
+    return (
+      <div className="min-h-screen bg-page text-ink flex flex-col items-center justify-center px-6 text-center gap-4">
+        <h1 className="text-2xl font-bold">No recent results</h1>
+        <p className="text-ink-secondary max-w-sm">
+          Complete a practice session to see a detailed results summary here.
+        </p>
+        <button
+          type="button"
+          onClick={() => navigate('/')}
+          className="px-5 py-2.5 rounded-xl bg-mustard hover:bg-mustard-hover text-ink font-bold"
+        >
+          Home
+        </button>
+      </div>
+    );
+  }
 
   const mode = modeLabels[summary.modeId] ?? { icon: '🎮', label: summary.modeId };
   const { grade, color, message } = gradeFromAccuracy(summary.accuracy);
@@ -48,28 +51,23 @@ export function ResultsScreen() {
     : '—';
 
   return (
-    <div className="min-h-screen bg-page text-ink flex flex-col items-center justify-center px-4 py-8 gap-6">
+    <div className="min-h-screen bg-page text-ink flex flex-col items-center justify-center px-4 py-6 gap-5 sm:py-8 sm:gap-6">
       <div className="text-center space-y-2">
-        <div className="text-5xl">{mode.icon}</div>
-        <h1 className="text-2xl font-bold text-ink">{mode.label} Complete!</h1>
+        <div className="text-4xl sm:text-5xl">{mode.icon}</div>
+        <h1 className="text-2xl font-bold text-ink">{mode.label} Complete</h1>
         <div
-          className="inline-flex items-center justify-center w-20 h-20 rounded-full text-4xl font-black border-4 mx-auto"
+          className="inline-flex items-center justify-center w-18 h-18 sm:w-20 sm:h-20 rounded-full text-3xl sm:text-4xl font-black border-4 mx-auto"
           style={{ borderColor: color, color, backgroundColor: color + '22' }}
         >
           {grade}
         </div>
         <p className="text-ink-secondary text-lg">{message}</p>
-        {sessionGoalMet && (
-          <p className="text-emerald-400 text-sm font-semibold mt-1" role="status">
-            Session goal completed — great focus.
-          </p>
-        )}
       </div>
 
-      <div className="bg-surface rounded-2xl border border-border p-6 w-full max-w-sm space-y-4">
+      <div className="bg-surface rounded-2xl border border-border p-4 sm:p-6 w-full max-w-sm space-y-4">
         <div className="text-center">
           <p className="text-4xl font-bold" style={{ color }}>{summary.score.toLocaleString()}</p>
-          <p className="text-ink-secondary text-sm">Final Score</p>
+          <p className="text-ink-secondary text-sm">Final score</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -83,11 +81,11 @@ export function ResultsScreen() {
           </div>
           <div className="bg-surface-elevated rounded-xl p-3 text-center">
             <p className="text-xl font-bold text-coral">{summary.bestStreak}</p>
-            <p className="text-ink-secondary text-xs">Best Streak</p>
+            <p className="text-ink-secondary text-xs">Best streak</p>
           </div>
           <div className="bg-surface-elevated rounded-xl p-3 text-center">
             <p className="text-xl font-bold text-link">{avgSec}s</p>
-            <p className="text-ink-secondary text-xs">Avg Response</p>
+            <p className="text-ink-secondary text-xs">Avg response</p>
           </div>
         </div>
 
@@ -109,35 +107,17 @@ export function ResultsScreen() {
       </div>
 
       <div className="flex flex-col gap-3 w-full max-w-sm">
-        {!fromIntro && (
-          <button
-            onClick={() =>
-              navigate(
-                classUnit
-                  ? `/class/${classUnit.params.classId}/unit/${classUnit.params.unitId}/practice`
-                  : '/practice'
-              )
-            }
-            className="w-full py-3 bg-green-700 hover:bg-green-600 text-white rounded-xl font-bold transition-colors"
-          >
-            🎯 Practice Weak Forms
-          </button>
-        )}
         <button
-          onClick={() =>
-            fromIntro ? navigate('/intro/play') : navigate(-1)
-          }
-          className="w-full py-3 bg-surface-muted hover:bg-surface-muted text-ink rounded-xl font-semibold transition-colors"
+          onClick={() => navigate(fromLesson === 'vocabulary' ? '/vocabulary' : '/case-practice')}
+          className="w-full min-h-11 py-3 bg-surface-muted hover:bg-surface-muted text-ink rounded-xl font-semibold transition-colors"
         >
-          Play Again
+          Back to {fromLesson === 'vocabulary' ? 'Vocabulary' : 'Case Practice'}
         </button>
         <button
-          onClick={() =>
-            navigate(fromIntro ? '/intro' : classUnit ? `/class/${classUnit.params.classId}` : '/home')
-          }
-          className="w-full py-3 bg-mustard hover:bg-mustard-hover text-ink rounded-xl font-bold transition-colors shadow-sm"
+          onClick={() => navigate('/')}
+          className="w-full min-h-11 py-3 bg-mustard hover:bg-mustard-hover text-ink rounded-xl font-bold transition-colors shadow-sm"
         >
-          {fromIntro ? 'Intro hub' : 'Home'}
+          Home
         </button>
       </div>
     </div>

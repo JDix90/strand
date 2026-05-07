@@ -29,6 +29,12 @@ export type LemmaId = string;
 
 export type WordCategory = 'pronoun' | 'name' | 'noun';
 
+/** One focused drill target: a single part-of-speech × case combination. */
+export interface PracticeFocus {
+  category: WordCategory;
+  caseId: CaseId;
+}
+
 export type Gender = 'masculine' | 'feminine' | 'neuter';
 
 export type Animacy = 'animate' | 'inanimate';
@@ -40,6 +46,13 @@ export type ModeId =
   | 'boss_battle'
   | 'memory_match'
   | 'grid_challenge';
+
+/**
+ * Identifier used for admin-controlled enable/disable flags. Includes every
+ * `ModeId` plus 'focused_drill', which the UI presents alongside the modes
+ * but is not itself a `ModeId` (it has its own dedicated route surface).
+ */
+export type PracticeModeFlagKey = ModeId | 'focused_drill';
 
 export type DifficultyId = 'beginner' | 'standard' | 'advanced';
 
@@ -127,9 +140,6 @@ export interface SessionAnswerEvent {
 
 export interface MasteryRecord {
   formKey: string;
-  /** Scope for progress; defaults to seeded Russian core unit when omitted (local legacy). */
-  unitId?: string;
-  contentModule?: string;
   attempts: number;
   correct: number;
   lastSeenAt: string;
@@ -144,8 +154,6 @@ export interface MasteryRecord {
 
 export interface AdaptiveReviewQueueItem {
   formKey: string;
-  /** When set, must match active unit for queue resolution. */
-  unitId?: string;
   priorityScore: number;
   scheduledAfterQuestions: number;
   questionsSinceEnqueue: number;
@@ -221,4 +229,10 @@ export interface SentenceFrame {
   explanation: string;
   difficulty: DifficultyId;
   requiresPreposition?: boolean;
+  /**
+   * When set, this frame is only used for forms whose category is in this list.
+   * Useful for frames with conjugated verbs that only work grammatically for
+   * certain categories (e.g. 3rd-person-singular nominative frames for names/nouns).
+   */
+  categories?: WordCategory[];
 }

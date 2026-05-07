@@ -1,55 +1,16 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Suspense, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { CurriculumProvider } from './contexts/CurriculumContext';
-import { RequireAuth } from './components/auth/RequireAuth';
-import { RootRoute } from './components/auth/RootRoute';
-import { AdminRoleBar } from './components/admin/AdminRoleBar';
 import { useGameStore } from './store/gameStore';
-import { SyncToastHost } from './components/ui/SyncToastHost';
-import { CloudSyncIndicator } from './components/ui/CloudSyncIndicator';
-import { I18nSync } from './components/curriculum/I18nSync';
-import { UnitScopedOutlet } from './components/student/UnitScopedOutlet';
-import { CurriculumV2FlatRedirect } from './components/curriculum/CurriculumV2FlatRedirect';
+import { AppShell } from './components/layout/AppShell';
+import { reportError } from './lib/observability';
 
-import { LoginScreen } from './screens/auth/LoginScreen';
-import { SignUpScreen } from './screens/auth/SignUpScreen';
 import {
   HomeScreen,
-  SettingsScreen,
-  LearnScreen,
-  PracticeScreen,
-  SpeedScreen,
-  BossScreen,
-  MemoryScreen,
-  GridScreen,
+  CasePracticeScreen,
+  CasePracticeRunScreen,
+  VocabularyScreen,
   ResultsScreen,
-  TeacherDashboard,
-  ClassListScreen,
-  ClassDetailScreen,
-  StudentDetailScreen,
-  AssignmentFormScreen,
-  AnalyticsScreen,
-  JoinClassScreen,
-  AssignmentsScreen,
-  StudentClassHome,
-  VocabularyHubScreen,
-  VocabularyMixedPracticeScreen,
-  CasesHubScreen,
-  StudentClassLayout,
-  StudentHomeLayout,
-  StudentCalendarScreen,
-  StudentProgressScreen,
-  TeacherCalendarScreen,
-  AdminDashboard,
-  AdminUsersScreen,
-  AdminClassesScreen,
-  AdminSiteSettingsScreen,
-  IntroHubScreen,
-  AlphabetScreen,
-  PhrasesScreen,
-  IntroPlayScreen,
 } from './lazyScreens';
 
 function RouteFallback() {
@@ -76,176 +37,40 @@ function AppErrorFallback() {
 }
 
 function AppInit() {
-  const { init, initForUser } = useGameStore();
-  const { profile } = useAuth();
-
+  const { init } = useGameStore();
   useEffect(() => {
-    if (profile) {
-      initForUser(profile.id);
-    } else {
-      init();
-    }
-  }, [profile, init, initForUser]);
-
+    init();
+  }, [init]);
   return null;
 }
 
 function AppRoutes() {
-  const { profile } = useAuth();
   return (
-    <>
-      <AdminRoleBar />
-      <div className={profile?.role === 'admin' ? 'pt-24' : undefined}>
-        <Routes>
-          {/* Public auth routes */}
-          <Route path="/login" element={<LoginScreen />} />
-          <Route path="/signup" element={<SignUpScreen />} />
-
-          {/* Landing for guests; role-based redirect when signed in */}
-          <Route path="/" element={<RootRoute />} />
-
-          {/* Student / shared game routes */}
-          <Route path="/home" element={<RequireAuth><StudentHomeLayout /></RequireAuth>}>
-            <Route index element={<HomeScreen />} />
-            <Route path="calendar" element={<StudentCalendarScreen />} />
-            <Route
-              path="progress"
-              element={
-                <RequireAuth requiredRole="student">
-                  <StudentProgressScreen />
-                </RequireAuth>
-              }
-            />
-          </Route>
-          <Route path="/settings" element={<RequireAuth><SettingsScreen /></RequireAuth>} />
-          <Route path="/intro" element={<RequireAuth><IntroHubScreen /></RequireAuth>} />
-          <Route path="/intro/alphabet" element={<RequireAuth><AlphabetScreen /></RequireAuth>} />
-          <Route path="/intro/phrases" element={<RequireAuth><PhrasesScreen /></RequireAuth>} />
-          <Route path="/intro/play" element={<RequireAuth><IntroPlayScreen /></RequireAuth>} />
-          <Route
-            path="/learn"
-            element={
-              <RequireAuth>
-                <CurriculumV2FlatRedirect>
-                  <LearnScreen />
-                </CurriculumV2FlatRedirect>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/practice"
-            element={
-              <RequireAuth>
-                <CurriculumV2FlatRedirect>
-                  <PracticeScreen />
-                </CurriculumV2FlatRedirect>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/speed"
-            element={
-              <RequireAuth>
-                <CurriculumV2FlatRedirect>
-                  <SpeedScreen />
-                </CurriculumV2FlatRedirect>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/boss"
-            element={
-              <RequireAuth>
-                <CurriculumV2FlatRedirect>
-                  <BossScreen />
-                </CurriculumV2FlatRedirect>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/memory"
-            element={
-              <RequireAuth>
-                <CurriculumV2FlatRedirect>
-                  <MemoryScreen />
-                </CurriculumV2FlatRedirect>
-              </RequireAuth>
-            }
-          />
-          <Route
-            path="/grid"
-            element={
-              <RequireAuth>
-                <CurriculumV2FlatRedirect>
-                  <GridScreen />
-                </CurriculumV2FlatRedirect>
-              </RequireAuth>
-            }
-          />
-          <Route path="/results" element={<RequireAuth><ResultsScreen /></RequireAuth>} />
-          <Route path="/join-class" element={<RequireAuth requiredRole="student"><JoinClassScreen /></RequireAuth>} />
-          <Route path="/assignments" element={<RequireAuth requiredRole="student"><AssignmentsScreen /></RequireAuth>} />
-
-          <Route
-            path="/class/:classId"
-            element={
-              <RequireAuth requiredRole="student">
-                <StudentClassLayout />
-              </RequireAuth>
-            }
-          >
-            <Route index element={<StudentClassHome />} />
-            <Route path="vocabulary" element={<VocabularyHubScreen />} />
-            <Route path="vocabulary/practice" element={<VocabularyMixedPracticeScreen />} />
-            <Route path="cases" element={<CasesHubScreen />} />
-            <Route path="unit/:unitId" element={<UnitScopedOutlet />}>
-              <Route index element={<Navigate to="practice" replace />} />
-              <Route path="learn" element={<LearnScreen />} />
-              <Route path="practice" element={<PracticeScreen />} />
-              <Route path="speed" element={<SpeedScreen />} />
-              <Route path="boss" element={<BossScreen />} />
-              <Route path="memory" element={<MemoryScreen />} />
-              <Route path="grid" element={<GridScreen />} />
-              <Route path="results" element={<ResultsScreen />} />
-            </Route>
-          </Route>
-
-          {/* Teacher routes */}
-          <Route path="/teacher" element={<RequireAuth requiredRole="teacher"><TeacherDashboard /></RequireAuth>} />
-          <Route path="/teacher/calendar" element={<RequireAuth requiredRole="teacher"><TeacherCalendarScreen /></RequireAuth>} />
-          <Route path="/teacher/classes" element={<RequireAuth requiredRole="teacher"><ClassListScreen /></RequireAuth>} />
-          <Route path="/teacher/class/:classId" element={<RequireAuth requiredRole="teacher"><ClassDetailScreen /></RequireAuth>} />
-          <Route path="/teacher/student/:studentId" element={<RequireAuth requiredRole="teacher"><StudentDetailScreen /></RequireAuth>} />
-          <Route path="/teacher/assign/:classId" element={<RequireAuth requiredRole="teacher"><AssignmentFormScreen /></RequireAuth>} />
-          <Route path="/teacher/analytics/:classId" element={<RequireAuth requiredRole="teacher"><AnalyticsScreen /></RequireAuth>} />
-
-          {/* Admin */}
-          <Route path="/admin" element={<RequireAuth requiredRole="admin"><AdminDashboard /></RequireAuth>} />
-          <Route path="/admin/users" element={<RequireAuth requiredRole="admin"><AdminUsersScreen /></RequireAuth>} />
-          <Route path="/admin/classes" element={<RequireAuth requiredRole="admin"><AdminClassesScreen /></RequireAuth>} />
-          <Route path="/admin/site" element={<RequireAuth requiredRole="admin"><AdminSiteSettingsScreen /></RequireAuth>} />
-        </Routes>
-      </div>
-    </>
+    <Routes>
+      <Route path="/" element={<AppShell />}>
+        <Route index element={<HomeScreen />} />
+        <Route path="case-practice" element={<CasePracticeScreen />} />
+        <Route path="case-practice/run" element={<CasePracticeRunScreen />} />
+        <Route path="vocabulary" element={<VocabularyScreen />} />
+        <Route path="results" element={<ResultsScreen />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
   );
 }
 
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <CurriculumProvider>
-          <I18nSync />
-          <AppInit />
-          <CloudSyncIndicator />
-          <SyncToastHost />
-          <ErrorBoundary FallbackComponent={AppErrorFallback}>
-            <Suspense fallback={<RouteFallback />}>
-              <AppRoutes />
-            </Suspense>
-          </ErrorBoundary>
-        </CurriculumProvider>
-      </AuthProvider>
+      <AppInit />
+      <ErrorBoundary
+        FallbackComponent={AppErrorFallback}
+        onError={(error) => reportError('app_error_boundary', error)}
+      >
+        <Suspense fallback={<RouteFallback />}>
+          <AppRoutes />
+        </Suspense>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

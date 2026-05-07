@@ -1,5 +1,13 @@
 import { create } from 'zustand';
-import type { MasteryRecord, AdaptiveReviewQueueItem, SessionSummary, ModeId, DifficultyId, WordCategory } from '../types';
+import type {
+  MasteryRecord,
+  AdaptiveReviewQueueItem,
+  SessionSummary,
+  ModeId,
+  DifficultyId,
+  WordCategory,
+  SessionAnswerEvent,
+} from '../types';
 import { masteryStorageKey, normalizeMasteryRecord } from '../lib/masteryKeys';
 import {
   loadMasteryRecords,
@@ -10,27 +18,11 @@ import {
   saveSettings,
   loadSessionHistory,
   appendSessionSummary,
-  checkAndMigrateSchema,
-  defaultSettings,
   type AppSettings,
 } from '../lib/storage';
-import { modeQualifiesForStreak, nextStreakState, localCalendarDateFromISO } from '../lib/streakEngine';
 import { enqueueStaleReviews } from '../lib/adaptiveEngine';
-import {
-  cloudLoadMasteryRecords,
-  cloudSaveMasteryRecord,
-  cloudLoadSettings,
-  cloudSaveSettings,
-  cloudLoadSessionHistory,
-  cloudAppendSessionSummary,
-  migrateLocalToCloud,
-} from '../lib/cloudStorage';
-import { runCloudWriteWithRetry } from '../lib/syncNotifications';
-
-const MIGRATED_KEY = 'cd_cloud_migrated';
 
 interface GameStore {
-  userId: string | null;
   settings: AppSettings;
   updateSettings: (s: Partial<AppSettings>) => void;
 
@@ -41,7 +33,12 @@ interface GameStore {
   setAdaptiveQueue: (queue: AdaptiveReviewQueueItem[]) => void;
 
   sessionHistory: SessionSummary[];
-  addSessionSummary: (summary: SessionSummary, opts?: { syncToCloud?: boolean }) => void;
+  addSessionSummary: (summary: SessionSummary) => void;
+
+  currentSessionEvents: SessionAnswerEvent[];
+  setCurrentSessionEvents: (events: SessionAnswerEvent[]) => void;
+  pushCurrentSessionEvent: (event: SessionAnswerEvent) => void;
+  clearCurrentSessionEvents: () => void;
 
   currentMode: ModeId | null;
   currentDifficulty: DifficultyId;
@@ -51,15 +48,14 @@ interface GameStore {
   toggleCategory: (cat: WordCategory) => void;
 
   init: () => void;
-  initForUser: (userId: string) => Promise<void>;
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
-  userId: null,
   settings: loadSettings(),
   masteryRecords: loadMasteryRecords(),
   adaptiveQueue: loadAdaptiveQueue(),
   sessionHistory: loadSessionHistory(),
+  currentSessionEvents: [],
   currentMode: null,
   currentDifficulty: 'standard',
 
@@ -67,18 +63,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const updated = { ...get().settings, ...partial };
     saveSettings(updated);
     set({ settings: updated });
-    const uid = get().userId;
-    if (uid) void runCloudWriteWithRetry('settings', () => cloudSaveSettings(uid, updated));
   },
 
   updateMasteryRecord: (record) => {
     const n = normalizeMasteryRecord(record);
-    const key = masteryStorageKey(n.unitId, n.formKey);
+    const key = masteryStorageKey(n.formKey);
     const updated = { ...get().masteryRecords, [key]: n };
     saveMasteryRecords(updated);
     set({ masteryRecords: updated });
-    const uid = get().userId;
-    if (uid) void runCloudWriteWithRetry('progress', () => cloudSaveMasteryRecord(uid, record));
   },
 
   setAdaptiveQueue: (queue) => {
@@ -86,28 +78,15 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ adaptiveQueue: queue });
   },
 
-  addSessionSummary: (summary, opts) => {
+  addSessionSummary: (summary) => {
     appendSessionSummary(summary);
     set({ sessionHistory: [summary, ...get().sessionHistory].slice(0, 50) });
-    const sync = opts?.syncToCloud !== false;
-    const uid = get().userId;
-    if (sync && uid) void runCloudWriteWithRetry('session', () => cloudAppendSessionSummary(uid, summary));
-
-    if (sync && modeQualifiesForStreak(summary.modeId)) {
-      const cur = get().settings;
-      const sessionDate = localCalendarDateFromISO(summary.completedAt);
-      const next = nextStreakState(cur.lastStreakActivityDate, sessionDate, cur.streakCurrent, cur.streakBest);
-      const newSettings: AppSettings = {
-        ...cur,
-        streakCurrent: next.current,
-        streakBest: next.best,
-        lastStreakActivityDate: next.lastActivityDate,
-      };
-      saveSettings(newSettings);
-      set({ settings: newSettings });
-      if (uid) void runCloudWriteWithRetry('settings', () => cloudSaveSettings(uid, newSettings));
-    }
   },
+
+  setCurrentSessionEvents: (events) => set({ currentSessionEvents: events }),
+  pushCurrentSessionEvent: (event) =>
+    set(state => ({ currentSessionEvents: [...state.currentSessionEvents, event] })),
+  clearCurrentSessionEvents: () => set({ currentSessionEvents: [] }),
 
   setCurrentMode: (mode) => set({ currentMode: mode }),
   setCurrentDifficulty: (d) => set({ currentDifficulty: d }),
@@ -124,12 +103,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const newSettings = { ...get().settings, activeCategories: updated };
     saveSettings(newSettings);
     set({ settings: newSettings });
-    const uid = get().userId;
-    if (uid) void runCloudWriteWithRetry('settings', () => cloudSaveSettings(uid, newSettings));
   },
 
   init: () => {
-    checkAndMigrateSchema();
     const mastery = loadMasteryRecords();
     const queue = loadAdaptiveQueue();
     const updatedQueue = enqueueStaleReviews(queue, mastery);
@@ -139,49 +115,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       masteryRecords: mastery,
       adaptiveQueue: updatedQueue,
       sessionHistory: loadSessionHistory(),
-    });
-  },
-
-  initForUser: async (userId: string) => {
-    set({ userId });
-
-    const migrated = localStorage.getItem(MIGRATED_KEY);
-    if (!migrated) {
-      const localMastery = loadMasteryRecords();
-      const localHistory = loadSessionHistory();
-      const localSettings = loadSettings();
-      const hasLocalData = Object.keys(localMastery).length > 0 || localHistory.length > 0;
-      if (hasLocalData) {
-        await migrateLocalToCloud(userId, localMastery, localHistory, localSettings);
-      }
-      localStorage.setItem(MIGRATED_KEY, userId);
-    }
-
-    const [cloudMastery, cloudSettingsPartial, cloudHistory] = await Promise.all([
-      cloudLoadMasteryRecords(userId),
-      cloudLoadSettings(userId),
-      cloudLoadSessionHistory(userId),
-    ]);
-
-    const localSettings = loadSettings();
-    const mergedSettings: AppSettings = {
-      ...defaultSettings,
-      ...localSettings,
-      ...cloudSettingsPartial,
-    };
-
-    saveMasteryRecords(cloudMastery);
-    saveSettings(mergedSettings);
-
-    const queue = loadAdaptiveQueue();
-    const updatedQueue = enqueueStaleReviews(queue, cloudMastery);
-    saveAdaptiveQueue(updatedQueue);
-
-    set({
-      settings: mergedSettings,
-      masteryRecords: cloudMastery,
-      adaptiveQueue: updatedQueue,
-      sessionHistory: cloudHistory,
+      currentSessionEvents: [],
     });
   },
 }));

@@ -20,6 +20,7 @@ export function AnswerButton({ label, onClick, state = 'default', index, classNa
     <button
       onClick={state === 'default' ? onClick : undefined}
       disabled={state === 'disabled'}
+      data-testid={index !== undefined ? `answer-choice-${index}` : undefined}
       className={`w-full flex items-center gap-3 px-5 py-4 rounded-xl border-2 text-left text-lg font-medium transition-all duration-150 ${stateStyles[state]} ${className}`}
     >
       {index !== undefined && (

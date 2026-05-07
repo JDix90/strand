@@ -34,8 +34,8 @@ export function canSpeakEnglish(): boolean {
   return canSpeakRussian();
 }
 
-export function canSpeakLang(_lang: 'ru' | 'en'): boolean {
-  return canSpeakRussian();
+export function canSpeakLang(lang: 'ru' | 'en'): boolean {
+  return lang === 'ru' ? canSpeakRussian() : canSpeakEnglish();
 }
 
 let warmRegistered = false;

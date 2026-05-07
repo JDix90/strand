@@ -1,0 +1,457 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for data/nameForms.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">data</a> nameForms.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>1/1</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>1/1</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line high'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import type { DeclensionForm } from '../types';
+&nbsp;
+export const nameForms: DeclensionForm[] = [
+  { lemmaId: 'lena', lemmaDisplay: 'Лена', englishGloss: 'Lena', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Лена', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Лена идёт в школу.', acceptedVariants: ['Лена'] },
+  { lemmaId: 'lena', lemmaDisplay: 'Лена', englishGloss: 'Lena', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Лены', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Лены есть собака.', acceptedVariants: ['Лены'] },
+  { lemmaId: 'lena', lemmaDisplay: 'Лена', englishGloss: 'Lena', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Лене', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я дал Лене подарок.', acceptedVariants: ['Лене'] },
+  { lemmaId: 'lena', lemmaDisplay: 'Лена', englishGloss: 'Lena', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Лену', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я вижу Лену.', acceptedVariants: ['Лену'] },
+  { lemmaId: 'lena', lemmaDisplay: 'Лена', englishGloss: 'Lena', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Леной', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я иду с Леной.', acceptedVariants: ['Леной'] },
+  { lemmaId: 'lena', lemmaDisplay: 'Лена', englishGloss: 'Lena', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Лене', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Я думаю о Лене.', acceptedVariants: ['Лене'] },
+  { lemmaId: 'boris', lemmaDisplay: 'Борис', englishGloss: 'Boris', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Борис', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Борис читает книгу.', acceptedVariants: ['Борис'] },
+  { lemmaId: 'boris', lemmaDisplay: 'Борис', englishGloss: 'Boris', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Бориса', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Бориса есть машина.', acceptedVariants: ['Бориса'] },
+  { lemmaId: 'boris', lemmaDisplay: 'Борис', englishGloss: 'Boris', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Борису', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я дал Борису книгу.', acceptedVariants: ['Борису'] },
+  { lemmaId: 'boris', lemmaDisplay: 'Борис', englishGloss: 'Boris', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Бориса', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я вижу Бориса.', acceptedVariants: ['Бориса'] },
+  { lemmaId: 'boris', lemmaDisplay: 'Борис', englishGloss: 'Boris', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Борисом', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я работаю с Борисом.', acceptedVariants: ['Борисом'] },
+  { lemmaId: 'boris', lemmaDisplay: 'Борис', englishGloss: 'Boris', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Борисе', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Я думаю о Борисе.', acceptedVariants: ['Борисе'] },
+  { lemmaId: 'andrey', lemmaDisplay: 'Андрей', englishGloss: 'Andrey', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Андрей', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Андрей играет в футбол.', acceptedVariants: ['Андрей'] },
+  { lemmaId: 'andrey', lemmaDisplay: 'Андрей', englishGloss: 'Andrey', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Андрея', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Андрея есть брат.', acceptedVariants: ['Андрея'] },
+  { lemmaId: 'andrey', lemmaDisplay: 'Андрей', englishGloss: 'Andrey', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Андрею', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я позвонил Андрею.', acceptedVariants: ['Андрею'] },
+  { lemmaId: 'andrey', lemmaDisplay: 'Андрей', englishGloss: 'Andrey', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Андрея', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я встретил Андрея.', acceptedVariants: ['Андрея'] },
+  { lemmaId: 'andrey', lemmaDisplay: 'Андрей', englishGloss: 'Andrey', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Андреем', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я говорил с Андреем.', acceptedVariants: ['Андреем'] },
+  { lemmaId: 'andrey', lemmaDisplay: 'Андрей', englishGloss: 'Andrey', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Андрее', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Мы говорим об Андрее.', acceptedVariants: ['Андрее'] },
+  { lemmaId: 'mariya', lemmaDisplay: 'Мария', englishGloss: 'Maria', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Мария', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Мария любит музыку.', acceptedVariants: ['Мария'] },
+  { lemmaId: 'mariya', lemmaDisplay: 'Мария', englishGloss: 'Maria', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Марии', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Марии красивый голос.', acceptedVariants: ['Марии'] },
+  { lemmaId: 'mariya', lemmaDisplay: 'Мария', englishGloss: 'Maria', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Марии', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я помог Марии.', acceptedVariants: ['Марии'] },
+  { lemmaId: 'mariya', lemmaDisplay: 'Мария', englishGloss: 'Maria', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Марию', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я пригласил Марию.', acceptedVariants: ['Марию'] },
+  { lemmaId: 'mariya', lemmaDisplay: 'Мария', englishGloss: 'Maria', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Марией', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я танцевал с Марией.', acceptedVariants: ['Марией'] },
+  { lemmaId: 'mariya', lemmaDisplay: 'Мария', englishGloss: 'Maria', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Марии', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Все говорят о Марии.', acceptedVariants: ['Марии'] },
+&nbsp;
+  // Иван (Ivan) — masculine hard declension
+  { lemmaId: 'ivan', lemmaDisplay: 'Иван', englishGloss: 'Ivan', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Иван', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Иван читает книгу.', acceptedVariants: ['Иван'] },
+  { lemmaId: 'ivan', lemmaDisplay: 'Иван', englishGloss: 'Ivan', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Ивана', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Ивана есть сестра.', acceptedVariants: ['Ивана'] },
+  { lemmaId: 'ivan', lemmaDisplay: 'Иван', englishGloss: 'Ivan', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Ивану', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я написал письмо Ивану.', acceptedVariants: ['Ивану'] },
+  { lemmaId: 'ivan', lemmaDisplay: 'Иван', englishGloss: 'Ivan', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Ивана', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я вижу Ивана.', acceptedVariants: ['Ивана'] },
+  { lemmaId: 'ivan', lemmaDisplay: 'Иван', englishGloss: 'Ivan', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Иваном', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я работаю с Иваном.', acceptedVariants: ['Иваном'] },
+  { lemmaId: 'ivan', lemmaDisplay: 'Иван', englishGloss: 'Ivan', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Иване', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Мы говорим об Иване.', acceptedVariants: ['Иване'] },
+&nbsp;
+  // Наташа (Natasha) — feminine soft declension
+  { lemmaId: 'natasha', lemmaDisplay: 'Наташа', englishGloss: 'Natasha', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Наташа', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Наташа поёт в хоре.', acceptedVariants: ['Наташа'] },
+  { lemmaId: 'natasha', lemmaDisplay: 'Наташа', englishGloss: 'Natasha', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Наташи', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Наташи красивый голос.', acceptedVariants: ['Наташи'] },
+  { lemmaId: 'natasha', lemmaDisplay: 'Наташа', englishGloss: 'Natasha', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Наташе', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я позвонил Наташе.', acceptedVariants: ['Наташе'] },
+  { lemmaId: 'natasha', lemmaDisplay: 'Наташа', englishGloss: 'Natasha', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Наташу', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я встретил Наташу.', acceptedVariants: ['Наташу'] },
+  { lemmaId: 'natasha', lemmaDisplay: 'Наташа', englishGloss: 'Natasha', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Наташей', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я иду с Наташей.', acceptedVariants: ['Наташей'] },
+  { lemmaId: 'natasha', lemmaDisplay: 'Наташа', englishGloss: 'Natasha', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Наташе', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Я думаю о Наташе.', acceptedVariants: ['Наташе'] },
+&nbsp;
+  // Сергей (Sergey) — masculine soft declension
+  { lemmaId: 'sergey', lemmaDisplay: 'Сергей', englishGloss: 'Sergey', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Сергей', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Сергей занимается спортом.', acceptedVariants: ['Сергей'] },
+  { lemmaId: 'sergey', lemmaDisplay: 'Сергей', englishGloss: 'Sergey', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Сергея', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Сергея есть машина.', acceptedVariants: ['Сергея'] },
+  { lemmaId: 'sergey', lemmaDisplay: 'Сергей', englishGloss: 'Sergey', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Сергею', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я помог Сергею.', acceptedVariants: ['Сергею'] },
+  { lemmaId: 'sergey', lemmaDisplay: 'Сергей', englishGloss: 'Sergey', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Сергея', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я встретил Сергея.', acceptedVariants: ['Сергея'] },
+  { lemmaId: 'sergey', lemmaDisplay: 'Сергей', englishGloss: 'Sergey', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Сергеем', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я работаю с Сергеем.', acceptedVariants: ['Сергеем'] },
+  { lemmaId: 'sergey', lemmaDisplay: 'Сергей', englishGloss: 'Sergey', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Сергее', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Мы говорим о Сергее.', acceptedVariants: ['Сергее'] },
+&nbsp;
+  // Катя (Katya) — feminine soft declension
+  { lemmaId: 'katya', lemmaDisplay: 'Катя', englishGloss: 'Katya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Катя', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Катя учится в университете.', acceptedVariants: ['Катя'] },
+  { lemmaId: 'katya', lemmaDisplay: 'Катя', englishGloss: 'Katya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Кати', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Кати новая книга.', acceptedVariants: ['Кати'] },
+  { lemmaId: 'katya', lemmaDisplay: 'Катя', englishGloss: 'Katya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Кате', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я дал цветы Кате.', acceptedVariants: ['Кате'] },
+  { lemmaId: 'katya', lemmaDisplay: 'Катя', englishGloss: 'Katya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Катю', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я вижу Катю.', acceptedVariants: ['Катю'] },
+  { lemmaId: 'katya', lemmaDisplay: 'Катя', englishGloss: 'Katya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Катей', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я гуляю с Катей.', acceptedVariants: ['Катей'] },
+  { lemmaId: 'katya', lemmaDisplay: 'Катя', englishGloss: 'Katya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Кате', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Я думаю о Кате.', acceptedVariants: ['Кате'] },
+&nbsp;
+  // Дима (Dima) — masculine, feminine-pattern declension
+  { lemmaId: 'dima', lemmaDisplay: 'Дима', englishGloss: 'Dima', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Дима', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Дима играет на гитаре.', acceptedVariants: ['Дима'] },
+  { lemmaId: 'dima', lemmaDisplay: 'Дима', englishGloss: 'Dima', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Димы', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Димы есть велосипед.', acceptedVariants: ['Димы'] },
+  { lemmaId: 'dima', lemmaDisplay: 'Дима', englishGloss: 'Dima', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Диме', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я написал Диме сообщение.', acceptedVariants: ['Диме'] },
+  { lemmaId: 'dima', lemmaDisplay: 'Дима', englishGloss: 'Dima', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Диму', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я вижу Диму.', acceptedVariants: ['Диму'] },
+  { lemmaId: 'dima', lemmaDisplay: 'Дима', englishGloss: 'Dima', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Димой', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я дружу с Димой.', acceptedVariants: ['Димой'] },
+  { lemmaId: 'dima', lemmaDisplay: 'Дима', englishGloss: 'Dima', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Диме', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Я думаю о Диме.', acceptedVariants: ['Диме'] },
+&nbsp;
+  // Оля (Olya) — feminine soft declension
+  { lemmaId: 'olya', lemmaDisplay: 'Оля', englishGloss: 'Olya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Оля', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Оля рисует картины.', acceptedVariants: ['Оля'] },
+  { lemmaId: 'olya', lemmaDisplay: 'Оля', englishGloss: 'Olya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Оли', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Оли есть кошка.', acceptedVariants: ['Оли'] },
+  { lemmaId: 'olya', lemmaDisplay: 'Оля', englishGloss: 'Olya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Оле', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я отдал тетрадь Оле.', acceptedVariants: ['Оле'] },
+  { lemmaId: 'olya', lemmaDisplay: 'Оля', englishGloss: 'Olya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Олю', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я встретил Олю.', acceptedVariants: ['Олю'] },
+  { lemmaId: 'olya', lemmaDisplay: 'Оля', englishGloss: 'Olya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Олей', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я иду с Олей.', acceptedVariants: ['Олей'] },
+  { lemmaId: 'olya', lemmaDisplay: 'Оля', englishGloss: 'Olya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Оле', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Мы говорим об Оле.', acceptedVariants: ['Оле'] },
+&nbsp;
+  // Алёша (Alyosha) — masculine, feminine-pattern declension
+  { lemmaId: 'alyosha', lemmaDisplay: 'Алёша', englishGloss: 'Alyosha', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Алёша', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Алёша помогает маме.', acceptedVariants: ['Алёша'] },
+  { lemmaId: 'alyosha', lemmaDisplay: 'Алёша', englishGloss: 'Alyosha', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Алёши', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Алёши добрая душа.', acceptedVariants: ['Алёши'] },
+  { lemmaId: 'alyosha', lemmaDisplay: 'Алёша', englishGloss: 'Alyosha', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Алёше', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я дал Алёше задание.', acceptedVariants: ['Алёше'] },
+  { lemmaId: 'alyosha', lemmaDisplay: 'Алёша', englishGloss: 'Alyosha', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Алёшу', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я вижу Алёшу.', acceptedVariants: ['Алёшу'] },
+  { lemmaId: 'alyosha', lemmaDisplay: 'Алёша', englishGloss: 'Alyosha', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Алёшей', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я дружу с Алёшей.', acceptedVariants: ['Алёшей'] },
+  { lemmaId: 'alyosha', lemmaDisplay: 'Алёша', englishGloss: 'Alyosha', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Алёше', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Все говорят об Алёше.', acceptedVariants: ['Алёше'] },
+&nbsp;
+  // Таня (Tanya) — feminine soft declension
+  { lemmaId: 'tanya', lemmaDisplay: 'Таня', englishGloss: 'Tanya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Таня', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Таня любит читать.', acceptedVariants: ['Таня'] },
+  { lemmaId: 'tanya', lemmaDisplay: 'Таня', englishGloss: 'Tanya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Тани', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Тани есть братик.', acceptedVariants: ['Тани'] },
+  { lemmaId: 'tanya', lemmaDisplay: 'Таня', englishGloss: 'Tanya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Тане', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я написал Тане письмо.', acceptedVariants: ['Тане'] },
+  { lemmaId: 'tanya', lemmaDisplay: 'Таня', englishGloss: 'Tanya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Таню', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я встретил Таню.', acceptedVariants: ['Таню'] },
+  { lemmaId: 'tanya', lemmaDisplay: 'Таня', englishGloss: 'Tanya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Таней', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я работаю с Таней.', acceptedVariants: ['Таней'] },
+  { lemmaId: 'tanya', lemmaDisplay: 'Таня', englishGloss: 'Tanya', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Тане', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Мы думаем о Тане.', acceptedVariants: ['Тане'] },
+&nbsp;
+  // Максим (Maxim) — masculine hard declension
+  { lemmaId: 'maxim', lemmaDisplay: 'Максим', englishGloss: 'Maxim', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Максим', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Максим играет в шахматы.', acceptedVariants: ['Максим'] },
+  { lemmaId: 'maxim', lemmaDisplay: 'Максим', englishGloss: 'Maxim', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Максима', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Максима новый телефон.', acceptedVariants: ['Максима'] },
+  { lemmaId: 'maxim', lemmaDisplay: 'Максим', englishGloss: 'Maxim', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Максиму', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я написал Максиму сообщение.', acceptedVariants: ['Максиму'] },
+  { lemmaId: 'maxim', lemmaDisplay: 'Максим', englishGloss: 'Maxim', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Максима', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я встретил Максима.', acceptedVariants: ['Максима'] },
+  { lemmaId: 'maxim', lemmaDisplay: 'Максим', englishGloss: 'Maxim', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Максимом', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я говорю с Максимом.', acceptedVariants: ['Максимом'] },
+  { lemmaId: 'maxim', lemmaDisplay: 'Максим', englishGloss: 'Maxim', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Максиме', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Мы говорим о Максиме.', acceptedVariants: ['Максиме'] },
+&nbsp;
+  // Светлана (Svetlana) — feminine hard declension
+  { lemmaId: 'svetlana', lemmaDisplay: 'Светлана', englishGloss: 'Svetlana', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Светлана', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Светлана работает в офисе.', acceptedVariants: ['Светлана'] },
+  { lemmaId: 'svetlana', lemmaDisplay: 'Светлана', englishGloss: 'Svetlana', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Светланы', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Светланы большой опыт.', acceptedVariants: ['Светланы'] },
+  { lemmaId: 'svetlana', lemmaDisplay: 'Светлана', englishGloss: 'Svetlana', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Светлане', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я позвонил Светлане.', acceptedVariants: ['Светлане'] },
+  { lemmaId: 'svetlana', lemmaDisplay: 'Светлана', englishGloss: 'Svetlana', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Светлану', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я вижу Светлану.', acceptedVariants: ['Светлану'] },
+  { lemmaId: 'svetlana', lemmaDisplay: 'Светлана', englishGloss: 'Svetlana', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Светланой', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я работаю со Светланой.', acceptedVariants: ['Светланой'] },
+  { lemmaId: 'svetlana', lemmaDisplay: 'Светлана', englishGloss: 'Svetlana', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Светлане', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Мы думаем о Светлане.', acceptedVariants: ['Светлане'] },
+&nbsp;
+  // Артём (Artyom) — masculine soft declension
+  { lemmaId: 'artyom', lemmaDisplay: 'Артём', englishGloss: 'Artyom', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Артём', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Артём живёт в Москве.', acceptedVariants: ['Артём', 'Артем'] },
+  { lemmaId: 'artyom', lemmaDisplay: 'Артём', englishGloss: 'Artyom', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Артёма', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Артёма есть собака.', acceptedVariants: ['Артёма', 'Артема'] },
+  { lemmaId: 'artyom', lemmaDisplay: 'Артём', englishGloss: 'Artyom', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Артёму', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я написал Артёму письмо.', acceptedVariants: ['Артёму', 'Артему'] },
+  { lemmaId: 'artyom', lemmaDisplay: 'Артём', englishGloss: 'Artyom', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Артёма', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я встретил Артёма.', acceptedVariants: ['Артёма', 'Артема'] },
+  { lemmaId: 'artyom', lemmaDisplay: 'Артём', englishGloss: 'Artyom', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Артёмом', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я говорил с Артёмом.', acceptedVariants: ['Артёмом', 'Артемом'] },
+  { lemmaId: 'artyom', lemmaDisplay: 'Артём', englishGloss: 'Artyom', category: 'name', gender: 'masculine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Артёме', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Мы говорим об Артёме.', acceptedVariants: ['Артёме', 'Артеме'] },
+&nbsp;
+  // Вера (Vera) — feminine hard declension
+  { lemmaId: 'vera', lemmaDisplay: 'Вера', englishGloss: 'Vera', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'nominative', surfaceForm: 'Вера', helperWord: 'это', questionPrompt: 'кто? что?', exampleSentence: 'Вера любит музыку.', acceptedVariants: ['Вера'] },
+  { lemmaId: 'vera', lemmaDisplay: 'Вера', englishGloss: 'Vera', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'genitive', surfaceForm: 'Веры', helperWord: 'нет', questionPrompt: 'кого? чего?', exampleSentence: 'У Веры красивый голос.', acceptedVariants: ['Веры'] },
+  { lemmaId: 'vera', lemmaDisplay: 'Вера', englishGloss: 'Vera', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'dative', surfaceForm: 'Вере', helperWord: 'дай', questionPrompt: 'кому? чему?', exampleSentence: 'Я помог Вере с заданием.', acceptedVariants: ['Вере'] },
+  { lemmaId: 'vera', lemmaDisplay: 'Вера', englishGloss: 'Vera', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'accusative', surfaceForm: 'Веру', helperWord: 'люблю', questionPrompt: 'кого? что?', exampleSentence: 'Я встретил Веру в парке.', acceptedVariants: ['Веру'] },
+  { lemmaId: 'vera', lemmaDisplay: 'Вера', englishGloss: 'Vera', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'instrumental', surfaceForm: 'Верой', helperWord: 'с', questionPrompt: 'кем? чем?', exampleSentence: 'Я разговаривал с Верой.', acceptedVariants: ['Верой'] },
+  { lemmaId: 'vera', lemmaDisplay: 'Вера', englishGloss: 'Vera', category: 'name', gender: 'feminine', animacy: 'animate', caseId: 'prepositional', surfaceForm: 'Вере', helperWord: 'о', questionPrompt: 'о ком? о чём?', exampleSentence: 'Мы думаем о Вере.', acceptedVariants: ['Вере'] },
+];
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-05-07T16:41:24.548Z
+            </div>
+        <script src="../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
+    </body>
+</html>
+    
