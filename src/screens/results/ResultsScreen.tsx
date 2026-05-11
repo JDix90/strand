@@ -1,10 +1,8 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-import type { SessionSummary } from '../../types';
+'use client';
 
-interface ResultsLocationState {
-  summary?: SessionSummary;
-  fromLesson?: 'case-practice' | 'vocabulary';
-}
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { consumeResultsState } from '@/lib/navigationState';
 
 const modeLabels: Record<string, { icon: string; label: string }> = {
   practice: { icon: '🎯', label: 'Practice Session' },
@@ -13,17 +11,16 @@ const modeLabels: Record<string, { icon: string; label: string }> = {
 const gradeFromAccuracy = (acc: number): { grade: string; color: string; message: string } => {
   if (acc >= 0.95) return { grade: 'S', color: '#a855f7', message: 'Outstanding!' };
   if (acc >= 0.85) return { grade: 'A', color: '#22c55e', message: 'Excellent work!' };
-  if (acc >= 0.70) return { grade: 'B', color: '#3b82f6', message: 'Good job!' };
+  if (acc >= 0.7) return { grade: 'B', color: '#3b82f6', message: 'Good job!' };
   if (acc >= 0.55) return { grade: 'C', color: '#f59e0b', message: 'Keep practicing!' };
   return { grade: 'D', color: '#ef4444', message: 'Review the table and try again.' };
 };
 
 export function ResultsScreen() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const state = location.state as ResultsLocationState | undefined;
-  const summary = state?.summary;
-  const fromLesson = state?.fromLesson ?? 'case-practice';
+  const router = useRouter();
+  const [payload] = useState(() => consumeResultsState());
+  const summary = payload?.summary;
+  const fromLesson = payload?.fromLesson ?? 'case-practice';
 
   if (!summary) {
     return (
@@ -34,7 +31,7 @@ export function ResultsScreen() {
         </p>
         <button
           type="button"
-          onClick={() => navigate('/')}
+          onClick={() => router.push('/')}
           className="px-5 py-2.5 rounded-xl bg-mustard hover:bg-mustard-hover text-ink font-bold"
         >
           Home
@@ -46,9 +43,8 @@ export function ResultsScreen() {
   const mode = modeLabels[summary.modeId] ?? { icon: '🎮', label: summary.modeId };
   const { grade, color, message } = gradeFromAccuracy(summary.accuracy);
   const accuracy = Math.round(summary.accuracy * 100);
-  const avgSec = summary.averageResponseMs > 0
-    ? (summary.averageResponseMs / 1000).toFixed(1)
-    : '—';
+  const avgSec =
+    summary.averageResponseMs > 0 ? (summary.averageResponseMs / 1000).toFixed(1) : '—';
 
   return (
     <div className="min-h-screen bg-page text-ink flex flex-col items-center justify-center px-4 py-6 gap-5 sm:py-8 sm:gap-6">
@@ -66,7 +62,9 @@ export function ResultsScreen() {
 
       <div className="bg-surface rounded-2xl border border-border p-4 sm:p-6 w-full max-w-sm space-y-4">
         <div className="text-center">
-          <p className="text-4xl font-bold" style={{ color }}>{summary.score.toLocaleString()}</p>
+          <p className="text-4xl font-bold" style={{ color }}>
+            {summary.score.toLocaleString()}
+          </p>
           <p className="text-ink-secondary text-sm">Final score</p>
         </div>
 
@@ -76,7 +74,9 @@ export function ResultsScreen() {
             <p className="text-ink-secondary text-xs">Accuracy</p>
           </div>
           <div className="bg-surface-elevated rounded-xl p-3 text-center">
-            <p className="text-xl font-bold text-ink">{summary.correctAnswers}/{summary.totalQuestions}</p>
+            <p className="text-xl font-bold text-ink">
+              {summary.correctAnswers}/{summary.totalQuestions}
+            </p>
             <p className="text-ink-secondary text-xs">Correct</p>
           </div>
           <div className="bg-surface-elevated rounded-xl p-3 text-center">
@@ -108,13 +108,15 @@ export function ResultsScreen() {
 
       <div className="flex flex-col gap-3 w-full max-w-sm">
         <button
-          onClick={() => navigate(fromLesson === 'vocabulary' ? '/vocabulary' : '/case-practice')}
+          type="button"
+          onClick={() => router.push(fromLesson === 'vocabulary' ? '/vocabulary' : '/case-practice')}
           className="w-full min-h-11 py-3 bg-surface-muted hover:bg-surface-muted text-ink rounded-xl font-semibold transition-colors"
         >
           Back to {fromLesson === 'vocabulary' ? 'Vocabulary' : 'Case Practice'}
         </button>
         <button
-          onClick={() => navigate('/')}
+          type="button"
+          onClick={() => router.push('/')}
           className="w-full min-h-11 py-3 bg-mustard hover:bg-mustard-hover text-ink rounded-xl font-bold transition-colors shadow-sm"
         >
           Home

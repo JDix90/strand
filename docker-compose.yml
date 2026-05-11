@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    # Host port: default 15432 (often free). Override with POSTGRES_HOST_PORT in a root `.env` file.
+    ports:
+      - '${POSTGRES_HOST_PORT:-15432}:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: languini
+    volumes:
+      - languini_pg:/var/lib/postgresql/data
+
+volumes:
+  languini_pg:

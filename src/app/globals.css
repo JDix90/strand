@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Languini design tokens — cream / navy / teal system */
 :root {
@@ -14,7 +13,7 @@
 }
 
 @theme {
-  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
 
   --color-page: #faf7f0;
   --color-ink: #2e4e8e;
@@ -46,8 +45,4 @@ body {
   color: var(--color-ink);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-}
-
-#root {
-  min-height: 100vh;
 }

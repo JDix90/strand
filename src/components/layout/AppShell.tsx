@@ -1,14 +1,15 @@
+'use client';
+
 import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 
-export function AppShell() {
+export function AppShell({ children, isAdmin }: { children: React.ReactNode; isAdmin?: boolean }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-page text-ink md:grid md:grid-cols-[240px_1fr]">
       <div className="hidden md:block">
-        <Sidebar />
+        <Sidebar isAdmin={isAdmin} />
       </div>
 
       <div className="md:hidden border-b border-border bg-surface px-4 py-3 flex items-center justify-between">
@@ -24,13 +25,11 @@ export function AppShell() {
 
       {mobileOpen && (
         <div className="md:hidden border-b border-border">
-          <Sidebar onNavigate={() => setMobileOpen(false)} />
+          <Sidebar isAdmin={isAdmin} onNavigate={() => setMobileOpen(false)} />
         </div>
       )}
 
-      <main className="min-w-0">
-        <Outlet />
-      </main>
+      <main className="min-w-0">{children}</main>
     </div>
   );
 }

@@ -1,5 +1,8 @@
+'use client';
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
+import { setResultsState } from '@/lib/navigationState';
 import { loadVocabularyDeck } from '../../lib/vocabulary/deckRegistry';
 import { buildVocabularySession, type VocabMcQuestion } from '../../lib/vocabulary/questionGenerator';
 import { vocabularyFormKey } from '../../lib/vocabulary/masteryFormKey';
@@ -38,7 +41,7 @@ export function VocabularyPractice({
   resultsPath,
   title,
 }: Props) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const updateMastery = useGameStore(s => s.updateMasteryRecord);
   const deckKey = useMemo(() => [...deckIds].sort().join(','), [deckIds]);
 
@@ -167,7 +170,8 @@ export function VocabularyPractice({
           weakForms: [...weakSessionRef.current],
         };
         addSessionSummary(summary);
-        navigate(resultsPath, { state: { summary, fromLesson: 'vocabulary' } });
+        setResultsState({ summary, fromLesson: 'vocabulary' });
+        router.push(resultsPath);
         return;
       }
       setCorrectTotal(nextCorrect);
@@ -190,7 +194,7 @@ export function VocabularyPractice({
       <div className="min-h-screen bg-page text-ink flex flex-col">
         <div className="bg-surface-elevated border-b border-border px-4 py-3 flex items-center justify-between">
           <span className="text-ink font-bold">{unitTitle}</span>
-          <button type="button" onClick={() => navigate(backPath)} className="text-ink-secondary hover:text-ink text-sm">
+          <button type="button" onClick={() => router.push(backPath)} className="text-ink-secondary hover:text-ink text-sm">
             Close
           </button>
         </div>
@@ -205,7 +209,7 @@ export function VocabularyPractice({
     <div className="min-h-screen bg-page text-ink flex flex-col">
       <div className="bg-surface-elevated border-b border-border px-4 py-3 flex items-center justify-between">
         <span className="text-ink font-bold">{unitTitle}</span>
-        <button type="button" onClick={() => navigate(backPath)} className="text-ink-secondary hover:text-ink text-sm">
+        <button type="button" onClick={() => router.push(backPath)} className="text-ink-secondary hover:text-ink text-sm">
           Close
         </button>
       </div>

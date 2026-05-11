@@ -1,24 +1,29 @@
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+'use client';
+
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { authClient } from '@/lib/auth-client';
 
 const linkBase =
-  'block rounded-xl px-3 py-2 text-sm font-semibold transition-colors';
+  'block w-full rounded-xl px-3 py-2 text-sm font-semibold text-left transition-[color,background-color,border-color,box-shadow]';
 
-const linkState = ({ isActive }: { isActive: boolean }) =>
-  isActive
-    ? `${linkBase} bg-brand text-white`
-    : `${linkBase} text-ink-secondary hover:text-ink hover:bg-surface`;
+const linkState = (pathname: string, href: string) =>
+  pathname === href
+    ? `${linkBase} bg-brand text-white border border-brand shadow-[var(--shadow-card)]`
+    : `${linkBase} text-ink-secondary bg-surface-elevated border border-border shadow-[var(--shadow-card)] hover:text-ink hover:bg-surface hover:border-border-strong hover:shadow-[var(--shadow-card-hover)]`;
 
-export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
-  const navigate = useNavigate();
-  const location = useLocation();
+export function Sidebar({ onNavigate, isAdmin }: { onNavigate?: () => void; isAdmin?: boolean }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { data: session, isPending } = authClient.useSession();
 
   const goHome = () => {
     onNavigate?.();
-    if (location.pathname === '/') {
-      navigate(0);
+    if (pathname === '/') {
+      router.refresh();
       return;
     }
-    navigate('/');
+    router.push('/');
   };
 
   return (
@@ -36,19 +41,63 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         <button
           type="button"
           onClick={goHome}
-          className={`${linkBase} w-full text-left text-ink-secondary hover:text-ink hover:bg-surface-muted`}
+          className={`${linkBase} text-ink-secondary bg-surface-elevated border border-border shadow-[var(--shadow-card)] hover:text-ink hover:bg-surface hover:border-border-strong hover:shadow-[var(--shadow-card-hover)]`}
         >
           Home
         </button>
-        <p className="px-3 pt-2 text-xs font-bold uppercase tracking-wide text-ink-secondary">
-          Lessons
-        </p>
-        <NavLink to="/case-practice" className={linkState} onClick={onNavigate}>
-          Case Practice
-        </NavLink>
-        <NavLink to="/vocabulary" className={linkState} onClick={onNavigate}>
-          Vocabulary
-        </NavLink>
+
+        {!isPending &&
+          (session?.user ? (
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={async () => {
+                  onNavigate?.();
+                  await authClient.signOut();
+                  router.push('/');
+                  router.refresh();
+                }}
+                className={`${linkBase} text-ink-secondary bg-surface-elevated border border-border shadow-[var(--shadow-card)] hover:text-ink hover:bg-surface hover:border-border-strong hover:shadow-[var(--shadow-card-hover)] w-full`}
+              >
+                Sign out
+              </button>
+              <p className="px-3 text-xs text-ink-secondary truncate" title={session.user.email}>
+                {session.user.email}
+              </p>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className={`${linkBase} text-xs text-ink-secondary bg-surface-elevated border border-border hover:text-ink hover:bg-surface hover:border-border-strong`}
+                  onClick={onNavigate}
+                >
+                  Admin
+                </Link>
+              )}
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              className={`${linkBase} text-ink-secondary bg-surface-elevated border border-border shadow-[var(--shadow-card)] hover:text-ink hover:bg-surface hover:border-border-strong hover:shadow-[var(--shadow-card-hover)]`}
+              onClick={onNavigate}
+            >
+              Sign In / Register
+            </Link>
+          ))}
+
+        <nav aria-labelledby="sidebar-lessons-heading" className="mt-5 space-y-2 border-t border-border pt-4">
+          <h2
+            id="sidebar-lessons-heading"
+            className="px-3 mb-1 text-xs font-semibold tracking-wide text-ink-secondary cursor-default select-none"
+          >
+            Lessons
+          </h2>
+          <Link href="/case-practice" className={linkState(pathname, '/case-practice')} onClick={onNavigate}>
+            Case Practice
+          </Link>
+          <Link href="/vocabulary" className={linkState(pathname, '/vocabulary')} onClick={onNavigate}>
+            Vocabulary
+          </Link>
+        </nav>
       </div>
     </aside>
   );

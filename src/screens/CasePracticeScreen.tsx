@@ -1,10 +1,14 @@
-import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+'use client';
+
+import { useMemo, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { setRoundPlan } from '@/lib/navigationState';
 import { caseMetadata, caseOrder } from '../data/caseMetadata';
 import { FOCUSED_ROUND_QUESTIONS } from '../data/gameConfigs';
 import type { CaseId, PracticeFocus, WordCategory } from '../types';
 import { useGameStore } from '../store/gameStore';
 import { accuracyByCase } from '../lib/sessionStats';
+import { CaseHelpDialog } from '../components/ui/CaseHelpDialog';
 
 const CATEGORIES: { value: WordCategory; label: string; icon: string }[] = [
   { value: 'pronoun', label: 'Pronouns', icon: '👤' },
@@ -36,8 +40,10 @@ function buildDefaultOrder(): PracticeFocus[] {
 }
 
 export function CasePracticeScreen() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const sessionEvents = useGameStore(s => s.currentSessionEvents);
+  const [helpCaseId, setHelpCaseId] = useState<CaseId | null>(null);
+  const helpTriggerRef = useRef<HTMLElement | null>(null);
   const [selectedFocuses, setSelectedFocuses] = useState<PracticeFocus[]>([]);
   const selectedKeys = useMemo(() => new Set(selectedFocuses.map(focusKey)), [selectedFocuses]);
   const statsByCase = useMemo(() => accuracyByCase(sessionEvents), [sessionEvents]);
@@ -68,11 +74,19 @@ export function CasePracticeScreen() {
               {caseOrder.map(caseId => {
                 const meta = caseMetadata[caseId];
                 return (
-                  <th key={caseId} className="text-center text-xs font-semibold pb-1 text-ink">
-                    <div className="flex flex-col items-center gap-0.5">
-                      <span>{meta.icon}</span>
+                  <th key={caseId} className="text-center text-xs font-semibold pb-1 text-ink align-bottom">
+                    <button
+                      type="button"
+                      aria-label={`${meta.label}: cues and examples`}
+                      onClick={e => {
+                        helpTriggerRef.current = e.currentTarget;
+                        setHelpCaseId(caseId);
+                      }}
+                      className="mx-auto flex min-h-11 min-w-11 sm:min-h-10 sm:min-w-10 flex-col items-center gap-0.5 rounded-lg px-1 py-1 text-ink transition-colors hover:bg-surface-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-1 cursor-pointer"
+                    >
+                      <span aria-hidden>{meta.icon}</span>
                       <span>{CASE_SHORT[caseId]}</span>
-                    </div>
+                    </button>
                   </th>
                 );
               })}
@@ -160,7 +174,10 @@ export function CasePracticeScreen() {
         type="button"
         data-testid="start-focused-practice"
         disabled={selectedFocuses.length === 0}
-        onClick={() => navigate('/case-practice/run', { state: { roundPlan: selectedFocuses } })}
+        onClick={() => {
+          setRoundPlan(selectedFocuses);
+          router.push('/case-practice/run');
+        }}
         className={[
           'w-full max-w-xl min-h-12 py-3.5 rounded-2xl text-base font-bold transition-all',
           selectedFocuses.length > 0
@@ -172,6 +189,8 @@ export function CasePracticeScreen() {
           ? 'Select at least one combination'
           : `Start Focused Practice (${selectedFocuses.length} rounds, ${FOCUSED_ROUND_QUESTIONS} questions each)`}
       </button>
+
+      <CaseHelpDialog caseId={helpCaseId} onOpenChange={setHelpCaseId} triggerRef={helpTriggerRef} />
     </div>
   );
 }

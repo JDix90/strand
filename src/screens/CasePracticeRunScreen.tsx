@@ -1,5 +1,8 @@
+'use client';
+
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
+import { consumeRoundPlan, setResultsState } from '@/lib/navigationState';
 import { useGameStore } from '../store/gameStore';
 import { generateQuestion, type GeneratedQuestion } from '../lib/questionGenerator';
 import {
@@ -35,8 +38,7 @@ const CATEGORY_LABELS: Record<WordCategory, { label: string; icon: string }> = {
 };
 
 export function CasePracticeRunScreen() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
   const {
     settings,
     masteryRecords,
@@ -48,10 +50,13 @@ export function CasePracticeRunScreen() {
     clearCurrentSessionEvents,
   } = useGameStore();
 
-  const locationState = location.state as { roundPlan?: PracticeFocus[] } | null;
-  const [roundPlan] = useState<PracticeFocus[] | null>(locationState?.roundPlan ?? null);
+  const [runSnapshot] = useState(() => {
+    const plan = consumeRoundPlan();
+    return { roundPlan: plan, activeFocus: plan?.[0] ?? null };
+  });
+  const { roundPlan } = runSnapshot;
   const [roundIndex, setRoundIndex] = useState(0);
-  const [activeFocus, setActiveFocus] = useState<PracticeFocus | null>(locationState?.roundPlan?.[0] ?? null);
+  const [activeFocus, setActiveFocus] = useState<PracticeFocus | null>(runSnapshot.activeFocus);
   const [roundQuestionCount, setRoundQuestionCount] = useState(0);
   const [roundCorrectCount, setRoundCorrectCount] = useState(0);
   const [phase, setPhase] = useState<Phase>('question');
@@ -153,9 +158,10 @@ export function CasePracticeRunScreen() {
         categories: roundCategories,
       });
       addSessionSummary(summary);
-      navigate('/results', { state: { summary, fromLesson: 'case-practice' } });
+      setResultsState({ summary, fromLesson: 'case-practice' });
+      router.push('/results');
     },
-    [questionCount, correctCount, events, score, roundCategories, addSessionSummary, navigate],
+    [questionCount, correctCount, events, score, roundCategories, addSessionSummary, router],
   );
 
   const handleAnswer = (choice: string, idx: number) => {
@@ -239,7 +245,7 @@ export function CasePracticeRunScreen() {
         <p className="text-ink-secondary">No round plan selected.</p>
         <button
           type="button"
-          onClick={() => navigate('/case-practice')}
+          onClick={() => router.push('/case-practice')}
           className="px-4 py-2 rounded-xl bg-surface-muted hover:bg-surface text-ink text-sm font-semibold"
         >
           Back to setup
@@ -308,7 +314,7 @@ export function CasePracticeRunScreen() {
         {questionError && (
           <button
             type="button"
-            onClick={() => navigate('/case-practice')}
+            onClick={() => router.push('/case-practice')}
             className="px-4 py-2 rounded-xl bg-surface-muted hover:bg-surface text-ink text-sm font-semibold"
           >
             Back to setup
@@ -336,7 +342,7 @@ export function CasePracticeRunScreen() {
               aria-label="Close practice"
               onClick={() => {
                 clearCurrentSessionEvents();
-                navigate('/case-practice');
+                router.push('/case-practice');
               }}
               className="text-ink-secondary hover:text-ink shrink-0 min-w-11 min-h-11 flex items-center justify-center rounded-xl"
             >

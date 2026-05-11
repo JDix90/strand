@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 
 export function HomeScreen() {
   return (
@@ -13,7 +13,7 @@ export function HomeScreen() {
 
         <div className="grid gap-4 md:grid-cols-2">
           <Link
-            to="/case-practice"
+            href="/case-practice"
             className="rounded-2xl border border-border bg-surface p-5 hover:border-border-strong"
           >
             <p className="text-lg font-bold text-ink">Case Practice</p>
@@ -23,7 +23,7 @@ export function HomeScreen() {
             <p className="mt-3 text-xs font-semibold text-link">Open lesson →</p>
           </Link>
           <Link
-            to="/vocabulary"
+            href="/vocabulary"
             className="rounded-2xl border border-border bg-surface p-5 hover:border-border-strong"
           >
             <p className="text-lg font-bold text-ink">Vocabulary</p>

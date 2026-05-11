@@ -1,3 +1,5 @@
+'use client';
+
 import { VocabularyPractice } from '../components/game/VocabularyPractice';
 import { useGameStore } from '../store/gameStore';
 import { STARTER_VOCAB_DECK_IDS } from '../lib/starterDeck';
